@@ -1,0 +1,71 @@
+POST https://ceb4-85-91-130-43.ngrok-free.app/revision/region/1
+Content-Type: application/json
+
+{
+    "submodules": {
+        "https://github.com/infitx-org/profile-cd.git": {
+            "ref": "71f3d4900a816b28832ffee9e53bc08ddb2a1f17"
+        }
+    }
+}
+
+###
+POST https://ceb4-85-91-130-43.ngrok-free.app/revision/region/1
+Content-Type: application/json
+
+{
+    "tests": {
+        "gp": {
+            "pass": 5,
+            "fail": 0
+        }
+    }
+}
+
+###
+POST https://ceb4-85-91-130-43.ngrok-free.app/revision/mw/1
+Content-Type: application/json
+
+{
+    "submodules": {
+        "https://github.com/infitx-org/profile-cd.git": {
+            "ref": "71f3d4900a816b28832ffee9e53bc08ddb2a1f17"
+        }
+    },
+    "tests": {
+        "gp": {
+            "pass": 5,
+            "fail": 0
+        }
+    }
+}
+
+###
+POST https://ceb4-85-91-130-43.ngrok-free.app/revision/zm/1
+Content-Type: application/json
+
+{
+    "submodules": {
+        "https://github.com/infitx-org/profile-cd.git": {
+            "ref": "71f3d4900a816b28832ffee9e53bc08ddb2a1f17"
+        },
+        "comesa-buffer": {
+            "ref": "main"
+        }
+    },
+    "tests": {
+        "gp": {
+            "pass": 5,
+            "fail": 0
+        }
+    }
+}
+
+###
+GET https://ceb4-85-91-130-43.ngrok-free.app/revision/region/1
+
+###
+GET https://ceb4-85-91-130-43.ngrok-free.app/revision/mw/1
+
+###
+GET https://ceb4-85-91-130-43.ngrok-free.app/revision/zm/1
