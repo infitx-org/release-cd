@@ -6,14 +6,14 @@ import { Octokit } from "@octokit/rest";
 import semver from 'semver';
 import assert from 'node:assert'
 
-const config = rc('cd', {
+const config = rc('release-cd', {
     server: {
         port: 8080,
         host: 'localhost'
     },
     mongodb: {
         url: 'mongodb://host.docker.internal:27017',
-        database: 'cd'
+        database: 'release-cd'
     },
     github: {
         token: 'your-github-token'
@@ -23,10 +23,8 @@ const config = rc('cd', {
         environments: ['region', 'mw', 'zm']
     },
     release: {
-        repos: [
-        ],
         prerelease: 'dev',
-        start: '1.0.1-dev.3'
+        start: '1.0.0'
     }
 });
 
