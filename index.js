@@ -5,6 +5,7 @@ import rc from 'rc';
 import { Octokit } from "@octokit/rest";
 import semver from 'semver';
 import assert from 'node:assert'
+import mongoUriBuilder from 'mongo-uri-builder';
 
 const config = rc('release-cd', {
     server: {
@@ -12,8 +13,9 @@ const config = rc('release-cd', {
         host: 'localhost'
     },
     mongodb: {
-        url: 'mongodb://host.docker.internal:27017',
-        database: 'release-cd'
+        host: 'host.docker.internal',
+        database: 'release-cd',
+        port: 27017
     },
     github: {
         token: 'your-github-token'
@@ -38,7 +40,7 @@ const init = async () => {
         host: config.server.host
     });
 
-    const client = new MongoClient(config.mongodb.url);
+    const client = new MongoClient(mongoUriBuilder(config.mongodb));
     await client.connect();
     const db = client.db(config.mongodb.database);
 

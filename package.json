@@ -9,6 +9,7 @@
     "@hapi/boom": "^10.0.1",
     "@hapi/hapi": "^21.3.12",
     "@octokit/rest": "^21.1.0",
+    "mongo-uri-builder": "^4.0.0",
     "mongoose": "^8.9.7",
     "rc": "^1.2.8",
     "semver": "^7.7.1"
