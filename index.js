@@ -7,7 +7,7 @@ import semver from 'semver';
 import assert from 'node:assert'
 import mongoUriBuilder from 'mongo-uri-builder';
 
-const config = rc('release-cd', {
+const config = rc('release_cd', {
     server: {
         port: 8080,
         host: 'localhost'
@@ -111,8 +111,8 @@ ${Object.entries(refs).map(([name, ref]) => `* ${name.replace(/^https:\/\/github
 
 ## Tests
 
-|Env | Test | Pass | Fail |
-|--- | ---- | ---- | ---- |
+| Env  | Test | Pass | Fail |
+| :--- | :--- | ---: | ---: |
 ${Object.entries(tests).map(([env, tests]) => Object.entries(tests).map(([name, { pass, fail }]) => `| ${env} | ${name} | ${pass} | ${fail} |`)).flat().join('\n')}
 
 `;
