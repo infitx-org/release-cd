@@ -4,7 +4,7 @@ import { MongoClient } from 'mongodb';
 import rc from 'rc';
 import { Octokit } from "@octokit/rest";
 import semver from 'semver';
-import assert from 'node:assert'
+import assert from 'node:assert';
 import mongoUriBuilder from 'mongo-uri-builder';
 
 const config = rc('release_cd', {
@@ -238,6 +238,22 @@ ${Object.entries(tests).map(([env, tests]) => Object.entries(tests).map(([name, 
         method: 'GET',
         path: '/{collection}/{env}/{id}',
         handler: cdCollectionGet
+    });
+
+    server.route({
+        method: 'GET',
+        path: '/release',
+        async handler(request, h) {
+            return h.response(await db.collection('release').findOne({ _id: 'version' })).code(200);
+        }
+    });
+
+    server.route({
+        method: 'GET',
+        path: '/health',
+        handler: (request, h) => {
+            return h.response({ status: 'ok' }).code(200);
+        }
     });
 
     await server.start();
