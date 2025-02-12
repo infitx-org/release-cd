@@ -1,4 +1,4 @@
-POST https://ceb4-85-91-130-43.ngrok-free.app/revision/region/1
+POST http://localhost:8080/revision/region/1
 Content-Type: application/json
 
 {
@@ -10,7 +10,7 @@ Content-Type: application/json
 }
 
 ###
-POST https://ceb4-85-91-130-43.ngrok-free.app/revision/region/1
+POST http://localhost:8080/revision/region/1
 Content-Type: application/json
 
 {
@@ -23,7 +23,7 @@ Content-Type: application/json
 }
 
 ###
-POST https://ceb4-85-91-130-43.ngrok-free.app/revision/mw/1
+POST http://localhost:8080/revision/mw/1
 Content-Type: application/json
 
 {
@@ -41,7 +41,7 @@ Content-Type: application/json
 }
 
 ###
-POST https://ceb4-85-91-130-43.ngrok-free.app/revision/zm/1
+POST http://localhost:8080/revision/zm/1
 Content-Type: application/json
 
 {
@@ -62,10 +62,10 @@ Content-Type: application/json
 }
 
 ###
-GET https://ceb4-85-91-130-43.ngrok-free.app/revision/region/1
+GET http://localhost:8080/revision/region/1
 
 ###
-GET https://ceb4-85-91-130-43.ngrok-free.app/revision/mw/1
+GET http://localhost:8080/revision/mw/1
 
 ###
-GET https://ceb4-85-91-130-43.ngrok-free.app/revision/zm/1
+GET http://localhost:8080/revision/zm/1

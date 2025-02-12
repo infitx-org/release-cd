@@ -1,4 +1,4 @@
-POST https://ceb4-85-91-130-43.ngrok-free.app/revision/region/2
+POST http://localhost:8080/revision/region/2
 Content-Type: application/json
 
 {
@@ -10,7 +10,7 @@ Content-Type: application/json
 }
 
 ###
-POST https://ceb4-85-91-130-43.ngrok-free.app/revision/region/2
+POST http://localhost:8080/revision/region/2
 Content-Type: application/json
 
 {
@@ -23,7 +23,7 @@ Content-Type: application/json
 }
 
 ###
-POST https://ceb4-85-91-130-43.ngrok-free.app/revision/mw/2
+POST http://localhost:8080/revision/mw/2
 Content-Type: application/json
 
 {
@@ -41,7 +41,7 @@ Content-Type: application/json
 }
 
 ###
-POST https://ceb4-85-91-130-43.ngrok-free.app/revision/zm/2
+POST http://localhost:8080/revision/zm/2
 Content-Type: application/json
 
 {
@@ -62,13 +62,16 @@ Content-Type: application/json
 }
 
 ###
-GET https://ceb4-85-91-130-43.ngrok-free.app/revision/region/2
+GET http://localhost:8080/revision/region/2
 
 ###
-GET https://ceb4-85-91-130-43.ngrok-free.app/revision/mw/2
+GET http://localhost:8080/revision/mw/2
 
 ###
-GET https://19a1-85-91-130-43.ngrok-free.app/revision/zm/2
+GET http://localhost:8080/revision/zm/2
 
 ###
-GET https://19a1-85-91-130-43.ngrok-free.app/release
+GET http://localhost:8080/release
+
+###
+GET http://localhost:8080/health
