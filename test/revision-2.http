@@ -68,4 +68,7 @@ GET https://ceb4-85-91-130-43.ngrok-free.app/revision/region/2
 GET https://ceb4-85-91-130-43.ngrok-free.app/revision/mw/2
 
 ###
-GET https://ceb4-85-91-130-43.ngrok-free.app/revision/zm/2
+GET https://19a1-85-91-130-43.ngrok-free.app/revision/zm/2
+
+###
+GET https://19a1-85-91-130-43.ngrok-free.app/release

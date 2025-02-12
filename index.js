@@ -53,6 +53,7 @@ const init = async () => {
     });
 
     server.ext('onRequest', (request, h) => {
+        if (request.route.path === '/health') return h.continue;
         request.log(['info'], `${request.method.toUpperCase()} ${request.path}`);
         return h.continue;
     });
@@ -94,7 +95,7 @@ const init = async () => {
         if (collection === 'revision') {
             const release = await db.collection(`release/${env}`).findOne({ _id });
             if (release) return h.response(release).code(200);
-            return h.response(await cdRuleExecute()).code(200);
+            return await cdRuleExecute();
         }
         return cdCollectionGet(request, h);
     };
@@ -117,37 +118,36 @@ ${Object.entries(tests).map(([env, tests]) => Object.entries(tests).map(([name, 
 
 `;
 
-    const cdRuleExecute = async () => {
+    const cdRuleExecute = async (h) => {
         const refs = {};
         const revisions = {};
         const tests = {};
         for (const env of config.rule.environments) {
             const revision = await db.collection(`revision/${env}`).findOne({}, { sort: { $natural: -1 } });
             if (!revision || !requiredTestsPassed(revision))
-                throw new Boom(`Required tests have not passed for environment ${env}`, { statusCode: 409 });
+                return h.response(`Required tests have not passed for environment ${env}`).code(202);
 
             if (!revision.submodules || !Object.keys(revision.submodules).length)
-                throw new Boom(`No submodules info found for environment ${env}`, { statusCode: 409 });
+                return h.response(`No submodules info found for environment ${env}`).code(202);
 
             if (revision.version)
-                throw new Boom(`Release ${version} already created for environment ${env}`, { statusCode: 409 });
+                return h.response(`Release ${version} already created for environment ${env}`).code(202);
 
             revisions[env] = revision._id;
             tests[env] = revision.tests;
-            if (!Object.entries(revision.submodules).every(([name, { ref }]) => {
+
+            if (Object.entries(revision.submodules).find(([name, { ref }]) => { // Check if submodule refs do not match
                 if (!refs[name]) {
                     refs[name] = ref;
-                    return true;
-                } else {
-                    if (refs[name] === ref) return true;
-                    throw new Boom(`Submodule refs do not match for environment ${env}, revision ${revision._id}, submodule ${name}`, { statusCode: 409 });
-                }
-            })) return;
+                    return;
+                } else if (refs[name] === ref) return;
+                return true;
+            })) return h.response(`Submodule refs do not match for environment ${env}, revision ${revision._id}, submodule ${foundMismatch[0]}`).code(202);
         }
 
         console.log('Submodule refs match', refs);
-        const version = await cdSemverBump(revisions);
-        if (!version) return;
+        const [version, versionResponse] = await cdSemverBump(revisions);
+        if (!version) return h.response(versionResponse).code(202);
         const releaseNotes = releaseNotesFormat(refs, tests);
         await Promise.all(Object.keys(refs).filter(url => url.startsWith('https://github.com/')).map(async (url) => {
             const [owner, repo] = url.replace(/\.git$/, '').split('/').slice(-2);
@@ -194,7 +194,7 @@ ${Object.entries(tests).map(([env, tests]) => Object.entries(tests).map(([name, 
     const cdSemverBump = async (revisions) => {
         const current = await db.collection('release').findOne({ _id: 'version' }) || { version: '1.0.0' };
         if (deepEqual(revisions, current?.revisions))
-            throw new Boom(`Revisions ${JSON.stringify(revisions)} match current version ${current.version}`, { statusCode: 409 });
+            return [false, `Revisions ${JSON.stringify(revisions)} match current version ${current.version}`];
 
         const newVersion = current?.version ? semver.inc(current.version, 'prerelease', config.release.prerelease) : config.release.start;
 
@@ -202,7 +202,7 @@ ${Object.entries(tests).map(([env, tests]) => Object.entries(tests).map(([name, 
 
         console.log(`Bumping version to ${newVersion}`);
         await db.collection('release').updateOne({ _id: 'version' }, { $set: { version: newVersion, revisions } }, { upsert: true });
-        return newVersion;
+        return [newVersion];
     }
 
     const cdReleaseCreate = async (owner, repo, commit, tag, releaseName, body) => {
