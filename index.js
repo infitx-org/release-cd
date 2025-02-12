@@ -95,7 +95,7 @@ const init = async () => {
         if (collection === 'revision') {
             const release = await db.collection(`release/${env}`).findOne({ _id });
             if (release) return h.response(release).code(200);
-            return await cdRuleExecute();
+            return await cdRuleExecute(h);
         }
         return cdCollectionGet(request, h);
     };
