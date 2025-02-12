@@ -22,7 +22,7 @@ const config = rc('release_cd', {
     },
     rule: {
         requiredTests: ['gp'],
-        environments: ['region', 'mw', 'zm']
+        environments: ['region-dev', 'mw-dev', 'zm-dev']
     },
     release: {
         prerelease: 'dev',
@@ -46,24 +46,25 @@ const init = async () => {
 
     server.events.on({ name: 'request', channels: 'app' }, (request, event, tags) => {
         if (tags.error) {
-            console.error(`${request.method.toUpperCase()} ${request.path} ${event.error?.output?.statusCode} ${event.error ? event.error.message : 'unknown'}`);
+            console.error(new Date(), `=> ${request.method.toUpperCase()} ${request.path} ${event.error?.output?.statusCode} ${event.error ? event.error.message : 'unknown'}`);
         } else {
-            console.log(event.data);
+            console.log(new Date(), event.data);
         }
     });
 
     server.ext('onRequest', (request, h) => {
-        if (request.route.path === '/health') return h.continue;
-        request.log(['info'], `${request.method.toUpperCase()} ${request.path}`);
+        if (request.path === '/health') return h.continue;
+        request.log(['info'], `=> ${request.method.toUpperCase()} ${request.path}`);
         return h.continue;
     });
 
     server.ext('onPreResponse', (request, h) => {
+        if (request.path === '/health') return h.continue;
         const response = request.response;
         if (response.isBoom) {
             request.log(['error'], response);
         } else {
-            request.log(['info'], `${request.method.toUpperCase()} ${request.path} ${response.statusCode}`);
+            request.log(['info'], `<= ${request.method.toUpperCase()} ${request.path} ${response.statusCode}`);
         }
         return h.continue;
     });
