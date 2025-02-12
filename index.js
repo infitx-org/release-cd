@@ -137,13 +137,14 @@ ${Object.entries(tests).map(([env, tests]) => Object.entries(tests).map(([name, 
             revisions[env] = revision._id;
             tests[env] = revision.tests;
 
-            if (Object.entries(revision.submodules).find(([name, { ref }]) => { // Check if submodule refs do not match
+            const foundMismatch = Object.entries(revision.submodules).find(([name, { ref }]) => { // Check if submodule refs do not match
                 if (!refs[name]) {
                     refs[name] = ref;
                     return;
                 } else if (refs[name] === ref) return;
                 return true;
-            })) return h.response(`Submodule refs do not match for environment ${env}, revision ${revision._id}, submodule ${foundMismatch[0]}`).code(202);
+            })
+            if (foundMismatch) return h.response(`Submodule refs do not match for environment ${env}, revision ${revision._id}, submodule ${foundMismatch[0]}`).code(202);
         }
 
         console.log('Submodule refs match', refs);
