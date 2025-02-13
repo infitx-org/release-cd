@@ -102,7 +102,7 @@ const init = async () => {
     };
 
     const requiredTestsPassed = ({ tests }) => config.rule.requiredTests.every(
-        test => tests?.[test].pass > 0 && tests[test].fail === 0
+        test => tests?.[test].totalAssertions > 0 && tests[test].totalAssertions === tests[test].totalPassedAssertions
     );
 
     const releaseNotesFormat = (refs, tests) => `# Release notes
