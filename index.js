@@ -10,7 +10,7 @@ import mongoUriBuilder from 'mongo-uri-builder';
 const config = rc('release_cd', {
     server: {
         port: 8080,
-        host: 'localhost'
+        host: '0.0.0.0'
     },
     mongodb: {
         host: 'host.docker.internal',
@@ -21,8 +21,17 @@ const config = rc('release_cd', {
         token: 'your-github-token'
     },
     rule: {
-        requiredTests: ['gp'],
-        environments: ['region-dev', 'mw-dev', 'zm-dev']
+        environments: {
+            'region-dev': {
+                requiredTests: ['gp_tests']
+            },
+            'mw-dev': {
+                requiredTests: ['gp_tests']
+            },
+            'zm-dev': {
+                requiredTests: ['gp_tests']
+            }
+        }
     },
     release: {
         prerelease: 'dev',
@@ -101,7 +110,7 @@ const init = async () => {
         return cdCollectionGet(request, h);
     };
 
-    const requiredTestsPassed = ({ tests }) => config.rule.requiredTests.every(
+    const requiredTestsPassed = (requiredTests, { tests }) => requiredTests.every(
         test => tests?.[test].totalAssertions > 0 && tests[test].totalAssertions === tests[test].totalPassedAssertions
     );
 
@@ -115,7 +124,7 @@ ${Object.entries(refs).map(([name, ref]) => `* ${name.replace(/^https:\/\/github
 
 | Env  | Test | Pass | Fail |
 | :--- | :--- | ---: | ---: |
-${Object.entries(tests).map(([env, tests]) => Object.entries(tests).map(([name, { pass, fail }]) => `| ${env} | ${name} | ${pass} | ${fail} |`)).flat().join('\n')}
+${Object.entries(tests).map(([env, tests]) => Object.entries(tests).map(([name, { totalPassedAssertions, totalAssertions }]) => `| ${env} | ${name} | ${totalPassedAssertions} | ${totalAssertions - totalPassedAssertions} |`)).flat().join('\n')}
 
 `;
 
@@ -123,9 +132,9 @@ ${Object.entries(tests).map(([env, tests]) => Object.entries(tests).map(([name, 
         const refs = {};
         const revisions = {};
         const tests = {};
-        for (const env of config.rule.environments) {
+        for (const [env, {requiredTests}] of Object.entries(config.rule.environments)) {
             const revision = await db.collection(`revision/${env}`).findOne({}, { sort: { $natural: -1 } });
-            if (!revision || !requiredTestsPassed(revision))
+            if (!revision || !requiredTestsPassed(requiredTests, revision))
                 return h.response(`Required tests have not passed for environment ${env}`).code(202);
 
             if (!revision.submodules || !Object.keys(revision.submodules).length)
@@ -156,7 +165,7 @@ ${Object.entries(tests).map(([env, tests]) => Object.entries(tests).map(([name, 
             await cdReleaseCreate(owner, repo, refs[url], `v${version}`, `CD pre-release ${version}`, releaseNotes);
         }));
 
-        await Promise.all(config.rule.environments.map(env => {
+        await Promise.all(Object.keys(config.rule.environments).map(env => {
             return revisions[env] && db.collection(`release/${env}`).updateOne(
                 { _id: revisions[env] },
                 { $set: { release: version } },
