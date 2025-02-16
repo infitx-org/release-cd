@@ -1,74 +1,72 @@
-POST http://localhost:8080/revision/region-dev/2
+POST http://localhost:8080/revision/region-dev/6
 Content-Type: application/json
 
 {
     "submodules": {
         "https://github.com/infitx-org/profile-cd.git": {
+            "path": "profiles/z-continuous-deployment",
             "ref": "94c4f2654efb4d7333df039170aca0e8a753a182"
         }
     }
 }
 
 ###
-POST http://localhost:8080/revision/region-dev/2
+POST http://localhost:8080/revision/region-dev/6
 Content-Type: application/json
 
 {
-    "tests": {
-        "gp_tests": {
-            "totalAssertions": 5,
-            "totalPassedAssertions": 5
-        }
+    "tests.gp_tests": {
+        "totalAssertions": 5,
+        "totalPassedAssertions": 5
     }
 }
 
 ###
-POST http://localhost:8080/revision/mw-dev/2
+POST http://localhost:8080/revision/mw-dev/6
 Content-Type: application/json
 
 {
     "submodules": {
         "https://github.com/infitx-org/profile-cd.git": {
+            "path": "profiles/z-continuous-deployment",
             "ref": "94c4f2654efb4d7333df039170aca0e8a753a182"
         }
     },
-    "tests": {
-        "gp_tests": {
-            "totalAssertions": 5,
-            "totalPassedAssertions": 5
-        }
+    "tests.gp_tests": {
+        "totalAssertions": 5,
+        "totalPassedAssertions": 5
     }
 }
 
 ###
-POST http://localhost:8080/revision/zm-dev/2
+POST http://localhost:8080/revision/zm-dev/6
 Content-Type: application/json
 
 {
     "submodules": {
         "https://github.com/infitx-org/profile-cd.git": {
+            "path": "profiles/z-continuous-deployment",
             "ref": "94c4f2654efb4d7333df039170aca0e8a753a182"
         },
         "comesa-buffer": {
+            "path": "profiles/buffer",
             "ref": "main"
         }
     },
-    "tests": {
-        "gp_tests": {
-            "totalAssertions": 5,
-            "totalPassedAssertions": 5
-        }
+    "tests.gp_tests": {
+        "totalAssertions": 5,
+        "totalPassedAssertions": 5
     }
 }
 
 ###
-GET http://localhost:8080/revision/region-dev/2
+GET http://localhost:8080/revision/region-dev/6
 
 ###
-GET http://localhost:8080/revision/mw-dev/2
+GET http://localhost:8080/revision/mw-dev/6
 
 ###
-GET http://localhost:8080/revision/zm-dev/2
+GET http://localhost:8080/revision/zm-dev/6
 
 ###
 GET http://localhost:8080/release

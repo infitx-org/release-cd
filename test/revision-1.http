@@ -4,6 +4,7 @@ Content-Type: application/json
 {
     "submodules": {
         "https://github.com/infitx-org/profile-cd.git": {
+            "path": "profiles/z-continuous-deployment",
             "ref": "71f3d4900a816b28832ffee9e53bc08ddb2a1f17"
         }
     }
@@ -29,6 +30,7 @@ Content-Type: application/json
 {
     "submodules": {
         "https://github.com/infitx-org/profile-cd.git": {
+            "path": "profiles/z-continuous-deployment",
             "ref": "71f3d4900a816b28832ffee9e53bc08ddb2a1f17"
         }
     },
@@ -47,9 +49,11 @@ Content-Type: application/json
 {
     "submodules": {
         "https://github.com/infitx-org/profile-cd.git": {
+            "path": "profiles/z-continuous-deployment",
             "ref": "71f3d4900a816b28832ffee9e53bc08ddb2a1f17"
         },
         "comesa-buffer": {
+            "path": "profiles/buffer",
             "ref": "main"
         }
     },

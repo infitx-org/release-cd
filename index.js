@@ -73,7 +73,7 @@ const init = async () => {
         if (response.isBoom) {
             request.log(['error'], response);
         } else {
-            request.log(['info'], `<= ${request.method.toUpperCase()} ${request.path} ${response.statusCode}`);
+            request.log(['info'], `<= ${request.method.toUpperCase()} ${request.path} ${response.statusCode} ${JSON.stringify(response.source)}`);
         }
         return h.continue;
     });
@@ -114,11 +114,19 @@ const init = async () => {
         test => tests?.[test].totalAssertions > 0 && tests[test].totalAssertions === tests[test].totalPassedAssertions
     );
 
-    const releaseNotesFormat = (refs, tests) => `# Release notes
+    const releaseNotesFormat = (submodules, tests) => `# Release notes
 
 ## Submodules
 
-${Object.entries(refs).map(([name, ref]) => `* ${name.replace(/^https:\/\/github.com\/|.git$/g, '')} ${name.replace(/^https:\/\/github.com\/|.git$/g, '')}@${ref}`).join('\n')}
+${Object.entries(submodules).map(([name, {ref}]) => `* ${name.replace(/^https:\/\/github.com\/|.git$/g, '')} ${name.replace(/^https:\/\/github.com\/|.git$/g, '')}@${ref}`).join('\n')}
+
+submodules.yaml
+
+\`\`\`yaml
+${Object.entries(submodules).map(([name, {path, ref}]) => `${path}:
+  url: ${name}
+  ref: ${ref}`).join('\n')}
+\`\`\`
 
 ## Tests
 
@@ -129,7 +137,7 @@ ${Object.entries(tests).map(([env, tests]) => Object.entries(tests).map(([name, 
 `;
 
     const cdRuleExecute = async (h) => {
-        const refs = {};
+        const submoduleProps = {};
         const revisions = {};
         const tests = {};
         for (const [env, {requiredTests}] of Object.entries(config.rule.environments)) {
@@ -146,23 +154,23 @@ ${Object.entries(tests).map(([env, tests]) => Object.entries(tests).map(([name, 
             revisions[env] = revision._id;
             tests[env] = revision.tests;
 
-            const foundMismatch = Object.entries(revision.submodules).find(([name, { ref }]) => { // Check if submodule refs do not match
-                if (!refs[name]) {
-                    refs[name] = ref;
+            const foundMismatch = Object.entries(revision.submodules).find(([name, props]) => { // Check if submodule refs do not match
+                if (!submoduleProps[name]) {
+                    submoduleProps[name] = props;
                     return;
-                } else if (refs[name] === ref) return;
+                } else if (submoduleProps[name].ref === props.ref) return;
                 return true;
             })
             if (foundMismatch) return h.response(`Submodule refs do not match for environment ${env}, revision ${revision._id}, submodule ${foundMismatch[0]}`).code(202);
         }
 
-        console.log('Submodule refs match', refs);
+        console.log('Submodule refs match', submoduleProps);
         const [version, versionResponse] = await cdSemverBump(revisions);
         if (!version) return h.response(versionResponse).code(202);
-        const releaseNotes = releaseNotesFormat(refs, tests);
-        await Promise.all(Object.keys(refs).filter(url => url.startsWith('https://github.com/')).map(async (url) => {
+        const releaseNotes = releaseNotesFormat(submoduleProps, tests);
+        await Promise.all(Object.keys(submoduleProps).filter(url => url.startsWith('https://github.com/')).map(async (url) => {
             const [owner, repo] = url.replace(/\.git$/, '').split('/').slice(-2);
-            await cdReleaseCreate(owner, repo, refs[url], `v${version}`, `CD pre-release ${version}`, releaseNotes);
+            await cdReleaseCreate(owner, repo, submoduleProps[url].ref, `v${version}`, `CD pre-release ${version}`, releaseNotes);
         }));
 
         await Promise.all(Object.keys(config.rule.environments).map(env => {
