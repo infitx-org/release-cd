@@ -114,7 +114,7 @@ const init = async () => {
         test => tests?.[test].totalAssertions > 0 && tests[test].totalAssertions === tests[test].totalPassedAssertions
     );
 
-    const releaseNotesFormat = (submodules, tests) => `# Release notes
+    const releaseNotesFormat = (submodules, tests, version) => `# Release notes
 
 ## Submodules
 
@@ -125,7 +125,7 @@ submodules.yaml
 \`\`\`yaml
 ${Object.entries(submodules).map(([name, {path, ref}]) => `${path}:
   url: ${name}
-  ref: ${ref}`).join('\n')}
+  ref: ${version}`).join('\n')}
 \`\`\`
 
 ## Tests
@@ -167,7 +167,7 @@ ${Object.entries(tests).map(([env, tests]) => Object.entries(tests).map(([name, 
         console.log('Submodule refs match', submoduleProps);
         const [version, versionResponse] = await cdSemverBump(revisions);
         if (!version) return h.response(versionResponse).code(202);
-        const releaseNotes = releaseNotesFormat(submoduleProps, tests);
+        const releaseNotes = releaseNotesFormat(submoduleProps, tests, `v${version}`);
         await Promise.all(Object.keys(submoduleProps).filter(url => url.startsWith('https://github.com/')).map(async (url) => {
             const [owner, repo] = url.replace(/\.git$/, '').split('/').slice(-2);
             await cdReleaseCreate(owner, repo, submoduleProps[url].ref, `v${version}`, `CD pre-release ${version}`, releaseNotes);
