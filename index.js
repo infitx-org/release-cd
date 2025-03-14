@@ -111,7 +111,7 @@ const init = async () => {
     };
 
     const requiredTestsPassed = (requiredTests, { tests }) => requiredTests.every(
-        test => tests?.[test].totalAssertions > 0 && tests[test].totalAssertions === tests[test].totalPassedAssertions
+        test => tests?.[test]?.totalAssertions > 0 && tests[test].totalAssertions === tests[test].totalPassedAssertions
     );
 
     const releaseNotesFormat = (submodules, tests, version) => `# Release notes
