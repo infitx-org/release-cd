@@ -6,6 +6,8 @@ import { Octokit } from "@octokit/rest";
 import semver from 'semver';
 import assert from 'node:assert';
 import mongoUriBuilder from 'mongo-uri-builder';
+import { IncomingWebhook } from '@slack/webhook';
+
 
 const config = rc('release_cd', {
     server: {
@@ -32,6 +34,9 @@ const config = rc('release_cd', {
                 requiredTests: ['gp_tests']
             }
         }
+    },
+    slack: {
+        url: ''
     },
     release: {
         prerelease: 'dev',
@@ -211,11 +216,11 @@ ${Object.entries(tests).map(([env, tests]) => Object.entries(tests).map(([name, 
     };
 
     const cdSemverBump = async (revisions) => {
-        const current = await db.collection('release').findOne({ _id: 'version' }) || { version: '1.0.0' };
+        const current = await db.collection('release').findOne({ _id: 'version' }) || { version: config.release.start };
         if (deepEqual(revisions, current?.revisions))
             return [false, `Revisions ${JSON.stringify(revisions)} match current version ${current.version}`];
 
-        const newVersion = current?.version ? semver.inc(current.version, 'prerelease', config.release.prerelease) : config.release.start;
+        const newVersion = semver.inc(current?.version || config.release.start, 'prerelease', config.release.prerelease);
 
         if (!newVersion) throw new Boom('Cannot determine new version', { statusCode: 500 });
 
@@ -241,6 +246,16 @@ ${Object.entries(tests).map(([env, tests]) => Object.entries(tests).map(([name, 
                 body
             });
 
+            if (config.slack.url && repo === 'profile-cd') {
+                try {
+                    const webhook = new IncomingWebhook(config.slack.release);
+                    await webhook.send({
+                        text: `Release created: ${response.data.html_url}`
+                    });
+                } catch (error) {
+                    console.error(`Error sending Slack notification: ${error.message}`);
+                }
+            }
             console.log(`Release created: ${response.data.html_url}`);
         } catch (error) {
             console.error(`Error creating release: ${error.message}`);
