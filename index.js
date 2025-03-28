@@ -248,7 +248,7 @@ ${Object.entries(tests).map(([env, tests]) => Object.entries(tests).map(([name, 
 
             if (config.slack.url && repo === 'profile-cd') {
                 try {
-                    const webhook = new IncomingWebhook(config.slack.release);
+                    const webhook = new IncomingWebhook(config.slack.url);
                     await webhook.send({
                         text: `Release created: ${response.data.html_url}`
                     });
