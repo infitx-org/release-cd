@@ -60,7 +60,7 @@ const init = async () => {
 
     server.events.on({ name: 'request', channels: 'app' }, (request, event, tags) => {
         if (tags.error) {
-            console.error(new Date(), `=> ${request.method.toUpperCase()} ${request.path} ${event.error?.output?.statusCode} ${event.error ? event.error.message : 'unknown'}`);
+            console.error(new Date(), `=> ${request.method.toUpperCase()} ${request.path} ${event.error?.output?.statusCode}`, event.error ?? 'unknown');
         } else {
             console.log(new Date(), event.data);
         }
@@ -250,7 +250,7 @@ ${Object.entries(tests).map(([env, tests]) => Object.entries(tests).map(([name, 
                 try {
                     const webhook = new IncomingWebhook(config.slack.url);
                     await webhook.send({
-                        text: `Release created: ${response.data.html_url}`
+                        text: `🎉 Release created: ${response.data.html_url}`
                     });
                 } catch (error) {
                     console.error(`Error sending Slack notification: ${error.message}`);
