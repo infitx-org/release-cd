@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.0](https://github.com/infitx-org/release-cd/compare/v1.0.18...v1.1.0) (2025-04-28)
+
+
+### Features
+
+* add downstream workflow trigger for profile CD ([737f13b](https://github.com/infitx-org/release-cd/commit/737f13bc17ae6682725317db73df818e0e3e72cf))
+
 ## [1.0.18](https://github.com/infitx-org/release-cd/compare/v1.0.17...v1.0.18) (2025-04-23)
 
 
