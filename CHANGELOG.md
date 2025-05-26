@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.1](https://github.com/infitx-org/release-cd/compare/v1.1.0...v1.1.1) (2025-05-26)
+
+
+### Bug Fixes
+
+* handle iac/ansible tags ([6ff7b93](https://github.com/infitx-org/release-cd/commit/6ff7b939c33e97e313928f2de0a919935122cf56))
+
 ## [1.1.0](https://github.com/infitx-org/release-cd/compare/v1.0.18...v1.1.0) (2025-05-26)
 
 
