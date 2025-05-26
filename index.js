@@ -119,16 +119,35 @@ const init = async () => {
         test => tests?.[test]?.totalAssertions > 0 && tests[test].totalAssertions === tests[test].totalPassedAssertions
     );
 
+    const isNotIac = ([name]) => !['ansible_collection_tag', 'iac_terraform_modules_tag'].includes(name);
     const releaseNotesFormat = (submodules, tests, version) => `# Release notes
+
+## Upgrade instructions
+
+For each environment do the following:
+1. Use the ArgoCD dashboard to verify for any unexpected pre-existing issues and handle them.
+1. Edit the file \`custom-config/cluster-config.yaml\` and set:
+   \`\`\`yaml
+   ansible_collection_tag: ${submodules.ansible_collection_tag?.ref || ''}
+   iac_terraform_modules_tag: ${submodules.iac_terraform_modules_tag?.ref || ''}
+   \`\`\`
+1. Commit the changes with a subject: \`refresh: iac ${submodules.iac_terraform_modules_tag?.ref || ''}\`, push and verify that the pipeline has passed.
+1. Edit the file \`submodules.yaml\` and make sure the submodules listed below are updated to use the \`ref: ${version}\`.
+1. Commit changes with subject: \`deploy: ${version}\`, push and verify that the pipeline has passed.
+1. Only for environments with 3 or more nodes: delete the Mojaloop Redis PVCs and then the Redis pods, so that they can be recreated as per the HA anti-affinity settings.
+1. Use the ArgoCD dashboard to verify for any new issues and handle them.
+
+> [!WARNING]
+> Due to Terraform peculiarities some jobs may fail and a retry could fix that.
 
 ## Submodules
 
-${Object.entries(submodules).map(([name, {ref}]) => `* ${name.replace(/^https:\/\/github.com\/|.git$/g, '')} ${name.replace(/^https:\/\/github.com\/|.git$/g, '')}@${ref}`).join('\n')}
+${Object.entries(submodules).filter(isNotIac).map(([name, {ref}]) => `* ${name.replace(/^https:\/\/github.com\/|.git$/g, '')} ${name.replace(/^https:\/\/github.com\/|.git$/g, '')}@${ref}`).join('\n')}
 
 submodules.yaml
 
 \`\`\`yaml
-${Object.entries(submodules).map(([name, {path, ref}]) => `${path}:
+${Object.entries(submodules).filter(isNotIac).map(([name, {path, ref}]) => `${path}:
   url: ${name}
   ref: ${version}`).join('\n')}
 \`\`\`
