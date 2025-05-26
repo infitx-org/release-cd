@@ -120,7 +120,7 @@ const init = async () => {
     );
 
     const isNotIac = ([name]) => !['ansible_collection_tag', 'iac_terraform_modules_tag'].includes(name);
-    const releaseNotesFormat = (submodules, tests, version) => `# Release notes
+    const releaseNotesFormat = (submodules, tests, version, iac, ansible) => `# Release notes
 
 ## Upgrade instructions
 
@@ -128,10 +128,10 @@ For each environment do the following:
 1. Use the ArgoCD dashboard to verify for any unexpected pre-existing issues and handle them.
 1. Edit the file \`custom-config/cluster-config.yaml\` and set:
    \`\`\`yaml
-   ansible_collection_tag: ${submodules.ansible_collection_tag?.ref || ''}
-   iac_terraform_modules_tag: ${submodules.iac_terraform_modules_tag?.ref || ''}
+   ansible_collection_tag: ${ansible || ''}
+   iac_terraform_modules_tag: ${iac || ''}
    \`\`\`
-1. Commit the changes with a subject: \`refresh: iac ${submodules.iac_terraform_modules_tag?.ref || ''}\`, push and verify that the pipeline has passed.
+1. Commit the changes with a subject: \`refresh: iac ${iac || ''}\`, push and verify that the pipeline has passed.
 1. Edit the file \`submodules.yaml\` and make sure the submodules listed below are updated to use the \`ref: ${version}\`.
 1. Commit changes with subject: \`deploy: ${version}\`, push and verify that the pipeline has passed.
 1. Only for environments with 3 or more nodes: delete the Mojaloop Redis PVCs and then the Redis pods, so that they can be recreated as per the HA anti-affinity settings.
@@ -164,6 +164,8 @@ ${Object.entries(tests).map(([env, tests]) => Object.entries(tests).map(([name, 
         const submoduleProps = {};
         const revisions = {};
         const tests = {};
+        let iac;
+        let ansible;
         for (const [env, {requiredTests}] of Object.entries(config.rule.environments)) {
             const revision = await db.collection(`revision/${env}`).findOne({}, { sort: { $natural: -1 } });
             if (!revision || !requiredTestsPassed(requiredTests, revision))
@@ -177,6 +179,12 @@ ${Object.entries(tests).map(([env, tests]) => Object.entries(tests).map(([name, 
 
             revisions[env] = revision._id;
             tests[env] = revision.tests;
+            iac ||= revision.iac_terraform_modules_tag
+            if (iac !== revision.iac_terraform_modules_tag)
+                return h.response(`IAC Terraform modules tag mismatch for environment ${env}, expected ${iac}, found ${revision.iac_terraform_modules_tag}`).code(202);
+            ansible ||= revision.ansible_collection_tag;
+            if (ansible !== revision.ansible_collection_tag)
+                return h.response(`Ansible collection tag mismatch for environment ${env}, expected ${ansible}, found ${revision.ansible_collection_tag}`).code(202);
 
             const foundMismatch = Object.entries(revision.submodules).find(([name, props]) => { // Check if submodule refs do not match
                 if (!submoduleProps[name]) {
@@ -191,7 +199,7 @@ ${Object.entries(tests).map(([env, tests]) => Object.entries(tests).map(([name, 
         console.log('Submodule refs match', submoduleProps);
         const [version, versionResponse] = await cdSemverBump(revisions);
         if (!version) return h.response(versionResponse).code(202);
-        const releaseNotes = releaseNotesFormat(submoduleProps, tests, `v${version}`);
+        const releaseNotes = releaseNotesFormat(submoduleProps, tests, `v${version}`, iac, ansible);
         await Promise.all(Object.keys(submoduleProps).filter(url => url.startsWith('https://github.com/')).map(async (url) => {
             const [owner, repo] = url.replace(/\.git$/, '').split('/').slice(-2);
             await cdReleaseCreate(owner, repo, submoduleProps[url].ref, `v${version}`, `CD pre-release ${version}`, releaseNotes);
