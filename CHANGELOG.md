@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.1.0](https://github.com/infitx-org/release-cd/compare/v1.0.18...v1.1.0) (2025-05-26)
+
+
+### Features
+
+* add downstream workflow trigger for profile CD ([737f13b](https://github.com/infitx-org/release-cd/commit/737f13bc17ae6682725317db73df818e0e3e72cf))
+* handle iac/ansible tags ([7ab5a3e](https://github.com/infitx-org/release-cd/commit/7ab5a3eabb8506ccc808d3c57e3259710255eab4))
+
 ## [1.0.18](https://github.com/infitx-org/release-cd/compare/v1.0.17...v1.0.18) (2025-04-23)
 
 
