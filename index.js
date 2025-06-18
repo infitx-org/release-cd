@@ -134,7 +134,6 @@ For each environment do the following:
 1. Commit the changes with a subject: \`refresh: iac ${iac || ''}\`, push and verify that the pipeline has passed.
 1. Edit the file \`submodules.yaml\` and make sure the submodules listed below are updated to use the \`ref: ${version}\`.
 1. Commit changes with subject: \`deploy: ${version}\`, push and verify that the pipeline has passed.
-1. Only for environments with 3 or more nodes: delete the Mojaloop Redis PVCs and then the Redis pods, so that they can be recreated as per the HA anti-affinity settings.
 1. Use the ArgoCD dashboard to verify for any new issues and handle them.
 
 > [!WARNING]
