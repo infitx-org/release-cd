@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.2](https://github.com/infitx-org/release-cd/compare/v1.1.1...v1.1.2) (2025-06-18)
+
+
+### Bug Fixes
+
+* remove obsolete instruction ([12b951a](https://github.com/infitx-org/release-cd/commit/12b951a5a3cee20f6306757eebb9461297397698))
+
 ## [1.1.1](https://github.com/infitx-org/release-cd/compare/v1.1.0...v1.1.1) (2025-05-26)
 
 
