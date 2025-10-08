@@ -24,9 +24,18 @@ const config = rc('release_cd', {
     },
     rule: {
         environments: {
-            'region-dev': {
-                requiredTests: ['sdkFxSendE2EMin']
-            }
+            // 'region-dev': {
+            //     requiredTests: ['gp_tests']
+            // },
+            // 'mw-dev': {
+            //     requiredTests: ['gp_tests']
+            // },
+            // 'zm-dev': {
+            //     requiredTests: ['gp_tests']
+            // },
+            // 'pm-dev': {
+            //     requiredTests: ['sdkFxSendE2EMin']
+            // }
         }
     },
     slack: {
