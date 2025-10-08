@@ -7,7 +7,7 @@ import semver from 'semver';
 import assert from 'node:assert';
 import mongoUriBuilder from 'mongo-uri-builder';
 import { IncomingWebhook } from '@slack/webhook';
-
+import AWS from 'aws-sdk';
 
 const config = rc('release_cd', {
     server: {
@@ -25,18 +25,20 @@ const config = rc('release_cd', {
     rule: {
         environments: {
             'region-dev': {
-                requiredTests: ['gp_tests']
-            },
-            'mw-dev': {
-                requiredTests: ['gp_tests']
-            },
-            'zm-dev': {
-                requiredTests: ['gp_tests']
+                requiredTests: ['sdkFxSendE2EMin']
             }
         }
     },
     slack: {
         url: ''
+    },
+    report: {
+        s3Endpoint: '',
+        s3Bucket: '',
+        s3AccessKeyId: '',
+        s3SecretAccessKey: '',
+        reportEndpoint: '',
+        awsRegion: 'us-east-1'
     },
     release: {
         prerelease: 'dev',
@@ -120,6 +122,14 @@ const init = async () => {
     );
 
     const isNotIac = ([name]) => !['ansible_collection_tag', 'iac_terraform_modules_tag'].includes(name);
+    const formatTime = (ms) => {
+        if (ms == null || isNaN(ms)) return '00:00:00';
+        const seconds = Math.floor((ms / 1000) % 60);
+        const minutes = Math.floor((ms / (1000 * 60)) % 60);
+        const hours = Math.floor((ms / (1000 * 60 * 60)) % 24);
+        const pad = (n) => n.toString().padStart(2, '0');
+        return `${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
+    };
     const releaseNotesFormat = (submodules, tests, version, iac, ansible) => `# Release notes
 
 ## Upgrade instructions
@@ -153,11 +163,48 @@ ${Object.entries(submodules).filter(isNotIac).map(([name, {path, ref}]) => `${pa
 
 ## Tests
 
-| Env  | Test | Pass | Fail |
-| :--- | :--- | ---: | ---: |
-${Object.entries(tests).map(([env, tests]) => Object.entries(tests).map(([name, { totalPassedAssertions, totalAssertions }]) => `| ${env} | ${name} | ${totalPassedAssertions} | ${totalAssertions - totalPassedAssertions} |`)).flat().join('\n')}
+| Env  | Test | Pass | Fail | Duration |
+| :--- | :--- | ---: | ---: | ---:     |
+${Object.entries(tests).map(([env, tests]) => Object.entries(tests).map(([name, { totalPassedAssertions, totalAssertions, s3Url, duration }]) => `| ${env} | ${s3Url ? `[${name}](${s3Url})` : name} | ${totalPassedAssertions} | ${totalAssertions - totalPassedAssertions} | ${formatTime(duration)} |`)).flat().join('\n')}
 
 `;
+
+    const copyReportToS3 = async (testName, reportURL) => {
+        if (!reportURL) return;
+        if ((!config.report?.s3Endpoint && !config.report?.awsRegion) || !config.report?.s3Bucket || !config.report?.s3AccessKeyId || !config.report?.s3SecretAccessKey || !config.report?.reportEndpoint) {
+            console.warn('S3 configuration is incomplete, skipping report upload');
+            return;
+        }
+        console.log({
+                accessKeyId: config.report.s3AccessKeyId,
+                secretAccessKey: config.report.s3SecretAccessKey
+            })
+        const s3 = new AWS.S3({
+            endpoint: config.report.s3Endpoint,
+            region: config.report.awsRegion,
+            s3ForcePathStyle: true,
+            credentials: new AWS.Credentials({
+                accessKeyId: config.report.s3AccessKeyId,
+                secretAccessKey: config.report.s3SecretAccessKey
+            })
+        });
+
+        const report = await fetch(reportURL);
+        if (!report.ok) {
+            throw new Error(`Failed to fetch report from ${reportURL}: ${report.statusText}`);
+        }
+
+        const params = {
+            Bucket: config.report.s3Bucket,
+            Key: testName,
+            Body: Buffer.from(await report.arrayBuffer()),
+            ContentType: report.headers.get('content-type'),
+            ACL: 'public-read'
+        };
+
+        await s3.putObject(params).promise();
+        return config.report.reportEndpoint.replace('{key}', testName);
+    };
 
     const cdRuleExecute = async (h) => {
         const submoduleProps = {};
@@ -198,7 +245,14 @@ ${Object.entries(tests).map(([env, tests]) => Object.entries(tests).map(([name, 
         console.log('Submodule refs match', submoduleProps);
         const [version, versionResponse] = await cdSemverBump(revisions);
         if (!version) return h.response(versionResponse).code(202);
+        for (const [envName, envTests] of Object.entries(tests)) {
+            for (const [testName, test] of Object.entries(envTests)) {
+                if (test?.report) test.s3Url = await copyReportToS3(`${version}/${envName}/${testName}`, test.report);
+            }
+        }
         const releaseNotes = releaseNotesFormat(submoduleProps, tests, `v${version}`, iac, ansible);
+        await db.collection('release').updateOne({ _id: 'version' }, { $set: { version, revisions } }, { upsert: true });
+
         await Promise.all(Object.keys(submoduleProps).filter(url => url.startsWith('https://github.com/')).map(async (url) => {
             const [owner, repo] = url.replace(/\.git$/, '').split('/').slice(-2);
             await cdReleaseCreate(owner, repo, submoduleProps[url].ref, `v${version}`, `CD pre-release ${version}`, releaseNotes);
@@ -251,7 +305,6 @@ ${Object.entries(tests).map(([env, tests]) => Object.entries(tests).map(([name, 
         if (!newVersion) throw new Boom('Cannot determine new version', { statusCode: 500 });
 
         console.log(`Bumping version to ${newVersion}`);
-        await db.collection('release').updateOne({ _id: 'version' }, { $set: { version: newVersion, revisions } }, { upsert: true });
         return [newVersion];
     }
 

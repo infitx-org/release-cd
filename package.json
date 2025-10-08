@@ -1,5 +1,5 @@
 {
-  "name": "cd",
+  "name": "release-cd",
   "version": "1.1.2",
   "main": "index.js",
   "scripts": {
@@ -10,6 +10,7 @@
     "@hapi/hapi": "^21.3.12",
     "@octokit/rest": "^21.1.0",
     "@slack/webhook": "^7.0.5",
+    "aws-sdk": "^2.1692.0",
     "mongo-uri-builder": "^4.0.0",
     "mongoose": "^8.9.7",
     "rc": "^1.2.8",
