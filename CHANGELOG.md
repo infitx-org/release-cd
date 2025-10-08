@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.0](https://github.com/infitx-org/release-cd/compare/v1.1.2...v1.2.0) (2025-10-08)
+
+
+### Features
+
+* release reports ([0f5d177](https://github.com/infitx-org/release-cd/commit/0f5d177cbbec0c42600e06d0b9114b062d5c1729))
+
 ## [1.1.2](https://github.com/infitx-org/release-cd/compare/v1.1.1...v1.1.2) (2025-06-18)
 
 
