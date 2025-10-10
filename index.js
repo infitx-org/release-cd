@@ -184,10 +184,7 @@ ${Object.entries(tests).map(([env, tests]) => Object.entries(tests).map(([name, 
             console.warn('S3 configuration is incomplete, skipping report upload');
             return;
         }
-        console.log({
-                accessKeyId: config.report.s3AccessKeyId,
-                secretAccessKey: config.report.s3SecretAccessKey
-            })
+
         const s3 = new AWS.S3({
             endpoint: config.report.s3Endpoint,
             region: config.report.awsRegion,
@@ -198,9 +195,12 @@ ${Object.entries(tests).map(([env, tests]) => Object.entries(tests).map(([name, 
             })
         });
 
-        const report = await fetch(reportURL);
-        if (!report.ok) {
-            throw new Error(`Failed to fetch report from ${reportURL}: ${report.statusText}`);
+        let report;
+        try {
+            report = await fetch(reportURL);
+        } catch (error) {
+            console.error(`Error fetching report from ${reportURL}: ${error.message}`);
+            throw error;
         }
 
         const params = {
