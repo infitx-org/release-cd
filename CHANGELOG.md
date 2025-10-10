@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.1](https://github.com/infitx-org/release-cd/compare/v1.2.0...v1.2.1) (2025-10-10)
+
+
+### Bug Fixes
+
+* improve error handling for S3 report fetching ([6a0d79d](https://github.com/infitx-org/release-cd/commit/6a0d79d5dab602d8d96c507ed46cbb2e3a55ddf5))
+
 ## [1.2.0](https://github.com/infitx-org/release-cd/compare/v1.1.2...v1.2.0) (2025-10-08)
 
 
