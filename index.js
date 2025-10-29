@@ -129,6 +129,9 @@ const init = async () => {
     const requiredTestsPassed = (requiredTests, { tests }) => requiredTests.every(
         test => tests?.[test]?.totalAssertions > 0 && tests[test].totalAssertions === tests[test].totalPassedAssertions
     );
+    const optionalTestsPresent = (optionalTests, { tests }) => optionalTests.every(
+        test => tests?.[test]?.totalAssertions > 0
+    );
 
     const isNotIac = ([name]) => !['ansible_collection_tag', 'iac_terraform_modules_tag'].includes(name);
     const formatTime = (ms) => {
@@ -221,10 +224,13 @@ ${Object.entries(tests).map(([env, tests]) => Object.entries(tests).map(([name, 
         const tests = {};
         let iac;
         let ansible;
-        for (const [env, {requiredTests}] of Object.entries(config.rule.environments)) {
+        for (const [env, {requiredTests, optionalTests}] of Object.entries(config.rule.environments)) {
             const revision = await db.collection(`revision/${env}`).findOne({}, { sort: { $natural: -1 } });
             if (!revision || !requiredTestsPassed(requiredTests, revision))
                 return h.response(`Required tests have not passed for environment ${env}`).code(202);
+
+            if (optionalTests && !optionalTestsPresent(optionalTests, revision))
+                return h.response(`Optional tests are not all present for environment ${env}`).code(202);
 
             if (!revision.submodules || !Object.keys(revision.submodules).length)
                 return h.response(`No submodules info found for environment ${env}`).code(202);
@@ -350,6 +356,58 @@ ${Object.entries(tests).map(([env, tests]) => Object.entries(tests).map(([name, 
         }
     };
 
+    const cdRevisionGet = async (request, h) => {
+        const submoduleProps = {};
+        const revisions = {};
+        const tests = {};
+        let iac;
+        let ansible;
+        const result = [];
+        for (const [env, {requiredTests, optionalTests}] of Object.entries(config.rule.environments)) {
+            result.push(`Checking environment ${env}...`);
+            const revision = await db.collection(`revision/${env}`).findOne({}, { sort: { $natural: -1 } });
+            if (!revision || !requiredTestsPassed(requiredTests, revision))
+                result.push(`  ⚠️ Required tests have not passed`);
+
+            if (optionalTests && !optionalTestsPresent(optionalTests, revision))
+                result.push(`  ⚠️ Optional tests are not all present`);
+
+            if (!revision.submodules || !Object.keys(revision.submodules).length)
+                result.push(`  ⚠️ No submodules info found`);
+
+            if (revision.version)
+                result.push(`  ✅ Release ${revision.version} already created`);
+
+            revisions[env] = revision._id;
+            tests[env] = revision.tests;
+            iac ||= revision.iac_terraform_modules_tag
+            if (iac !== revision.iac_terraform_modules_tag)
+                result.push(`  ⚠️ IAC Terraform modules tag mismatch, expected ${iac}, found ${revision.iac_terraform_modules_tag}`);
+            ansible ||= revision.ansible_collection_tag;
+            if (ansible !== revision.ansible_collection_tag)
+                result.push(`  ⚠️ Ansible collection tag mismatch, expected ${ansible}, found ${revision.ansible_collection_tag}`);
+
+            const foundMismatch = Object.entries(revision.submodules).filter(([name, props]) => { // Check if submodule refs do not match
+                if (!submoduleProps[name]) {
+                    submoduleProps[name] = props;
+                    return;
+                } else if (submoduleProps[name].ref === props.ref) return;
+                return true;
+            })
+            if (foundMismatch.length) result.push(`  ⚠️ Submodule refs do not match for: ${foundMismatch.map(([name]) => name).join(', ')}`);
+            result.push(`  ℹ️ Revision ID: ${revision._id}`);
+            result.push(`  🧪 Tests:`);
+            for (const [testName, test] of Object.entries(revision.tests || {})) {
+                result.push(`    - ${testName} passed ${test.totalPassedAssertions || 0}/${test.totalAssertions || 0}, ⌛ ${formatTime(test.duration)}, 🌐 ${test.s3Url || ''}`);
+            }
+        }
+        result.push('', '---', 'Submodules:');
+        for (const [name, props] of Object.entries(revisions.submodules || {})) {
+            result.push(`  - ${name}: ${props.ref}`);
+        }
+        return h.response(result.join('\n')).code(202).type('text/plain');
+    };
+
     server.route({
         method: 'POST',
         path: '/{collection}/{env}/{id}',
@@ -376,6 +434,12 @@ ${Object.entries(tests).map(([env, tests]) => Object.entries(tests).map(([name, 
         handler: (request, h) => {
             return h.response({ status: 'ok' }).code(200);
         }
+    });
+
+    server.route({
+        method: 'GET',
+        path: '/',
+        handler: cdRevisionGet
     });
 
     await server.start();
