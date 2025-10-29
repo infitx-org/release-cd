@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.0](https://github.com/infitx-org/release-cd/compare/v1.2.1...v1.3.0) (2025-10-29)
+
+
+### Features
+
+* add optional tests validation and new endpoint for CD revision checks ([ff7b394](https://github.com/infitx-org/release-cd/commit/ff7b394daaedb67b574a093aae566e57d6f2c56d))
+
 ## [1.2.1](https://github.com/infitx-org/release-cd/compare/v1.2.0...v1.2.1) (2025-10-10)
 
 
