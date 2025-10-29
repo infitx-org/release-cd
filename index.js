@@ -224,7 +224,7 @@ ${Object.entries(tests).map(([env, tests]) => Object.entries(tests).map(([name, 
         const tests = {};
         let iac;
         let ansible;
-        for (const [env, {requiredTests, optionalTests}] of Object.entries(config.rule.environments)) {
+        for (const [env, {requiredTests = [], optionalTests = []}] of Object.entries(config.rule.environments)) {
             const revision = await db.collection(`revision/${env}`).findOne({}, { sort: { $natural: -1 } });
             if (!revision || !requiredTestsPassed(requiredTests, revision))
                 return h.response(`Required tests have not passed for environment ${env}`).code(202);
@@ -364,48 +364,52 @@ ${Object.entries(tests).map(([env, tests]) => Object.entries(tests).map(([name, 
         let ansible;
         const result = [];
         for (const [env, {requiredTests, optionalTests}] of Object.entries(config.rule.environments)) {
-            result.push(`Checking environment ${env}...`);
             const revision = await db.collection(`revision/${env}`).findOne({}, { sort: { $natural: -1 } });
-            if (!revision || !requiredTestsPassed(requiredTests, revision))
-                result.push(`  ⛔ Required tests have not passed`);
-
-            if (optionalTests && !optionalTestsPresent(optionalTests, revision))
-                result.push(`  ⛔ Optional tests are not all present`);
-
-            if (revision.version)
-                result.push(`  ✅ Release ${revision.version} already created`);
-
             revisions[env] = revision._id;
             tests[env] = revision.tests;
+
+            result.push(`${env}`);
+            result.push(`===================`);
+            result.push(`  ℹ️ Revision ID: ${revision._id}`);
+            if (revision.version)
+                result.push(`  ✅ Release ${revision.version} already created`);
             iac ||= revision.iac_terraform_modules_tag
-            result.push(`  ℹ️ IAC Terraform modules tag: ${revision.iac_terraform_modules_tag}`);
             if (iac !== revision.iac_terraform_modules_tag)
                 result.push(`  ⛔ IAC Terraform modules tag mismatch, expected ${iac}, found ${revision.iac_terraform_modules_tag}`);
+            else
+                result.push(`  ℹ️ IAC Terraform modules tag: ${revision.iac_terraform_modules_tag}`);
             ansible ||= revision.ansible_collection_tag;
-            result.push(`  ℹ️ Ansible collection tag: ${revision.ansible_collection_tag}`);
             if (ansible !== revision.ansible_collection_tag)
                 result.push(`  ⛔ Ansible collection tag mismatch, expected ${ansible}, found ${revision.ansible_collection_tag}`);
-            result.push(`  ℹ️ Revision ID: ${revision._id}`);
-            if (!revision.submodules || !Object.keys(revision.submodules).length)
-                result.push(`  ⛔ No submodules info found`);
-            else {
-                result.push(`  📁 Submodules:`);
-                for (const [name, props] of Object.entries(revision.submodules || {})) {
-                    result.push(`    📁 ${name}: ${props.ref}`);
-                }
-            }
-            const foundMismatch = Object.entries(revision.submodules).filter(([name, props]) => { // Check if submodule refs do not match
+            else
+                result.push(`  ℹ️ Ansible collection tag: ${revision.ansible_collection_tag}`);
+            const mismatchList = Object.entries(revision.submodules).filter(([name, props]) => { // Check if submodule refs do not match
                 if (!submoduleProps[name]) {
                     submoduleProps[name] = props;
                     return;
                 } else if (submoduleProps[name].ref === props.ref) return;
                 return true;
-            })
-            if (foundMismatch.length) result.push(`  ⛔ Submodule refs do not match for: ${foundMismatch.map(([name]) => name).join(', ')}`);
-            result.push(`  🧪 Tests:`);
-            for (const [testName, test] of Object.entries(revision.tests || {})) {
-                result.push(`    - ${testName} passed ${test.totalPassedAssertions || 0}/${test.totalAssertions || 0}, ⌛ ${formatTime(test.duration)}, 🌐 ${test.report || ''}`);
+            }).map(([name]) => name);
+            result.push(`  📁 Submodules:`);
+            if (!revision.submodules || !Object.keys(revision.submodules).length)
+                result.push(`    ⛔ No submodules info found`);
+            else {
+                for (const [name, props] of Object.entries(revision.submodules || {})) {
+                    if (mismatchList.includes(name))
+                        result.push(`    ⛔ ${name}: ${props.ref}`)
+                    else
+                        result.push(`    📁 ${name}: ${props.ref}`);
+
+                }
             }
+            result.push(`  🧪 Tests:`);
+            for (const testName of [...requiredTests, ...optionalTests])
+                if (!(testName in (revision.tests || {})))
+                    result.push(`    ⛔ ${testName} missing`);
+            for (const [testName, test] of Object.entries(revision.tests || {}))
+                result.push(`    ${test.totalPassedAssertions == test.totalAssertions ? '✅' : testName in requiredTests ? '⛔' : '⚠️'} ${testName} passed ${test.totalPassedAssertions || 0}/${test.totalAssertions || 0}, ⌛ ${formatTime(test.duration)}, 🌐 ${test.report || ''}`);
+            result.push('');
+
         }
         return h.response(result.join('\n')).code(202).type('text/plain');
     };
