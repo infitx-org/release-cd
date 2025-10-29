@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.0](https://github.com/infitx-org/release-cd/compare/v1.3.2...v1.4.0) (2025-10-29)
+
+
+### Features
+
+* enhance release CD status report with HTML formatting and detailed test results ([0b1158f](https://github.com/infitx-org/release-cd/commit/0b1158f9253a9f8eba195f602bc1cce4744533cb))
+
 ## [1.3.2](https://github.com/infitx-org/release-cd/compare/v1.3.1...v1.3.2) (2025-10-29)
 
 
