@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.1](https://github.com/infitx-org/release-cd/compare/v1.3.0...v1.3.1) (2025-10-29)
+
+
+### Bug Fixes
+
+* update status messages for test and submodule checks ([557895f](https://github.com/infitx-org/release-cd/commit/557895fee0a296b6c77204ae72500a45b9fe56d9))
+
 ## [1.3.0](https://github.com/infitx-org/release-cd/compare/v1.2.1...v1.3.0) (2025-10-29)
 
 
