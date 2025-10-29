@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.2](https://github.com/infitx-org/release-cd/compare/v1.3.1...v1.3.2) (2025-10-29)
+
+
+### Bug Fixes
+
+* handle optional tests and improve submodule mismatch reporting ([9a1cea4](https://github.com/infitx-org/release-cd/commit/9a1cea4fccd5c4aeb3d7a3906db96cfa31f5f534))
+
 ## [1.3.1](https://github.com/infitx-org/release-cd/compare/v1.3.0...v1.3.1) (2025-10-29)
 
 
