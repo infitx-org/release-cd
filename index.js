@@ -433,7 +433,7 @@ ${Object.entries(tests).map(([env, tests]) => Object.entries(tests).map(([name, 
                 result.push(`<li>✅ ansible_collection_tag: <code>${revision.ansible_collection_tag}</code></li>`);
             result.push('</ul>');
 
-            const mismatchList = Object.entries(revision.submodules).filter(([name, props]) => {
+            const mismatchList = Object.entries(revision.submodules || {}).filter(([name, props]) => {
                 if (!submoduleProps[name]) {
                     submoduleProps[name] = props;
                     return;
