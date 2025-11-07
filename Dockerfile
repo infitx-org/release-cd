@@ -4,8 +4,8 @@ FROM node:${NODE_VERSION} AS builder
 
 WORKDIR /opt/app
 COPY package*.json ./
-COPY index.js ./
-
 RUN npm ci
+
+COPY *.*js *.feature ./
 
 CMD [ "node" , "index.mjs" ]
