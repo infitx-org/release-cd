@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.5.2](https://github.com/infitx-org/release-cd/compare/v1.5.1...v1.5.2) (2025-11-07)
+
+
+### Bug Fixes
+
+* remove unused parameter from response validation in portal tests ([1d8819a](https://github.com/infitx-org/release-cd/commit/1d8819aa84689c19a1e233bb570e15abb8b62a0e))
+
 ## [1.5.1](https://github.com/infitx-org/release-cd/compare/v1.5.0...v1.5.1) (2025-11-07)
 
 
