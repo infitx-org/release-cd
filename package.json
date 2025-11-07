@@ -1,9 +1,9 @@
 {
   "name": "release-cd",
-  "version": "1.4.0",
+  "version": "1.5.0",
   "main": "index.js",
   "scripts": {
-      "test": "jest"
+    "test": "jest"
   },
   "dependencies": {
     "@hapi/boom": "^10.0.1",
