@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.5.0](https://github.com/infitx-org/release-cd/compare/v1.4.0...v1.5.0) (2025-11-07)
+
+
+### Features
+
+* add portal testing ([26b2b99](https://github.com/infitx-org/release-cd/commit/26b2b999dec124791529a95434f1dfe560d4c862))
+
+
+### Bug Fixes
+
+* handle potential undefined submodules in mismatch list ([f43b7eb](https://github.com/infitx-org/release-cd/commit/f43b7eb53263a311c5fdf7df50b2e0d0d2b440c0))
+
 ## [1.4.0](https://github.com/infitx-org/release-cd/compare/v1.3.2...v1.4.0) (2025-10-29)
 
 
