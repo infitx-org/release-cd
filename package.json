@@ -3,7 +3,7 @@
   "version": "1.4.0",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+      "test": "jest"
   },
   "dependencies": {
     "@hapi/boom": "^10.0.1",
@@ -11,13 +11,17 @@
     "@octokit/rest": "^21.1.0",
     "@slack/webhook": "^7.0.5",
     "aws-sdk": "^2.1692.0",
+    "axios-cookiejar-support": "^5.0.5",
+    "axios": "^1.13.2",
+    "jest-cucumber": "^4.5.0",
+    "jest": "^30.2.0",
     "mongo-uri-builder": "^4.0.0",
     "mongoose": "^8.9.7",
     "rc": "^1.2.8",
-    "semver": "^7.7.1"
+    "semver": "^7.7.1",
+    "tough-cookie": "^5.1.2"
   },
   "author": "",
-  "type": "module",
   "license": "ISC",
   "description": ""
 }
