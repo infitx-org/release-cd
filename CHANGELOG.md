@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.5.1](https://github.com/infitx-org/release-cd/compare/v1.5.0...v1.5.1) (2025-11-07)
+
+
+### Bug Fixes
+
+* simplify response expectation in portal tests ([c84895a](https://github.com/infitx-org/release-cd/commit/c84895aa2b04bbf0b4e6b72b787bf7ef6f608ca6))
+* update Dockerfile to copy all JavaScript and feature files ([08c407c](https://github.com/infitx-org/release-cd/commit/08c407c235743e52474a81193f7336dcf42406c0))
+
 ## [1.5.0](https://github.com/infitx-org/release-cd/compare/v1.4.0...v1.5.0) (2025-11-07)
 
 
