@@ -20,7 +20,7 @@ Feature: Portal RBAC API Access
     Scenario Outline: "<role>" access to MCM endpoint "<endpoint_name>"
         Given I am authenticated as "<role>" at portal "MCM"
         When I send a request to "<endpoint_name>"
-        Then I should receive a "<expected_status>" response for "<endpoint_name>"
+        Then I should receive a "<expected_status>"
         Examples:
             | role      | endpoint_name         | expected_status |
             # anonymous tests

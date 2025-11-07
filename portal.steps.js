@@ -146,7 +146,7 @@ defineFeature(feature, test => {
             }
         });
 
-        then(/^I should receive a "(.*)" response for "(.*)"$/, (expectedStatus, endpointName) => {
+        then(/^I should receive a "(.*)"$/, (expectedStatus, endpointName) => {
             expect(response).toBeDefined();
             expect(response.status).toBe(parseInt(expectedStatus));
         });
