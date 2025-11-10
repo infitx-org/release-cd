@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.6.0](https://github.com/infitx-org/release-cd/compare/v1.5.2...v1.6.0) (2025-11-10)
+
+
+### Features
+
+* add all mcm endpoints ([c5a07f5](https://github.com/infitx-org/release-cd/commit/c5a07f581abd41067e38d205d580f1e99c041c14))
+
 ## [1.5.2](https://github.com/infitx-org/release-cd/compare/v1.5.1...v1.5.2) (2025-11-07)
 
 
