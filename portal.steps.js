@@ -10,19 +10,11 @@ const config = rc('portal_test', {
     }
 });
 
-const jar = new CookieJar();
-const client = wrapper(axios.create({jar}));
 const feature = loadFeature('portal.feature');
 
 defineFeature(feature, test => {
     let users = {};
-    let endpoints = {};
     let portals = {};
-    let currentUser = null;
-    let response = null;
-    let baseURL = '';
-    let loginURL = '';
-    let currentRole = '';
 
     const parseForm = html => {
         // extract action URL, input and button values from the HTML form
@@ -45,24 +37,16 @@ defineFeature(feature, test => {
     };
 
     const authenticateUser = async (role, portal) => {
-        if (currentRole === role && baseURL === portals[portal].url) return true; // Reuse existing session if role hasn't changed
-        jar.removeAllCookiesSync();
-        currentRole = '';
-        baseURL = '';
+        portal = portals[`${role}@${portal}`];
+        portal.jar.removeAllCookiesSync();
         const user = Object.values(users).find(u => u.role === role);
-        if (!user) {
-            throw new Error(`User with role ${role} not found`);
-        }
-        if (!user.username) {
-            currentRole = role;
-            baseURL = portals[portal].url;
-            return true; // No authentication for anonymous user
-        }
+        if (!user) throw new Error(`User with role ${role} not found`);
+        if (!user.username) return true; // No authentication for anonymous user
         try {
-            const flow = await client.get(`${loginURL}${portals[portal].url}`);
+            const flow = await portal.client.get(portal.loginUrl);
             // submit the form to get to the login page
-            const url = new URL(flow.data.ui.action, loginURL).href;
-            const loginForm = await client.request({
+            const url = new URL(flow.data.ui.action, portal.loginUrl).href;
+            const loginForm = await portal.client.request({
                 url,
                 method: flow.data.ui.method,
                 data: flow.data.ui.nodes.reduce((acc, node) => {
@@ -78,7 +62,7 @@ defineFeature(feature, test => {
                 },
             });
             const login = parseForm(loginForm.data);
-            const authResponse = await client.request({
+            await portal.client.request({
                 url: new URL(login.action, url).href,
                 method: login.method,
                 data: {
@@ -91,64 +75,76 @@ defineFeature(feature, test => {
                     Accept: 'text/html',
                 },
             });
-            currentRole = role;
-            baseURL = portals[portal].url;
             return true;
         } catch (error) {
             throw new Error(`Authentication failed: ${error.message}`);
         }
     };
 
-    test('"<role>" access to MCM endpoint "<endpoint_name>"', ({given, when, then}) => {
-        given('the following roles exist:', table => {
+    function checkEndpointAccess ({given, when, then}) {
+        given('credentials for the following roles are configured:', table => {
             table.forEach(row => {
+                expect(config.credentials?.[row.role]).toBeDefined();
                 users[row.role] = {
                     role: row.role,
+                    portal: row.portal,
                     username: config.credentials[row.role]?.username,
                     password: config.credentials[row.role]?.password,
                 };
             });
         });
 
-        given(/the login URL is configured/, () => {
-            loginURL = config.loginUrl;
-            expect(loginURL).toBeDefined();
-        });
-
-        given('the portals URLs are configured', () => {
-            portals = config.portals;
-            expect(Object.keys(portals || {}).length).toBeGreaterThan(0);
-        });
-
-        given('the following API endpoints are available:', table => {
+        given('portal and login URLs for the following portals are configured:', table => {
             table.forEach(row => {
-                endpoints[row.endpoint] = row;
+                expect(config.portals[row.portal]?.url).toBeDefined();
+                Object.keys(users).forEach(role => {
+                    const jar = new CookieJar();
+                    portals[`${role}@${row.portal}`] = {
+                        url: config.portals[row.portal]?.url,
+                        loginUrl: config.portals[row.portal]?.loginUrl,
+                        jar,
+                        client: wrapper(axios.create({ jar })),
+                    };
+                });
             });
         });
 
-        given(/^I am authenticated as "(.*)" at portal "(.*)"$/, async (role, portal) => {
-            authenticated = await authenticateUser(role, portal);
-            currentUser = Object.values(users).find(u => u.role === role);
-            expect(authenticated).toBe(true);
-        });
-
-        when(/^I send a request to "(.*)"$/, async endpointName => {
-            const endpoint = endpoints[endpointName].path;
-            expect(endpoint).toBeDefined();
-
-            try {
-                response = await client.request({
-                    url: `${baseURL}${endpoint}`,
-                    method: endpoints[endpointName].method,
-                });
-            } catch (error) {
-                response = error.response;
+        given('I am authenticated with the existing roles', async () => {
+            for (const [role, {portal}] of Object.entries(users)) {
+                expect(await authenticateUser(role, portal)).toBe(true);
             }
         });
 
-        then(/^I should receive a "(.*)"$/, (expectedStatus) => {
-            expect(response).toBeDefined();
-            expect(response.status).toBe(parseInt(expectedStatus));
+        then('check access for the following endpoints:', async table => {
+            const expected = [];
+            const observed = [];
+            for (const {portal, path: endpoint, method, ...roleStatuses} of table) {
+                const observedStatuses = [];
+                const expectedStatuses = [];
+                for (const role of Object.keys(users)) {
+                    if (!roleStatuses[role]) continue; // Skip if no expected status for this role
+                    let response;
+                    try {
+                        response = await portals[`${role}@${portal}`].client.request({
+                            url: `${portals[`${role}@${portal}`].url}${endpoint}`,
+                            method,
+                            timeout: 10000,
+                        });
+                    } catch (error) {
+                        response = error.response ?? {status: error.message};
+                    }
+                    observedStatuses.push(`${role} ${response?.status}`);
+                    expectedStatuses.push(`${role} ${roleStatuses[role]}`);
+                }
+                observed.push(`${portal} ${method} ${endpoint} | ${observedStatuses.join(' | ')}`);
+                expected.push(`${portal} ${method} ${endpoint} | ${expectedStatuses.join(' | ')}`);
+            }
+            expect(observed.join('\n')).toBe(expected.join('\n'));
         });
-    });
+    };
+
+    test('MCM DFSP endpoints', checkEndpointAccess);
+    test('MCM DFSPs', checkEndpointAccess);
+    test('MCM HUB endpoints', checkEndpointAccess);
+    test('MCM Other endpoints', checkEndpointAccess);
 });

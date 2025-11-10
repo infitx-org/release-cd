@@ -1,41 +1,115 @@
 Feature: Portal RBAC API Access
 
     Background:
-        Given the following roles exist:
-            | role      |
-            | anonymous |
-            | mcm_admin |
-        And the login URL is configured
-        And the portals URLs are configured
-        And the following API endpoints are available:
-            | portal | endpoint              | path                             | method |
-            | MCM    | DFSP List             | /api/dfsps                       | GET    |
-            | MCM    | Unprocessed Endpoints | /api/dfsps/endpoints/unprocessed | GET    |
-            | MCM    | Hub CA                | /api/hub/ca                      | GET    |
-            | MCM    | Hub Egress IPs        | /api/hub/endpoints/egress/ips    | GET    |
-            | MCM    | Hub Ingress IPs       | /api/hub/endpoints/ingress/ips   | GET    |
-            | MCM    | Hub Ingress URLs      | /api/hub/endpoints/ingress/urls  | GET    |
-            | MCM    | Hub Monetary Zones    | /api/monetaryzones               | GET    |
+        Given credentials for the following roles are configured:
+            | role      | portal   |
+            | anonymous | MCM      |
+            | mcm_admin | MCM      |
+        And portal and login URLs for the following portals are configured:
+            | portal |
+            | MCM    |
+        And I am authenticated with the existing roles
 
-    Scenario Outline: "<role>" access to MCM endpoint "<endpoint_name>"
-        Given I am authenticated as "<role>" at portal "MCM"
-        When I send a request to "<endpoint_name>"
-        Then I should receive a "<expected_status>"
-        Examples:
-            | role      | endpoint_name         | expected_status |
-            # anonymous tests
-            | anonymous | DFSP List             | 401             |
-            | anonymous | Unprocessed Endpoints | 401             |
-            | anonymous | Hub CA                | 401             |
-            | anonymous | Hub Egress IPs        | 401             |
-            | anonymous | Hub Ingress IPs       | 401             |
-            | anonymous | Hub Ingress URLs      | 401             |
-            | anonymous | Hub Monetary Zones    | 401             |
-            # mcm_admin tests
-            | mcm_admin | DFSP List             | 200             |
-            | mcm_admin | Unprocessed Endpoints | 200             |
-            | mcm_admin | Hub CA                | 200             |
-            | mcm_admin | Hub Egress IPs        | 200             |
-            | mcm_admin | Hub Ingress IPs       | 200             |
-            | mcm_admin | Hub Ingress URLs      | 200             |
-            | mcm_admin | Hub Monetary Zones    | 200             |
+    Scenario: MCM DFSP endpoints
+        Then check access for the following endpoints:
+            | portal | path                                                     | method | anonymous | mcm_admin |
+            | MCM    | /dfsps/test-rbac/endpoints                               | GET    |       401 |       200 |
+            | MCM    | /dfsps/test-rbac/endpoints/x                             | GET    |       401 |       404 |
+            | MCM    | /dfsps/test-rbac/endpoints/x                             | PUT    |       401 |       415 |
+            | MCM    | /dfsps/test-rbac/endpoints/x                             | DELETE |       401 |       404 |
+            | MCM    | /dfsps/test-rbac/endpoints/x/confirmation                | POST   |       401 |       400 |
+            | MCM    | /dfsps/test-rbac/endpoints/egress                        | GET    |       401 |       404 |
+            | MCM    | /dfsps/test-rbac/endpoints/egress                        | POST   |       401 |       415 |
+            | MCM    | /dfsps/test-rbac/endpoints/egress/ips                    | GET    |       401 |       200 |
+            | MCM    | /dfsps/test-rbac/endpoints/egress/ips                    | POST   |       401 |       415 |
+            | MCM    | /dfsps/test-rbac/endpoints/egress/ips/0                  | GET    |       401 |       404 |
+            | MCM    | /dfsps/test-rbac/endpoints/egress/ips/0                  | PUT    |       401 |       415 |
+            | MCM    | /dfsps/test-rbac/endpoints/egress/ips/0                  | DELETE |       401 |       404 |
+            | MCM    | /dfsps/test-rbac/endpoints/ingress                       | GET    |       401 |       404 |
+            | MCM    | /dfsps/test-rbac/endpoints/ingress                       | POST   |       401 |       415 |
+            | MCM    | /dfsps/test-rbac/endpoints/ingress/ips                   | GET    |       401 |       200 |
+            | MCM    | /dfsps/test-rbac/endpoints/ingress/ips                   | POST   |       401 |       415 |
+            | MCM    | /dfsps/test-rbac/endpoints/ingress/ips/0                 | GET    |       401 |       404 |
+            | MCM    | /dfsps/test-rbac/endpoints/ingress/ips/0                 | PUT    |       401 |       415 |
+            | MCM    | /dfsps/test-rbac/endpoints/ingress/ips/0                 | DELETE |       401 |       404 |
+            | MCM    | /dfsps/test-rbac/endpoints/ingress/urls                  | GET    |       401 |       200 |
+            | MCM    | /dfsps/test-rbac/endpoints/ingress/urls                  | POST   |       401 |       415 |
+            | MCM    | /dfsps/test-rbac/endpoints/ingress/urls/0                | GET    |       401 |       404 |
+            | MCM    | /dfsps/test-rbac/endpoints/ingress/urls/0                | PUT    |       401 |       415 |
+            | MCM    | /dfsps/test-rbac/endpoints/ingress/urls/0                | DELETE |       401 |       404 |
+            | MCM    | /dfsps/test-rbac/endpoints/unprocessed                   | GET    |       401 |       200 |
+
+    Scenario: MCM DFSPs
+        Then check access for the following endpoints:
+            | portal | path                                                     | method | anonymous | mcm_admin |
+            | MCM    | /dfsps/test-rbac                                         | PUT    |       401 |       415 |
+            | MCM    | /dfsps/test-rbac/ca                                      | GET    |       401 |       200 |
+            | MCM    | /dfsps/test-rbac/ca                                      | POST   |       401 |       415 |
+            | MCM    | /dfsps/test-rbac/enrollments/inbound                     | GET    |       401 |       200 |
+            | MCM    | /dfsps/test-rbac/enrollments/inbound                     | POST   |       401 |       415 |
+            | MCM    | /dfsps/test-rbac/enrollments/inbound/0                   | GET    |       401 |       404 |
+            | MCM    | /dfsps/test-rbac/enrollments/inbound/0/sign              | POST   |       401 |       404 |
+            | MCM    | /dfsps/test-rbac/enrollments/outbound                    | GET    |       401 |       200 |
+            | MCM    | /dfsps/test-rbac/enrollments/outbound/0                  | GET    |       401 |       404 |
+            | MCM    | /dfsps/test-rbac/enrollments/outbound/0/certificate      | POST   |       401 |       415 |
+            | MCM    | /dfsps/test-rbac/enrollments/outbound/0/validate         | POST   |       401 |       404 |
+            | MCM    | /dfsps/test-rbac/enrollments/outbound/csr                | POST   |       401 |       200 |
+            | MCM    | /dfsps/test-rbac/jwscerts                                | GET    |       401 |       404 |
+            | MCM    | /dfsps/test-rbac/jwscerts                                | POST   |       401 |       415 |
+            | MCM    | /dfsps/test-rbac/jwscerts                                | DELETE |       401 |       200 |
+            | MCM    | /dfsps/test-rbac/onboard                                 | POST   |       401 |       404 |
+            | MCM    | /dfsps/test-rbac/servercerts                             | GET    |       401 |       404 |
+            | MCM    | /dfsps/test-rbac/servercerts                             | PUT    |       401 |       415 |
+            | MCM    | /dfsps/test-rbac/servercerts                             | POST   |       401 |       415 |
+            | MCM    | /dfsps/test-rbac/servercerts                             | DELETE |       401 |       200 |
+            | MCM    | /dfsps/test-rbac/states                                  | POST   |       401 |       415 |
+            | MCM    | /dfsps/test-rbac/status                                  | GET    |       401 |       200 |
+
+    Scenario: MCM HUB endpoints
+        Then check access for the following endpoints:
+            | portal | path                                                    | method | anonymous | mcm_admin |
+            | MCM    | /hub/endpoints                                          | GET    |       401 |       200 |
+            | MCM    | /hub/endpoints/0                                        | GET    |       401 |       404 |
+            | MCM    | /hub/endpoints/0                                        | PUT    |       401 |       415 |
+            | MCM    | /hub/endpoints/0                                        | DELETE |       401 |       404 |
+            | MCM    | /hub/endpoints/egress/ips                               | GET    |       401 |       200 |
+            | MCM    | /hub/endpoints/egress/ips                               | POST   |       401 |       415 |
+            | MCM    | /hub/endpoints/egress/ips/0                             | GET    |       401 |       404 |
+            | MCM    | /hub/endpoints/egress/ips/0                             | PUT    |       401 |       415 |
+            | MCM    | /hub/endpoints/egress/ips/0                             | DELETE |       401 |       404 |
+            | MCM    | /hub/endpoints/ingress/ips                              | GET    |       401 |       200 |
+            | MCM    | /hub/endpoints/ingress/ips                              | POST   |       401 |       415 |
+            | MCM    | /hub/endpoints/ingress/ips/0                            | GET    |       401 |       404 |
+            | MCM    | /hub/endpoints/ingress/ips/0                            | PUT    |       401 |       415 |
+            | MCM    | /hub/endpoints/ingress/ips/0                            | DELETE |       401 |       404 |
+            | MCM    | /hub/endpoints/ingress/urls                             | GET    |       401 |       200 |
+            | MCM    | /hub/endpoints/ingress/urls                             | POST   |       401 |       415 |
+            | MCM    | /hub/endpoints/ingress/urls/0                           | GET    |       401 |       404 |
+            | MCM    | /hub/endpoints/ingress/urls/0                           | PUT    |       401 |       415 |
+            | MCM    | /hub/endpoints/ingress/urls/0                           | DELETE |       401 |       404 |
+
+    Scenario: MCM Other endpoints
+        Then check access for the following endpoints:
+            | portal | path                                                    | method | anonymous | mcm_admin |
+            | MCM    | /dfsps                                                  | GET    |       401 |       200 |
+            | MCM    | /dfsps                                                  | POST   |       401 |       415 |
+            | MCM    | /dfsps/endpoints/unprocessed                            | GET    |       401 |       200 |
+            | MCM    | /dfsps/jwscerts                                         | GET    |       401 |       200 |
+            | MCM    | /dfsps/servercerts                                      | GET    |       401 |       404 |
+            | MCM    | /dfsps/states-status                                    | GET    |       401 |       200 |
+            | MCM    | /external-dfsps/jwscerts                                | POST   |       401 |       415 |
+            | MCM    | /hub/ca                                                 | GET    |       401 |       200 |
+            | MCM    | /hub/ca                                                 | POST   |       401 |       415 |
+            | MCM    | /hub/ca                                                 | PUT    |       401 |       415 |
+            | MCM    | /hub/jwscerts                                           | GET    |       401 |       200 |
+            | MCM    | /hub/jwscerts                                           | POST   |       401 |       415 |
+            | MCM    | /hub/servercerts                                        | GET    |       401 |       404 |
+            | MCM    | /monetaryzones                                          | GET    |       401 |       200 |
+            | MCM    | /monetaryzones/XXX/dfsps?monetaryZoneId=XXX             | GET    |       401 |       400 |
+            | MCM    | /resetPassword                                          | POST   |       401 |       400 |
+          # unsafe to test
+          # | MCM    | /hub/ca                                                 | DELETE |       401 |       200 |
+          # | MCM    | /hub/servercerts                                        | POST   |       401 |       200 |
+          # | MCM    | /hub/servercerts                                        | DELETE |       401 |       200 |
+          # | MCM    | /login                                                  | POST   |       401 |       200 |
+          # | MCM    | /logout                                                 | POST   |       401 |       200 |

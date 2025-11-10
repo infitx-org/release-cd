@@ -3,6 +3,6 @@ module.exports = {
     testMatch: ['**/__tests__/**/*.js?(x)', '**/?(*.)+(spec|test).js?(x)', '**/*.steps.js'],
     collectCoverage: false,
     coverageDirectory: 'coverage',
-    testTimeout: 15000,
+    testTimeout: 60000,
     verbose: true,
 };
