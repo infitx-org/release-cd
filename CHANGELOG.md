@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.7.0](https://github.com/infitx-org/release-cd/compare/v1.6.0...v1.7.0) (2025-11-12)
+
+
+### Features
+
+* add oidc flow ([fef6d0d](https://github.com/infitx-org/release-cd/commit/fef6d0d3345c01143593eef4b66b817d93463149))
+
 ## [1.6.0](https://github.com/infitx-org/release-cd/compare/v1.5.2...v1.6.0) (2025-11-10)
 
 
