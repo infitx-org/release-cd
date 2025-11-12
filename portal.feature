@@ -2,12 +2,15 @@ Feature: Portal RBAC API Access
 
     Background:
         Given credentials for the following roles are configured:
-            | role      | portal   |
-            | anonymous | MCM      |
-            | mcm_admin | MCM      |
+            | role      | portal   | flow |
+            | anonymous | MCM      | form |
+            | mcm_admin | MCM      | form |
+            | alice     | MCM-ext  | oidc |
+            | bob       | MCM-ext  | oidc |
         And portal and login URLs for the following portals are configured:
-            | portal |
-            | MCM    |
+            | portal  |
+            | MCM     |
+            | MCM-ext |
         And I am authenticated with the existing roles
 
     Scenario: MCM DFSP endpoints
@@ -113,3 +116,9 @@ Feature: Portal RBAC API Access
           # | MCM    | /hub/servercerts                                        | DELETE |       401 |       200 |
           # | MCM    | /login                                                  | POST   |       401 |       200 |
           # | MCM    | /logout                                                 | POST   |       401 |       200 |
+
+    Scenario: MCM-ext DFSP endpoints
+        Then check access for the following endpoints:
+            | portal  | path                                                     | method | bob | alice |
+            | MCM-ext | /dfsps/test-alice/endpoints                              | GET    | 401 |   200 |
+            | MCM-ext | /dfsps/test-bob/endpoints                                | GET    | 200 |   401 |

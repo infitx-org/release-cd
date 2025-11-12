@@ -1,7 +1,7 @@
 const axios = require('axios');
-const {CookieJar} = require('tough-cookie');
-const {wrapper} = require('axios-cookiejar-support');
-const {defineFeature, loadFeature} = require('jest-cucumber');
+const { CookieJar } = require('tough-cookie');
+const { wrapper } = require('axios-cookiejar-support');
+const { defineFeature, loadFeature } = require('jest-cucumber');
 const rc = require('rc');
 
 const config = rc('portal_test', {
@@ -33,15 +33,10 @@ defineFeature(feature, test => {
                 acc[name] = value;
                 return acc;
             }, {});
-        return {action, method, inputs};
+        return { action, method, inputs };
     };
 
-    const authenticateUser = async (role, portal) => {
-        portal = portals[`${role}@${portal}`];
-        portal.jar.removeAllCookiesSync();
-        const user = Object.values(users).find(u => u.role === role);
-        if (!user) throw new Error(`User with role ${role} not found`);
-        if (!user.username) return true; // No authentication for anonymous user
+    async function formFlow(portal, user) {
         try {
             const flow = await portal.client.get(portal.loginUrl);
             // submit the form to get to the login page
@@ -79,9 +74,46 @@ defineFeature(feature, test => {
         } catch (error) {
             throw new Error(`Authentication failed: ${error.message}`);
         }
+    }
+
+    async function oidcFlow(portal, user) {
+        try {
+            const tokenRequest = await axios.post(
+                portal.loginUrl,
+                {
+                    grant_type: 'client_credentials',
+                    client_id: user.username,
+                    client_secret: user.password
+                },
+                {
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    }
+                }
+            )
+
+            portal.token = tokenRequest.data.access_token
+            return true;
+        } catch (error) {
+            throw new Error(`OIDC authentication failed: ${error.message}`);
+        }
+    }
+
+    const authenticateUser = async (role, portal) => {
+        portal = portals[`${role}@${portal}`];
+        portal.jar.removeAllCookiesSync();
+        portal.token = '';
+        const user = Object.values(users).find(u => u.role === role);
+        if (!user) throw new Error(`User with role ${role} not found`);
+        if (!user.username) return true; // No authentication for anonymous user
+        switch (user.flow) {
+            case 'form': return formFlow(portal, user)
+            case 'oidc': return oidcFlow(portal, user)
+            default: throw new Error(`Unsupported flow ${user.flow} for user ${user.username}`)
+        }
     };
 
-    function checkEndpointAccess ({given, when, then}) {
+    function checkEndpointAccess({ given, when, then }) {
         given('credentials for the following roles are configured:', table => {
             table.forEach(row => {
                 expect(config.credentials?.[row.role]).toBeDefined();
@@ -90,6 +122,7 @@ defineFeature(feature, test => {
                     portal: row.portal,
                     username: config.credentials[row.role]?.username,
                     password: config.credentials[row.role]?.password,
+                    flow: row.flow
                 };
             });
         });
@@ -110,7 +143,7 @@ defineFeature(feature, test => {
         });
 
         given('I am authenticated with the existing roles', async () => {
-            for (const [role, {portal}] of Object.entries(users)) {
+            for (const [role, { portal }] of Object.entries(users)) {
                 expect(await authenticateUser(role, portal)).toBe(true);
             }
         });
@@ -118,20 +151,24 @@ defineFeature(feature, test => {
         then('check access for the following endpoints:', async table => {
             const expected = [];
             const observed = [];
-            for (const {portal, path: endpoint, method, ...roleStatuses} of table) {
+            for (const { portal, path: endpoint, method, ...roleStatuses } of table) {
                 const observedStatuses = [];
                 const expectedStatuses = [];
                 for (const role of Object.keys(users)) {
                     if (!roleStatuses[role]) continue; // Skip if no expected status for this role
                     let response;
+                    const currentPortal = portals[`${role}@${portal}`];
                     try {
-                        response = await portals[`${role}@${portal}`].client.request({
-                            url: `${portals[`${role}@${portal}`].url}${endpoint}`,
+                        response = await currentPortal.client.request({
+                            url: `${currentPortal.url}${endpoint}`,
                             method,
                             timeout: 10000,
+                            headers: {
+                                ... currentPortal.token && {authorization: `Bearer ${currentPortal.token}`}
+                            }
                         });
                     } catch (error) {
-                        response = error.response ?? {status: error.message};
+                        response = error.response ?? { status: error.message };
                     }
                     observedStatuses.push(`${role} ${response?.status}`);
                     expectedStatuses.push(`${role} ${roleStatuses[role]}`);
@@ -147,4 +184,5 @@ defineFeature(feature, test => {
     test('MCM DFSPs', checkEndpointAccess);
     test('MCM HUB endpoints', checkEndpointAccess);
     test('MCM Other endpoints', checkEndpointAccess);
+    test('MCM-ext DFSP endpoints', checkEndpointAccess);
 });
