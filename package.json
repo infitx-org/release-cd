@@ -3,7 +3,7 @@
   "version": "1.7.0",
   "main": "index.js",
   "scripts": {
-    "test": "jest"
+    "test": "jest --colors"
   },
   "dependencies": {
     "@hapi/boom": "^10.0.1",
