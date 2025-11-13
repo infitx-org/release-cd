@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.7.1](https://github.com/infitx-org/release-cd/compare/v1.7.0...v1.7.1) (2025-11-13)
+
+
+### Bug Fixes
+
+* enable color output for jest test script ([42d207e](https://github.com/infitx-org/release-cd/commit/42d207eed8a204efd6f52e5a4d91834f2a422210))
+
 ## [1.7.0](https://github.com/infitx-org/release-cd/compare/v1.6.0...v1.7.0) (2025-11-12)
 
 
