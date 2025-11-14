@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.7.2](https://github.com/infitx-org/release-cd/compare/v1.7.1...v1.7.2) (2025-11-14)
+
+
+### Bug Fixes
+
+* improve endpoint access checks and formatting in tests ([c82b9a0](https://github.com/infitx-org/release-cd/commit/c82b9a01b4a85038524e3d9f90dda7281f545288))
+
 ## [1.7.1](https://github.com/infitx-org/release-cd/compare/v1.7.0...v1.7.1) (2025-11-13)
 
 
