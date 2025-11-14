@@ -149,7 +149,6 @@ defineFeature(feature, test => {
         });
 
         then('check access for the following endpoints:', async table => {
-            const expected = [];
             const observed = [];
             for (const { portal, path: endpoint, method, ...roleStatuses } of table) {
                 const observedStatuses = [];
@@ -164,7 +163,7 @@ defineFeature(feature, test => {
                             method,
                             timeout: 10000,
                             headers: {
-                                ... currentPortal.token && {authorization: `Bearer ${currentPortal.token}`}
+                                ...currentPortal.token && { authorization: `Bearer ${currentPortal.token}` }
                             }
                         });
                     } catch (error) {
@@ -173,10 +172,12 @@ defineFeature(feature, test => {
                     observedStatuses.push(`${role} ${response?.status}`);
                     expectedStatuses.push(`${role} ${roleStatuses[role]}`);
                 }
-                observed.push(`${portal} ${method} ${endpoint} | ${observedStatuses.join(' | ')}`);
-                expected.push(`${portal} ${method} ${endpoint} | ${expectedStatuses.join(' | ')}`);
+                observed.push([
+                    `${portal} ${method} ${endpoint} | ${observedStatuses.join(' | ')}`,
+                    `${portal} ${method} ${endpoint} | ${expectedStatuses.join(' | ')}`
+                ]);
             }
-            expect(observed.join('\n')).toBe(expected.join('\n'));
+            expected.forEach(([obs, exp]) => expect(obs).toBe(exp));
         });
     };
 
