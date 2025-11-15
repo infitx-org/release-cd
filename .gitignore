@@ -132,3 +132,5 @@ dist
 .*rc
 
 allure-results
+allure-report
+.allure
