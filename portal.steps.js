@@ -177,7 +177,7 @@ defineFeature(feature, test => {
                     `${portal} ${method} ${endpoint} | ${expectedStatuses.join(' | ')}`
                 ]);
             }
-            expected.forEach(([obs, exp]) => expect(obs).toBe(exp));
+            observed.forEach(([obs, exp]) => expect(obs).toBe(exp));
         });
     };
 
