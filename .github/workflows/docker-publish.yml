@@ -2,17 +2,15 @@ name: Docker
 
 on:
   push:
-    tags: [ 'v*.*.*' ]
+    tags: ["v*.*.*"]
 
 env:
   # Use docker.io for Docker Hub if empty
   REGISTRY: ghcr.io
   # github.repository as <account>/<repo>
-  IMAGE_NAME: ${{ github.repository }}
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     strategy:
@@ -46,7 +44,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ${{ env.REGISTRY }}/${{ matrix.image }}
+          images: ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ matrix.image }}
 
       - name: Build and push Docker image
         id: build-and-push
@@ -68,4 +66,4 @@ jobs:
               -H "Accept: application/vnd.github+json" \
               -H "Authorization: Bearer ${{ secrets.TRIGGER_DOWNSTREAM }}" \
               https://api.github.com/repos/infitx-org/profile-cd/actions/workflows/docker-image.yaml/dispatches \
-              -d '{"ref":"main","inputs":{"upstream":"${{ github.event.repository.url }}","image":"${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}","tag":"${{ steps.meta.outputs.version }}"}}'
+              -d '{"ref":"main","inputs":{"upstream":"${{ github.event.repository.url }}","image":"${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ matrix.image }}","tag":"${{ steps.meta.outputs.version }}"}}'
