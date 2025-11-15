@@ -3,7 +3,7 @@
   "version": "1.7.3",
   "main": "index.js",
   "scripts": {
-    "test": "jest --colors; allure generate",
+    "test": "jest --colors; allure generate; node notify.mjs",
     "generate": "allure generate"
   },
   "dependencies": {
