@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.8.1](https://github.com/infitx-org/release-cd/compare/v1.8.0...v1.8.1) (2025-11-15)
+
+
+### Bug Fixes
+
+* correct image name reference in Docker publish workflow ([65e33a5](https://github.com/infitx-org/release-cd/commit/65e33a5d1b6746652b26b53ef808176153968972))
+
 ## [1.8.0](https://github.com/infitx-org/release-cd/compare/v1.7.3...v1.8.0) (2025-11-15)
 
 
