@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.8.2](https://github.com/infitx-org/release-cd/compare/v1.8.1...v1.8.2) (2025-11-15)
+
+
+### Bug Fixes
+
+* add historyPath to allure configuration ([22fb1dd](https://github.com/infitx-org/release-cd/commit/22fb1dd2e3cd26932445d7250981ef4116f79aef))
+
 ## [1.8.1](https://github.com/infitx-org/release-cd/compare/v1.8.0...v1.8.1) (2025-11-15)
 
 
