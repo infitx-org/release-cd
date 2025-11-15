@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.7.3](https://github.com/infitx-org/release-cd/compare/v1.7.2...v1.7.3) (2025-11-15)
+
+
+### Bug Fixes
+
+* update test environment to allure-jest and add allure-jest dependency ([59e273e](https://github.com/infitx-org/release-cd/commit/59e273e935dcdce475a7f0fa89d9dcf579d3fbd3))
+
 ## [1.7.2](https://github.com/infitx-org/release-cd/compare/v1.7.1...v1.7.2) (2025-11-14)
 
 
