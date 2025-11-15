@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.8.0](https://github.com/infitx-org/release-cd/compare/v1.7.3...v1.8.0) (2025-11-15)
+
+
+### Features
+
+* add allure reporting to test script and include allure dependency ([e2595ca](https://github.com/infitx-org/release-cd/commit/e2595cad126bded94e425cc9557c1f69baec1c86))
+* implement configuration management and reporting features with S3 and Slack integration ([66b637b](https://github.com/infitx-org/release-cd/commit/66b637bb39af547cfdedd04cde290f447d8da782))
+
+
+### Bug Fixes
+
+* update test script to include notification step ([0f4cf50](https://github.com/infitx-org/release-cd/commit/0f4cf50bd4c2c28c6b9894bbb98a938d9a5f2cd2))
+
 ## [1.7.3](https://github.com/infitx-org/release-cd/compare/v1.7.2...v1.7.3) (2025-11-15)
 
 
