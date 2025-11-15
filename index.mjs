@@ -1,59 +1,14 @@
-import Hapi from '@hapi/hapi';
 import { Boom } from '@hapi/boom';
-import { MongoClient } from 'mongodb';
-import rc from 'rc';
+import Hapi from '@hapi/hapi';
 import { Octokit } from "@octokit/rest";
-import semver from 'semver';
-import assert from 'node:assert';
 import mongoUriBuilder from 'mongo-uri-builder';
-import { IncomingWebhook } from '@slack/webhook';
-import AWS from 'aws-sdk';
+import { MongoClient } from 'mongodb';
+import assert from 'node:assert';
+import semver from 'semver';
 
-const config = rc('release_cd', {
-    server: {
-        port: 8080,
-        host: '0.0.0.0'
-    },
-    mongodb: {
-        host: 'host.docker.internal',
-        database: 'release-cd',
-        port: 27017
-    },
-    github: {
-        token: 'your-github-token'
-    },
-    rule: {
-        environments: {
-            // 'region-dev': {
-            //     requiredTests: ['gp_tests']
-            // },
-            // 'mw-dev': {
-            //     requiredTests: ['gp_tests']
-            // },
-            // 'zm-dev': {
-            //     requiredTests: ['gp_tests']
-            // },
-            // 'pm-dev': {
-            //     requiredTests: ['sdkFxSendE2EMin']
-            // }
-        }
-    },
-    slack: {
-        url: ''
-    },
-    report: {
-        s3Endpoint: '',
-        s3Bucket: '',
-        s3AccessKeyId: '',
-        s3SecretAccessKey: '',
-        reportEndpoint: '',
-        awsRegion: 'us-east-1'
-    },
-    release: {
-        prerelease: 'dev',
-        start: '1.0.0'
-    }
-});
+import config from './config.mjs';
+import copyReportToS3 from './s3.mjs';
+import notifySlack from './slack.mjs';
 
 const octokit = new Octokit({
     auth: config.github.token
@@ -163,12 +118,12 @@ For each environment do the following:
 
 ## Submodules
 
-${Object.entries(submodules).filter(isNotIac).map(([name, {ref}]) => `* ${name.replace(/^https:\/\/github.com\/|.git$/g, '')} ${name.replace(/^https:\/\/github.com\/|.git$/g, '')}@${ref}`).join('\n')}
+${Object.entries(submodules).filter(isNotIac).map(([name, { ref }]) => `* ${name.replace(/^https:\/\/github.com\/|.git$/g, '')} ${name.replace(/^https:\/\/github.com\/|.git$/g, '')}@${ref}`).join('\n')}
 
 submodules.yaml
 
 \`\`\`yaml
-${Object.entries(submodules).filter(isNotIac).map(([name, {path, ref}]) => `${path}:
+${Object.entries(submodules).filter(isNotIac).map(([name, { path, ref }]) => `${path}:
   url: ${name}
   ref: ${version}`).join('\n')}
 \`\`\`
@@ -181,50 +136,13 @@ ${Object.entries(tests).map(([env, tests]) => Object.entries(tests).map(([name, 
 
 `;
 
-    const copyReportToS3 = async (testName, reportURL) => {
-        if (!reportURL) return;
-        if ((!config.report?.s3Endpoint && !config.report?.awsRegion) || !config.report?.s3Bucket || !config.report?.s3AccessKeyId || !config.report?.s3SecretAccessKey || !config.report?.reportEndpoint) {
-            console.warn('S3 configuration is incomplete, skipping report upload');
-            return;
-        }
-
-        const s3 = new AWS.S3({
-            endpoint: config.report.s3Endpoint,
-            region: config.report.awsRegion,
-            s3ForcePathStyle: true,
-            credentials: new AWS.Credentials({
-                accessKeyId: config.report.s3AccessKeyId,
-                secretAccessKey: config.report.s3SecretAccessKey
-            })
-        });
-
-        let report;
-        try {
-            report = await fetch(reportURL);
-        } catch (error) {
-            console.error(`Error fetching report from ${reportURL}: ${error.message}`);
-            throw error;
-        }
-
-        const params = {
-            Bucket: config.report.s3Bucket,
-            Key: testName,
-            Body: Buffer.from(await report.arrayBuffer()),
-            ContentType: report.headers.get('content-type'),
-            ACL: 'public-read'
-        };
-
-        await s3.putObject(params).promise();
-        return config.report.reportEndpoint.replace('{key}', testName);
-    };
-
     const cdRuleExecute = async (h) => {
         const submoduleProps = {};
         const revisions = {};
         const tests = {};
         let iac;
         let ansible;
-        for (const [env, {requiredTests = [], optionalTests = []}] of Object.entries(config.rule.environments)) {
+        for (const [env, { requiredTests = [], optionalTests = [] }] of Object.entries(config.rule.environments)) {
             const revision = await db.collection(`revision/${env}`).findOne({}, { sort: { $natural: -1 } });
             if (!revision || !requiredTestsPassed(requiredTests, revision))
                 return h.response(`Required tests have not passed for environment ${env}`).code(202);
@@ -340,16 +258,7 @@ ${Object.entries(tests).map(([env, tests]) => Object.entries(tests).map(([name, 
                 body
             });
 
-            if (config.slack.url && repo === 'profile-cd') {
-                try {
-                    const webhook = new IncomingWebhook(config.slack.url);
-                    await webhook.send({
-                        text: `🎉 Release created: ${response.data.html_url}`
-                    });
-                } catch (error) {
-                    console.error(`Error sending Slack notification: ${error.message}`);
-                }
-            }
+            if (repo === 'profile-cd') notifySlack(`🎉 Release created: ${response.data.html_url}`)
             console.log(`Release created: ${response.data.html_url}`);
         } catch (error) {
             console.error(`Error creating release: ${error.message}`);
@@ -411,7 +320,7 @@ ${Object.entries(tests).map(([env, tests]) => Object.entries(tests).map(([name, 
     </style>`);
         result.push('</head><body>');
         result.push('<h1>Release CD Status</h1>');
-        for (const [env, {requiredTests = [], optionalTests = []}] of Object.entries(config.rule.environments)) {
+        for (const [env, { requiredTests = [], optionalTests = [] }] of Object.entries(config.rule.environments)) {
             const revision = await db.collection(`revision/${env}`).findOne({}, { sort: { $natural: -1 } });
             revisions[env] = revision._id;
             tests[env] = revision.tests;
