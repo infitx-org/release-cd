@@ -27,10 +27,10 @@ RUN apt-get update && \
     curl -LO https://github.com/tsl0922/ttyd/releases/latest/download/ttyd.x86_64 && \
     install -m 0755 ttyd.x86_64 /usr/local/bin/ttyd && \
     rm ttyd.x86_64 && \
-    # Install latest k6
-    curl -LO https://github.com/grafana/k6/releases/latest/download/k6-linux-amd64.tar.gz && \
-    tar -xzf k6-linux-amd64.tar.gz -C /usr/local/bin k6 && \
-    rm k6-linux-amd64.tar.gz && \
+    # Install k6
+    curl -LO https://github.com/grafana/k6/releases/download/v1.4.0/k6-v1.4.0-linux-amd64.tar.gz && \
+    tar -xzf k6-v1.4.0-linux-amd64.tar.gz -C /usr/local/bin k6 && \
+    rm k6-v1.4.0-linux-amd64.tar.gz && \
     # Clean up
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
