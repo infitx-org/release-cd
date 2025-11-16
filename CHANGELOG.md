@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.9.0](https://github.com/infitx-org/release-cd/compare/v1.8.2...v1.9.0) (2025-11-16)
+
+
+### Features
+
+* enhance Dockerfile with additional tools and create kube-config script ([729b725](https://github.com/infitx-org/release-cd/commit/729b7259fa37dd46636be78e7e82783b2cfd9636))
+
 ## [1.8.2](https://github.com/infitx-org/release-cd/compare/v1.8.1...v1.8.2) (2025-11-15)
 
 
