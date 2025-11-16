@@ -48,6 +48,7 @@ RUN npm ci
 
 # Final release image
 FROM system AS release
+RUN mkdir -p /opt/app && chown -R node:node /opt/app
 WORKDIR /opt/app
 USER node
 COPY --chown=node --from=builder /opt/app .
