@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.9.2](https://github.com/infitx-org/release-cd/compare/v1.9.1...v1.9.2) (2025-11-16)
+
+
+### Bug Fixes
+
+* streamline Dockerfile by consolidating COPY commands in release stage ([638532a](https://github.com/infitx-org/release-cd/commit/638532a568dc91373e3cc315a91d75aef0f75cbf))
+
 ## [1.9.1](https://github.com/infitx-org/release-cd/compare/v1.9.0...v1.9.1) (2025-11-16)
 
 
