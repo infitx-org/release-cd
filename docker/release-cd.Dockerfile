@@ -49,9 +49,8 @@ RUN npm ci
 # Final release image
 FROM system AS release
 WORKDIR /opt/app
-COPY --from=builder /opt/app/node_modules ./node_modules
-COPY package*.json ./
-COPY *.*js *.feature *.sh ./
+COPY --chown=node --from=builder /opt/app .
+COPY --chown=node *.*js *.feature *.sh ./
 
 USER node
 EXPOSE 80
