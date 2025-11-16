@@ -1,9 +1,10 @@
+#! /usr/bin/env node
 import { readFileSync } from 'fs';
 
 import copyReportToS3 from './s3.mjs';
 import notifySlack from './slack.mjs';
 
-async function notify({
+export default async function notify({
     report,
     stats
 }) {

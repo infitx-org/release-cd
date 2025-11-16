@@ -1,3 +1,4 @@
+#! /usr/bin/env node
 import { Boom } from '@hapi/boom';
 import Hapi from '@hapi/hapi';
 import { Octokit } from "@octokit/rest";
