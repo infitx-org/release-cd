@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.9.1](https://github.com/infitx-org/release-cd/compare/v1.9.0...v1.9.1) (2025-11-16)
+
+
+### Bug Fixes
+
+* copy package.json files in release stage of Dockerfile ([d2c0a91](https://github.com/infitx-org/release-cd/commit/d2c0a91e41d4066640bad43a9f053bb2b704d36c))
+
 ## [1.9.0](https://github.com/infitx-org/release-cd/compare/v1.8.2...v1.9.0) (2025-11-16)
 
 
