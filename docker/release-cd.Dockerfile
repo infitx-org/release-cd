@@ -27,6 +27,10 @@ RUN apt-get update && \
     curl -LO https://github.com/tsl0922/ttyd/releases/latest/download/ttyd.x86_64 && \
     install -m 0755 ttyd.x86_64 /usr/local/bin/ttyd && \
     rm ttyd.x86_64 && \
+    # Install latest k6
+    curl -LO https://github.com/grafana/k6/releases/latest/download/k6-linux-amd64.tar.gz && \
+    tar -xzf k6-linux-amd64.tar.gz -C /usr/local/bin k6 && \
+    rm k6-linux-amd64.tar.gz && \
     # Clean up
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
@@ -38,7 +42,8 @@ RUN kubectl version --client && \
     git --version && \
     jq --version && \
     yq --version && \
-    argocd version --client
+    argocd version --client && \
+    k6 version
 
 # Build application dependencies
 FROM node:${NODE_VERSION_BUILD} AS builder
