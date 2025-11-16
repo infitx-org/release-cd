@@ -50,6 +50,7 @@ RUN npm ci
 FROM system AS release
 WORKDIR /opt/app
 COPY --from=builder /opt/app/node_modules ./node_modules
+COPY package*.json ./
 COPY *.*js *.feature *.sh ./
 
 USER node
