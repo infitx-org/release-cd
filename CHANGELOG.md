@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.9.4](https://github.com/infitx-org/release-cd/compare/v1.9.3...v1.9.4) (2025-11-16)
+
+
+### Bug Fixes
+
+* ensure proper ownership of /opt/app directory in release image ([be152d8](https://github.com/infitx-org/release-cd/commit/be152d86ada4082abd45187e121a93ebc241c11f))
+
 ## [1.9.3](https://github.com/infitx-org/release-cd/compare/v1.9.2...v1.9.3) (2025-11-16)
 
 
