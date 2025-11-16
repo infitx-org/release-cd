@@ -49,10 +49,10 @@ RUN npm ci
 # Final release image
 FROM system AS release
 WORKDIR /opt/app
+USER node
 COPY --chown=node --from=builder /opt/app .
 COPY --chown=node *.*js *.feature *.sh ./
 
-USER node
 EXPOSE 80
 ENTRYPOINT [ "bash", "-c" ]
 CMD [ "sleep infinity" ]
