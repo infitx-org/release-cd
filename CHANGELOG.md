@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.11.0](https://github.com/infitx-org/release-cd/compare/v1.10.2...v1.11.0) (2025-11-16)
+
+
+### Features
+
+* add vscode-cli installation and create ttyd and tui scripts ([9602e8d](https://github.com/infitx-org/release-cd/commit/9602e8d662e7cd5f261676d6841d8bff0f9deae9))
+
 ## [1.10.2](https://github.com/infitx-org/release-cd/compare/v1.10.1...v1.10.2) (2025-11-16)
 
 
