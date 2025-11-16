@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.10.2](https://github.com/infitx-org/release-cd/compare/v1.10.1...v1.10.2) (2025-11-16)
+
+
+### Bug Fixes
+
+* correct k6 installation extraction path in Dockerfile ([5ba9b78](https://github.com/infitx-org/release-cd/commit/5ba9b78a3b4a91d3dbc75a14c62d1600d801b4a1))
+
 ## [1.10.1](https://github.com/infitx-org/release-cd/compare/v1.10.0...v1.10.1) (2025-11-16)
 
 
