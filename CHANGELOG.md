@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.9.3](https://github.com/infitx-org/release-cd/compare/v1.9.2...v1.9.3) (2025-11-16)
+
+
+### Bug Fixes
+
+* move user command ([be71a6f](https://github.com/infitx-org/release-cd/commit/be71a6f4d23b91d33935989dd0afecf57a939d21))
+
 ## [1.9.2](https://github.com/infitx-org/release-cd/compare/v1.9.1...v1.9.2) (2025-11-16)
 
 
