@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.10.0](https://github.com/infitx-org/release-cd/compare/v1.9.4...v1.10.0) (2025-11-16)
+
+
+### Features
+
+* add installation of k6 to Dockerfile ([c8da953](https://github.com/infitx-org/release-cd/commit/c8da953b9bea684096592baa1d3895873b815a9c))
+
+
+### Bug Fixes
+
+* remove unused historyPath from allure configuration ([bf56ad6](https://github.com/infitx-org/release-cd/commit/bf56ad61a79fef94b64e4dcd464d03102228e583))
+
 ## [1.9.4](https://github.com/infitx-org/release-cd/compare/v1.9.3...v1.9.4) (2025-11-16)
 
 
