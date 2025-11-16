@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.10.1](https://github.com/infitx-org/release-cd/compare/v1.10.0...v1.10.1) (2025-11-16)
+
+
+### Bug Fixes
+
+* update k6 installation to use specific version v1.4.0 ([cdd89b7](https://github.com/infitx-org/release-cd/commit/cdd89b703332b3a15ef635986a6d0b0b64a53a33))
+
 ## [1.10.0](https://github.com/infitx-org/release-cd/compare/v1.9.4...v1.10.0) (2025-11-16)
 
 
