@@ -63,6 +63,6 @@ USER node
 COPY --chown=node --from=builder /opt/app .
 COPY --chown=node *.*js *.feature *.sh ./
 
-EXPOSE 80
+EXPOSE 8080
 ENTRYPOINT [ "bash", "-c" ]
 CMD [ "sleep infinity" ]
