@@ -1,3 +1,3 @@
 #! /bin/bash
 
-ttyd -a -O -W -m 5 -c ${K9S_USER}:${K9S_PASS} bash ./tui.sh
+ttyd -a -O -W -m 5 -p 80 -c ${DEV_USER}:${DEV_PASS} bash ./tui.sh

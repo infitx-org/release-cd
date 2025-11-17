@@ -1,26 +1,27 @@
 #! /bin/bash
 
 # run a tool based on the first argument
+# consider passing arguments
 case "$1" in
   k9s)
     ./kube-config.sh
     shift
-    k9s "$@"
+    k9s
     ;;
   mc)
     shift
-    mc "$@"
+    mc
     ;;
-  code)
+  vscode)
     shift
-    code "$@"
+    code tunnel
     ;;
   node)
     shift
-    node "$@"
+    node
     ;;
   *)
-    echo "Usage: $0 {k9s|mc|code|node} [args...]"
-    exit 1
+    shift
+    bash
     ;;
 esac
