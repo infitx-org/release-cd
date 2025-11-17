@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.11.2](https://github.com/infitx-org/release-cd/compare/v1.11.1...v1.11.2) (2025-11-17)
+
+
+### Bug Fixes
+
+* show all mismatches ([93384bd](https://github.com/infitx-org/release-cd/commit/93384bd037c3b26be14371295d02b0453a4294ef))
+
 ## [1.11.1](https://github.com/infitx-org/release-cd/compare/v1.11.0...v1.11.1) (2025-11-17)
 
 
