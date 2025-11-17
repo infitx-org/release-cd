@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.11.1](https://github.com/infitx-org/release-cd/compare/v1.11.0...v1.11.1) (2025-11-17)
+
+
+### Bug Fixes
+
+* enhance endpoint access checks to log mismatches and fail tests on errors ([4ccf8ab](https://github.com/infitx-org/release-cd/commit/4ccf8ab69997fea43503d25a5c135016348f85b0))
+* update ttyd script to use DEV_USER and DEV_PASS; improve tui.sh argument handling ([7ff0f92](https://github.com/infitx-org/release-cd/commit/7ff0f9211abc1b540f8af1aa8ee9303a1df28479))
+
 ## [1.11.0](https://github.com/infitx-org/release-cd/compare/v1.10.2...v1.11.0) (2025-11-16)
 
 
