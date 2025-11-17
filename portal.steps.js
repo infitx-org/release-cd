@@ -177,7 +177,15 @@ defineFeature(feature, test => {
                     `${portal} ${method} ${endpoint} | ${expectedStatuses.join(' | ')}`
                 ]);
             }
-            observed.forEach(([obs, exp]) => expect(obs).toBe(exp));
+            let failed = false;
+            observed.forEach(([obs, exp]) => { // log all mismatches
+                try {
+                    expect(obs).toBe(exp);
+                } catch {
+                    failed = true;
+                }
+            });
+            expect(failed).toBe(false); // fail the test if any mismatch found
         });
     };
 
