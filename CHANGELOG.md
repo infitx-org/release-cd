@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.11.3](https://github.com/infitx-org/release-cd/compare/v1.11.2...v1.11.3) (2025-11-17)
+
+
+### Bug Fixes
+
+* update exposed port from 80 to 8080 in Dockerfile and ttyd script ([bc8a10d](https://github.com/infitx-org/release-cd/commit/bc8a10d8e5ef9d0a8e517b00698cac69cf133ee5))
+
 ## [1.11.2](https://github.com/infitx-org/release-cd/compare/v1.11.1...v1.11.2) (2025-11-17)
 
 
