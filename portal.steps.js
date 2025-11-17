@@ -3,6 +3,7 @@ const { CookieJar } = require('tough-cookie');
 const { wrapper } = require('axios-cookiejar-support');
 const { defineFeature, loadFeature } = require('jest-cucumber');
 const rc = require('rc');
+const { expect } = require('@jest/globals');
 
 const config = rc('portal_test', {
     credentials: {
@@ -150,6 +151,7 @@ defineFeature(feature, test => {
 
         then('check access for the following endpoints:', async table => {
             const observed = [];
+            const expected = [];
             for (const { portal, path: endpoint, method, ...roleStatuses } of table) {
                 const observedStatuses = [];
                 const expectedStatuses = [];
@@ -172,20 +174,10 @@ defineFeature(feature, test => {
                     observedStatuses.push(`${role} ${response?.status}`);
                     expectedStatuses.push(`${role} ${roleStatuses[role]}`);
                 }
-                observed.push([
-                    `${portal} ${method} ${endpoint} | ${observedStatuses.join(' | ')}`,
-                    `${portal} ${method} ${endpoint} | ${expectedStatuses.join(' | ')}`
-                ]);
+                observed.push(`${portal} ${method} ${endpoint} | ${observedStatuses.join(' | ')}`);
+                expected.push(`${portal} ${method} ${endpoint} | ${expectedStatuses.join(' | ')}`);
             }
-            let failed = false;
-            observed.forEach(([obs, exp]) => { // log all mismatches
-                try {
-                    expect(obs).toBe(exp);
-                } catch {
-                    failed = true;
-                }
-            });
-            expect(failed).toBe(false); // fail the test if any mismatch found
+            expect(observed.join('\n')).toBe(expected.join('\n'))
         });
     };
 

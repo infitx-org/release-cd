@@ -3,6 +3,7 @@
   "version": "1.11.1",
   "main": "index.js",
   "scripts": {
+    "test": "rm -rf allure-results; jest --colors; allure generate; node notify.mjs",
     "portal-test": "jest --colors; allure generate; node notify.mjs",
     "generate-report": "allure generate",
     "release-cd": "./index.mjs",
