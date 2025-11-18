@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.12.0](https://github.com/infitx-org/release-cd/compare/v1.11.4...v1.12.0) (2025-11-18)
+
+
+### Features
+
+* add policy report extraction and Allure results generation ([38a58a7](https://github.com/infitx-org/release-cd/commit/38a58a758012560e8dd1d3fef26c367539715760))
+
 ## [1.11.4](https://github.com/infitx-org/release-cd/compare/v1.11.3...v1.11.4) (2025-11-18)
 
 
