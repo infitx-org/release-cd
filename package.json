@@ -6,12 +6,14 @@
     "test": "rm -rf allure-results; jest --colors; allure generate; node notify.mjs",
     "portal-test": "jest --colors; allure generate; node notify.mjs",
     "generate-report": "allure generate",
-    "release-cd": "./index.mjs",
+    "policy-report": "node policyReport.mjs; allure generate; node notify.mjs",
+    "release-cd": "if [ $NODE_WATCH_INSPECT ] ; then node --watch --inspect=0.0.0.0:9229 ./index.mjs ; else node ./index.mjs ; fi",
     "notify": "./notify.mjs"
   },
   "dependencies": {
     "@hapi/boom": "^10.0.1",
     "@hapi/hapi": "^21.3.12",
+    "@kubernetes/client-node": "^1.4.0",
     "@octokit/rest": "^21.1.0",
     "@slack/webhook": "^7.0.5",
     "allure": "^3.0.0-beta.22",
