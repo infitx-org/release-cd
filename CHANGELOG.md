@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.11.4](https://github.com/infitx-org/release-cd/compare/v1.11.3...v1.11.4) (2025-11-18)
+
+
+### Bug Fixes
+
+* add check for .bashrc and copy skeleton files if missing ([169c478](https://github.com/infitx-org/release-cd/commit/169c478dd9f1986d55ebd0b9be2cae20bf550d82))
+
 ## [1.11.3](https://github.com/infitx-org/release-cd/compare/v1.11.2...v1.11.3) (2025-11-17)
 
 
