@@ -7,6 +7,7 @@
     "portal-test": "jest --colors; allure generate; node notify.mjs",
     "generate-report": "allure generate",
     "policy-report": "node policyReport.mjs; allure generate; node notify.mjs",
+    "kubescape-report": "kubescape scan --format json --output kubescape.json; node kubescapeReport.mjs; allure generate; node notify.mjs",
     "release-cd": "if [ $NODE_WATCH_INSPECT ] ; then node --watch --inspect=0.0.0.0:9229 ./index.mjs ; else node ./index.mjs ; fi",
     "notify": "./notify.mjs"
   },

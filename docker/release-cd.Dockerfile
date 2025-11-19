@@ -35,6 +35,9 @@ RUN apt-get update && \
     curl -LOJ "https://code.visualstudio.com/sha/download?build=stable&os=cli-alpine-x64" && \
     tar -xzf vscode_cli_alpine_x64_cli.tar.gz -C /usr/local/bin && \
     rm vscode_cli_alpine_x64_cli.tar.gz && \
+    # Install kubescape
+    curl -s https://raw.githubusercontent.com/kubescape/kubescape/master/install.sh | bash && \
+    kubescape download artifacts --output /usr/local/lib/kubescape && \
     # Clean up
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
@@ -47,7 +50,8 @@ RUN kubectl version --client && \
     jq --version && \
     yq --version && \
     argocd version --client && \
-    k6 version
+    k6 version && \
+    kubescape version
 
 # Build application dependencies
 FROM node:${NODE_VERSION_BUILD} AS builder
