@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.13.0](https://github.com/infitx-org/release-cd/compare/v1.12.0...v1.13.0) (2025-11-19)
+
+
+### Features
+
+* add kubescape report generation and update Dockerfile ([4f37761](https://github.com/infitx-org/release-cd/commit/4f37761e45b1b94f904651244a9b227f558b6213))
+
 ## [1.12.0](https://github.com/infitx-org/release-cd/compare/v1.11.4...v1.12.0) (2025-11-18)
 
 
