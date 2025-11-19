@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.13.1](https://github.com/infitx-org/release-cd/compare/v1.13.0...v1.13.1) (2025-11-19)
+
+
+### Bug Fixes
+
+* normalize control message URLs to lowercase ([378a200](https://github.com/infitx-org/release-cd/commit/378a20041754d6fe81b21a91a6564ceb18fb305a))
+* update Kubescape control message URL to point to documentation ([1ec4310](https://github.com/infitx-org/release-cd/commit/1ec4310f046d3e58e2c24b6c7b9c1b654b8b50a5))
+
 ## [1.13.0](https://github.com/infitx-org/release-cd/compare/v1.12.0...v1.13.0) (2025-11-19)
 
 
