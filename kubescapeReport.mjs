@@ -58,7 +58,7 @@ function generateAllureResult(result, index, resources) {
             status: control.status.status === 'passed' ? 'passed' : 'failed',
             type: 'step',
             statusDetails: control.status.status !== 'passed' ? {
-                message: `https://hub.armosec.io/controls/${control.controlID}`,
+                message: `https://hub.armosec.io/controls/${control.controlID}`.toLowerCase(),
                 trace: JSON.stringify(control.rules, null, 2)
             } : undefined
         })).sort((a, b) => a.name.localeCompare(b.name))
