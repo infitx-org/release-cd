@@ -1,6 +1,5 @@
 import fs from 'fs';
 import path from 'path';
-import { fileURLToPath } from 'url';
 
 // Read and parse the Kubescape results
 function readKubescapeResults() {
@@ -74,7 +73,7 @@ function resourceMap(resources) {
 
 // Write Kubescape results to Allure results files
 function writeAllureResults(report) {
-    const allureDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), 'allure-results');
+    const allureDir = path.resolve('allure-results');
     if (!fs.existsSync(allureDir)) {
         fs.mkdirSync(allureDir, { recursive: true });
     }

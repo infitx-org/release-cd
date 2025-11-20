@@ -26,7 +26,7 @@ async function getAllPolicyReports() {
 
 // Write policy reports to Allure results files
 function writeAllureResults(policyReports) {
-    const allureDir = path.resolve(path.dirname(new URL(import.meta.url).pathname), 'allure-results');
+    const allureDir = path.resolve('allure-results');
     if (!fs.existsSync(allureDir)) fs.mkdirSync(allureDir);
     policyReports.forEach(report => {
         if (!['Deployment', 'Job', 'StatefulSet', 'DaemonSet', 'Service', 'Ingress'].includes(report.scope.kind)) return;
