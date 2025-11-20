@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.14.1](https://github.com/infitx-org/release-cd/compare/v1.14.0...v1.14.1) (2025-11-20)
+
+
+### Bug Fixes
+
+* config handling ([a6be1f4](https://github.com/infitx-org/release-cd/commit/a6be1f445e509d232e9debb7ec31162594f3b07f))
+
 ## [1.14.0](https://github.com/infitx-org/release-cd/compare/v1.13.1...v1.14.0) (2025-11-20)
 
 
