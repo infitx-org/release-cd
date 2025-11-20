@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.14.0](https://github.com/infitx-org/release-cd/compare/v1.13.1...v1.14.0) (2025-11-20)
+
+
+### Features
+
+* release notification ([641805c](https://github.com/infitx-org/release-cd/commit/641805cbca19ab8964e2b59401c85f6009274a75))
+
 ## [1.13.1](https://github.com/infitx-org/release-cd/compare/v1.13.0...v1.13.1) (2025-11-19)
 
 
