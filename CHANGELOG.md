@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.14.3](https://github.com/infitx-org/release-cd/compare/v1.14.2...v1.14.3) (2025-11-20)
+
+
+### Bug Fixes
+
+* simplify allure results directory path resolution ([244a61d](https://github.com/infitx-org/release-cd/commit/244a61d6e19a986254f5982dc73e140bccdb3855))
+
 ## [1.14.2](https://github.com/infitx-org/release-cd/compare/v1.14.1...v1.14.2) (2025-11-20)
 
 
