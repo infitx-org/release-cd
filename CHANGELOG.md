@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.14.2](https://github.com/infitx-org/release-cd/compare/v1.14.1...v1.14.2) (2025-11-20)
+
+
+### Bug Fixes
+
+* kubescape report handling ([ca8136a](https://github.com/infitx-org/release-cd/commit/ca8136aab8aa2364b29f44183e1b4400f7a3d7e0))
+
 ## [1.14.1](https://github.com/infitx-org/release-cd/compare/v1.14.0...v1.14.1) (2025-11-20)
 
 
