@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.14.5](https://github.com/infitx-org/release-cd/compare/v1.14.4...v1.14.5) (2025-11-20)
+
+
+### Bug Fixes
+
+* pass content type ([ed74369](https://github.com/infitx-org/release-cd/commit/ed74369dc646cb9f0b75f5e7d9dd6332fad78b93))
+
 ## [1.14.4](https://github.com/infitx-org/release-cd/compare/v1.14.3...v1.14.4) (2025-11-20)
 
 
