@@ -66,7 +66,7 @@ WORKDIR /opt/app
 USER node
 COPY --chown=node --from=builder /opt/app .
 COPY --chown=node src src
-COPY --chown=node docker/*.sh ./
+COPY --chown=node *.*js docker/*.sh ./
 
 EXPOSE 8080
 ENTRYPOINT [ "bash", "-c" ]

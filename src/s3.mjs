@@ -37,7 +37,7 @@ export default async (testName, reportURL) => {
         report = createReadStream(reportURL);
         ContentType = 'text/html';
     }
-    const Key = `reports/${testName}/${new Date().toISOString()}`.toLowerCase().replace(/ /g, '_');
+    const Key = `reports/${config.report.id || testName}/${new Date().toISOString()}`.toLowerCase().replace(/ /g, '_');
     const params = {
         Bucket: bucket,
         Key,
