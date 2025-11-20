@@ -1,6 +1,6 @@
 import { defineConfig } from "allure";
 
-import config from './config.mjs';
+import config from './src/config.mjs';
 
 export default defineConfig({
   name: config.report.name || "report",

@@ -65,7 +65,8 @@ RUN mkdir -p /opt/app && chown -R node:node /opt/app
 WORKDIR /opt/app
 USER node
 COPY --chown=node --from=builder /opt/app .
-COPY --chown=node *.*js *.feature *.sh ./
+COPY --chown=node src src
+COPY --chown=node docker/*.sh ./
 
 EXPOSE 8080
 ENTRYPOINT [ "bash", "-c" ]

@@ -11,7 +11,7 @@ const config = rc('portal_test', {
     }
 });
 
-const feature = loadFeature('portal.feature');
+const feature = loadFeature(__dirname + '/portal.feature');
 
 defineFeature(feature, test => {
     let users = {};

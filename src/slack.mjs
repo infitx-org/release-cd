@@ -16,7 +16,7 @@ export default async function notifySlack(message) {
         if (typeof message === 'string') message = { text: message }
         if (typeof message === 'object') {
             const {
-                name = config.slack.name || 'Test',
+                name = config.report.name || 'Test',
                 prefix = config.slack.prefix || '',
                 stats,
                 duration,

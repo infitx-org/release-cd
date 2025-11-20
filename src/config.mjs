@@ -1,6 +1,6 @@
 import rc from 'rc';
 
-export default rc('release_cd', {
+export default rc('dev', {
     server: {
         port: 8080,
         host: '0.0.0.0'
@@ -37,9 +37,11 @@ export default rc('release_cd', {
             region: 'us-east-1',
             s3ForcePathStyle: true
         },
+        id: '',
         name: 'report'
     },
     release: {
+        url: '',
         prerelease: 'dev',
         start: '1.0.0'
     }
