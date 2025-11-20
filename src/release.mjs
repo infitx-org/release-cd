@@ -4,7 +4,7 @@ export default async function notifyRelease({
     reportId = config.report.id,
     ...summary
 }) {
-    const { url, reportId } = config.release;
+    const { url } = config.release;
     if (!url || !reportId) return;
     console.log(`Notifying release at ${url} for report ${reportId}`);
     await fetch(url, {

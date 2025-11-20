@@ -4,7 +4,7 @@ import { fileURLToPath } from 'url';
 
 // Read and parse the Kubescape results
 function readKubescapeResults() {
-    const resultsPath = path.resolve(path.dirname(fileURLToPath(import.meta.url)), 'kubescape.json');
+    const resultsPath = 'kubescape.json';
     if (!fs.existsSync(resultsPath)) {
         throw new Error('kubescape.json not found');
     }
