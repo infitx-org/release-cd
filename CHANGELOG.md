@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.14.7](https://github.com/infitx-org/release-cd/compare/v1.14.6...v1.14.7) (2025-11-21)
+
+
+### Bug Fixes
+
+* correct conditional check for message type in notifySlack function ([1c5f3ae](https://github.com/infitx-org/release-cd/commit/1c5f3ae775d20d21c3699a65556a8b59c36ba3cb))
+* update report handling to use Readable.fromWeb for stream compatibility ([c19e824](https://github.com/infitx-org/release-cd/commit/c19e824f7c47c1e69c4a517953477c7be1e2e30e))
+
 ## [1.14.6](https://github.com/infitx-org/release-cd/compare/v1.14.5...v1.14.6) (2025-11-21)
 
 
