@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.14.6](https://github.com/infitx-org/release-cd/compare/v1.14.5...v1.14.6) (2025-11-21)
+
+
+### Bug Fixes
+
+* update notify function to use summary instead of stats ([b3c000e](https://github.com/infitx-org/release-cd/commit/b3c000e911134b9ca9d21c15bad564a9553f085e))
+
 ## [1.14.5](https://github.com/infitx-org/release-cd/compare/v1.14.4...v1.14.5) (2025-11-20)
 
 
