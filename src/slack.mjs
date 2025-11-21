@@ -14,7 +14,7 @@ export default async function notifySlack(message) {
     try {
         const webhook = new IncomingWebhook(config.slack.url);
         if (typeof message === 'string') message = { text: message }
-        if (typeof message === 'object') {
+        else if (typeof message === 'object') {
             const {
                 name = config.report.name || 'Test',
                 prefix = config.slack.prefix || '',
