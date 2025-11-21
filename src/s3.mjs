@@ -1,5 +1,6 @@
 import AWS from 'aws-sdk';
 import { createReadStream } from 'fs';
+import { Readable } from 'stream';
 
 import config from './config.mjs';
 
@@ -28,7 +29,7 @@ export default async (testName, reportURL) => {
         try {
             report = await fetch(reportURL);
             ContentType = report.headers.get('content-type')
-            report = report.body;
+            report = Readable.fromWeb(report.body);
         } catch (error) {
             console.error(`Error fetching report from ${reportURL}: ${error.message}`);
             throw error;
