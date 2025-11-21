@@ -7,18 +7,19 @@ import notifySlack from './slack.mjs';
 
 export default async function notify({
     report,
-    stats
+    summary
 }) {
-    const reportUrl = await copyReportToS3(stats.name, report);
+    const reportUrl = await copyReportToS3(summary.name, report);
     return await Promise.all([
         notifySlack({
-            ...stats,
+            ...summary,
             reportUrl
         }),
         notifyRelease({
-            ...stats,
-            totalAssertions: stats.total,
-            totalPassedAssertions: stats.passed,
+            totalAssertions: summary.stats?.total,
+            totalPassedAssertions: summary.stats?.passed,
+            duration: summary.duration,
+            allure: summary,
             report: reportUrl
         })
     ]);
@@ -27,7 +28,7 @@ export default async function notify({
 if (import.meta.url === process.argv[1] || import.meta.url === `file://${process.argv[1]}`) {
     notify({
         report: 'allure-report/index.html',
-        stats: JSON.parse(readFileSync('allure-report/summary.json'))
+        summary: JSON.parse(readFileSync('allure-report/summary.json'))
     }).catch(err => {
         console.error('Error in notify:', err);
         process.exit(1);
