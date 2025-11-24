@@ -4,7 +4,7 @@ ARG NODE_VERSION=24.11.0-slim
 # Base image with system tools
 FROM node:${NODE_VERSION} AS system
 RUN apt-get update && \
-    apt-get install -y curl gnupg2 ca-certificates git squid mc jq openssh-server && \
+    apt-get install -y curl gnupg2 ca-certificates git squid mc jq openssh-server sshfs fuse3 socat && \
     # Install yq
     curl -LO https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 && \
     install -m 0755 yq_linux_amd64 /usr/local/bin/yq && \

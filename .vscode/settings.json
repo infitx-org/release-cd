@@ -4,8 +4,10 @@
         "dfsp",
         "dfsps",
         "jwscerts",
+        "kubescape",
         "monetaryzones",
-        "servercerts"
+        "servercerts",
+        "ttyd"
     ],
     "editor.formatOnSave": true,
     "editor.codeActionsOnSave": {

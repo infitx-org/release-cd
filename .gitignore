@@ -134,3 +134,6 @@ dist
 allure-results
 allure-report
 .allure
+*-result.json
+*.crt
+test.sh
