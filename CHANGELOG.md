@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.15.0](https://github.com/infitx-org/release-cd/compare/v1.14.7...v1.15.0) (2025-11-24)
+
+
+### Features
+
+* add vulnerability report script ([14d7651](https://github.com/infitx-org/release-cd/commit/14d7651e5b08e2193964229ca41ccf7176bf123c))
+
 ## [1.14.7](https://github.com/infitx-org/release-cd/compare/v1.14.6...v1.14.7) (2025-11-21)
 
 
