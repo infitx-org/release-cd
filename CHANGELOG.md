@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.17.0](https://github.com/infitx-org/release-cd/compare/v1.16.0...v1.17.0) (2025-11-25)
+
+
+### Features
+
+* enhance vulnerability report with severity icons and decode artifact IDs ([8cb4fcc](https://github.com/infitx-org/release-cd/commit/8cb4fcc1a50bcca3325ea042daa3edcbe23bf173))
+
 ## [1.16.0](https://github.com/infitx-org/release-cd/compare/v1.15.0...v1.16.0) (2025-11-25)
 
 
