@@ -29,7 +29,8 @@
     "mongoose": "^8.9.7",
     "rc": "^1.2.8",
     "semver": "^7.7.1",
-    "tough-cookie": "^5.1.2"
+    "tough-cookie": "^5.1.2",
+    "uuid": "^13.0.0"
   },
   "author": "",
   "license": "ISC",

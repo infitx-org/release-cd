@@ -6,33 +6,33 @@ FROM node:${NODE_VERSION} AS system
 RUN apt-get update && \
     apt-get install -y curl gnupg2 ca-certificates git squid mc jq openssh-server sshfs fuse3 socat && \
     # Install yq
-    curl -LO https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 && \
+    curl -LOs --show-error --fail https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 && \
     install -m 0755 yq_linux_amd64 /usr/local/bin/yq && \
     rm yq_linux_amd64 && \
     # Install kubectl
-    curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl" && \
+    curl -LOs --show-error --fail "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl" && \
     install -m 0755 kubectl /usr/local/bin/kubectl && \
     rm kubectl && \
     # Install Helm
     curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash && \
     # Install k9s
-    curl -LO https://github.com/derailed/k9s/releases/latest/download/k9s_Linux_amd64.tar.gz && \
+    curl -LOs --show-error --fail https://github.com/derailed/k9s/releases/latest/download/k9s_Linux_amd64.tar.gz && \
     tar -xzf k9s_Linux_amd64.tar.gz -C /usr/local/bin k9s && \
     rm k9s_Linux_amd64.tar.gz && \
     # Install ArgoCD CLI
-    curl -LO https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64 && \
+    curl -LOs --show-error --fail https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64 && \
     install -m 0755 argocd-linux-amd64 /usr/local/bin/argocd && \
     rm argocd-linux-amd64 && \
     # Install latest ttyd
-    curl -LO https://github.com/tsl0922/ttyd/releases/latest/download/ttyd.x86_64 && \
+    curl -LOs --show-error --fail https://github.com/tsl0922/ttyd/releases/latest/download/ttyd.x86_64 && \
     install -m 0755 ttyd.x86_64 /usr/local/bin/ttyd && \
     rm ttyd.x86_64 && \
     # Install k6
-    curl -LO https://github.com/grafana/k6/releases/download/v1.4.0/k6-v1.4.0-linux-amd64.tar.gz && \
+    curl -LOs --show-error --fail https://github.com/grafana/k6/releases/download/v1.4.0/k6-v1.4.0-linux-amd64.tar.gz && \
     tar -xzf k6-v1.4.0-linux-amd64.tar.gz --strip-components=1 -C /usr/local/bin k6-v1.4.0-linux-amd64/k6 && \
     rm k6-v1.4.0-linux-amd64.tar.gz && \
     # Install vscode-cli
-    curl -LOJ "https://code.visualstudio.com/sha/download?build=stable&os=cli-alpine-x64" && \
+    curl -LOJs --show-error --fail "https://code.visualstudio.com/sha/download?build=stable&os=cli-alpine-x64" && \
     tar -xzf vscode_cli_alpine_x64_cli.tar.gz -C /usr/local/bin && \
     rm vscode_cli_alpine_x64_cli.tar.gz && \
     # Install kubescape
