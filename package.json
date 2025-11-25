@@ -1,6 +1,6 @@
 {
   "name": "release-cd",
-  "version": "1.15.0",
+  "version": "1.16.0",
   "main": "index.js",
   "scripts": {
     "test": "rm -rf allure-results; jest --colors; allure generate; node src/notify.mjs",
