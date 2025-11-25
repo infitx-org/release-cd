@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.16.0](https://github.com/infitx-org/release-cd/compare/v1.15.0...v1.16.0) (2025-11-25)
+
+
+### Features
+
+* improve vulnerability report ([6f83458](https://github.com/infitx-org/release-cd/commit/6f8345845ec20becc5d67ffe34684581e9d7278b))
+* process all vulnerability reports instead of limiting to five ([3aa4f32](https://github.com/infitx-org/release-cd/commit/3aa4f32664460c34f1d59740477c50545331bb9b))
+
 ## [1.15.0](https://github.com/infitx-org/release-cd/compare/v1.14.7...v1.15.0) (2025-11-24)
 
 
