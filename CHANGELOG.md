@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.17.1](https://github.com/infitx-org/release-cd/compare/v1.17.0...v1.17.1) (2025-11-26)
+
+
+### Bug Fixes
+
+* conditionally skip TLS verification for Kubernetes API client ([61b1e9d](https://github.com/infitx-org/release-cd/commit/61b1e9dc9abc3295c0b88ce8d264512fb9fe466d))
+* ensure TLS verification is skipped for Kubernetes API client ([49c2127](https://github.com/infitx-org/release-cd/commit/49c212717effb20d2670fefd59fccc604a1fd010))
+
 ## [1.17.0](https://github.com/infitx-org/release-cd/compare/v1.16.0...v1.17.0) (2025-11-25)
 
 
