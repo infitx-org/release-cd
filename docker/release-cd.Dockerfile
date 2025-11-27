@@ -14,7 +14,7 @@ RUN apt-get update && \
     install -m 0755 kubectl /usr/local/bin/kubectl && \
     rm kubectl && \
     # Install Helm
-    curl -LOs --show-error --fail https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash && \
+    curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash && \
     # Install k9s
     curl -LOs --show-error --fail https://github.com/derailed/k9s/releases/latest/download/k9s_Linux_amd64.tar.gz && \
     tar -xzf k9s_Linux_amd64.tar.gz -C /usr/local/bin k9s && \
