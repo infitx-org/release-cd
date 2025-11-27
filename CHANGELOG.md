@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.17.2](https://github.com/infitx-org/release-cd/compare/v1.17.1...v1.17.2) (2025-11-27)
+
+
+### Bug Fixes
+
+* update Helm installation command to remove redundant flags ([42ffa75](https://github.com/infitx-org/release-cd/commit/42ffa75981531d825415694dd7c463b771fd409d))
+
 ## [1.17.1](https://github.com/infitx-org/release-cd/compare/v1.17.0...v1.17.1) (2025-11-26)
 
 
