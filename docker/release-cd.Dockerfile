@@ -37,6 +37,7 @@ RUN apt-get update && \
     rm vscode_cli_alpine_x64_cli.tar.gz && \
     # Install kubescape
     curl -s https://raw.githubusercontent.com/kubescape/kubescape/master/install.sh | bash && \
+    mkdir -p /usr/local/lib/kubescape && \
     kubescape download artifacts --output /usr/local/lib/kubescape && \
     # Clean up
     apt-get clean && rm -rf /var/lib/apt/lists/*
