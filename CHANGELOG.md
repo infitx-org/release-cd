@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.18.0](https://github.com/infitx-org/release-cd/compare/v1.17.2...v1.18.0) (2025-12-09)
+
+
+### Features
+
+* refactor GitHub workflows and make bucket configurable ([26d03de](https://github.com/infitx-org/release-cd/commit/26d03de8e072aed52820a1a6b8afb6c09743eadb))
+
+
+### Bug Fixes
+
+* add TRIGGER_DOWNSTREAM secret to Docker workflow ([a040050](https://github.com/infitx-org/release-cd/commit/a040050e46a6d4a3683e98b1781d50cf33db004d))
+* update Docker workflow to remove redundant owner field and correct token secret in release workflow ([c95a871](https://github.com/infitx-org/release-cd/commit/c95a871599ce4b58643b33b7135fb091a970b4c8))
+
 ## [1.17.2](https://github.com/infitx-org/release-cd/compare/v1.17.1...v1.17.2) (2025-11-27)
 
 
