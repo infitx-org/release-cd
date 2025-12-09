@@ -1,0 +1,10 @@
+ignore:
+    - vulnerability: CVE-2025-21311
+    - vulnerability: CVE-2025-21311
+    - vulnerability: GHSA-cf4h-3jhx-xvhq
+    - vulnerability: CVE-2025-7458
+
+# Set output format defaults
+output:
+    - 'table'
+    - 'json'
