@@ -6,7 +6,7 @@ import config from './config.mjs';
 
 export default async (testName, reportURL) => {
     if (!reportURL) return;
-    if ((!config.report?.s3?.endpoint && !config.report?.s3?.region) || !config.report?.s3?.bucket || !config.report?.reportEndpoint) {
+    if ((!config.report?.s3?.endpoint && !config.report?.s3?.region) || !config.report?.bucket?.Bucket || !config.report?.reportEndpoint) {
         console.warn('S3 configuration is incomplete, skipping report upload');
         return;
     }
