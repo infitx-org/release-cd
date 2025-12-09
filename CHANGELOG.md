@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.18.3](https://github.com/infitx-org/release-cd/compare/v1.18.2...v1.18.3) (2025-12-09)
+
+
+### Bug Fixes
+
+* correct bucket property access in S3 configuration check ([dc1d17f](https://github.com/infitx-org/release-cd/commit/dc1d17fa2132be2a41be0d729e7b655e4625cfaa))
+
 ## [1.18.2](https://github.com/infitx-org/release-cd/compare/v1.18.1...v1.18.2) (2025-12-09)
 
 
