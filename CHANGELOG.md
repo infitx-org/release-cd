@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.18.2](https://github.com/infitx-org/release-cd/compare/v1.18.1...v1.18.2) (2025-12-09)
+
+
+### Bug Fixes
+
+* update allure and allure-jest dependencies to latest versions ([2608a89](https://github.com/infitx-org/release-cd/commit/2608a8901741ad3f111374b20b707877f1382beb))
+
 ## [1.18.1](https://github.com/infitx-org/release-cd/compare/v1.18.0...v1.18.1) (2025-12-09)
 
 
