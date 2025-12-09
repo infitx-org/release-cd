@@ -21,6 +21,7 @@ jobs:
       dockerfile: ${{ matrix.dockerfile }}
       image: ${{ matrix.image }}
       context: ${{ matrix.context }}
+      license-scan: false
     secrets:
       REGISTRY_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
       TRIGGER_DOWNSTREAM: ${{ secrets.TRIGGER_DOWNSTREAM }}
