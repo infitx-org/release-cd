@@ -38,6 +38,7 @@ export default rc('dev', {
             s3ForcePathStyle: true
         },
         id: '',
+        bucket: {},
         name: 'report'
     },
     release: {

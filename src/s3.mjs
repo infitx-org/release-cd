@@ -11,7 +11,7 @@ export default async (testName, reportURL) => {
         return;
     }
 
-    const { bucket, accessKeyId, secretAccessKey, ...s3Config } = config.report.s3 || {};
+    const { accessKeyId, secretAccessKey, ...s3Config } = config.report.s3 || {};
 
     const s3 = new AWS.S3({
         ...s3Config,
@@ -40,11 +40,10 @@ export default async (testName, reportURL) => {
     }
     const Key = `reports/${config.report.id || testName}/${new Date().toISOString()}`.toLowerCase().replace(/ /g, '_');
     const params = {
-        Bucket: bucket,
+        ...config.report.bucket,
         Key,
         Body: report,
         ContentType,
-        ACL: 'public-read'
     };
 
     await s3.putObject(params).promise();
