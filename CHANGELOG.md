@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.18.1](https://github.com/infitx-org/release-cd/compare/v1.18.0...v1.18.1) (2025-12-09)
+
+
+### Bug Fixes
+
+* add downstream dispatch URL to Docker workflow and create directory for kubescape artifacts ([4087edc](https://github.com/infitx-org/release-cd/commit/4087edca258388fd2650fa14d5a333ec67eb6867))
+* remove unnecessary directory creation and download command for kubescape artifacts ([ccb2e16](https://github.com/infitx-org/release-cd/commit/ccb2e16b25a63c614680ae41c17a007a7d2f3419))
+* specify version for kubescape installation in Dockerfile ([e338e43](https://github.com/infitx-org/release-cd/commit/e338e4359e765d88d0a45e1cf5d3b77bf2fe2d1f))
+* update kubescape installation command and add artifact download ([321ecf0](https://github.com/infitx-org/release-cd/commit/321ecf00e72273852a876d3d9d571463b1bd1cd8))
+
 ## [1.18.0](https://github.com/infitx-org/release-cd/compare/v1.17.2...v1.18.0) (2025-12-09)
 
 
