@@ -8,6 +8,7 @@ import assert from 'node:assert';
 import semver from 'semver';
 
 import config from './config.mjs';
+import keyRotate from './keyRotate.mjs';
 import copyReportToS3 from './s3.mjs';
 import notifySlack from './slack.mjs';
 
@@ -404,6 +405,12 @@ ${Object.entries(tests).map(([env, tests]) => Object.entries(tests).map(([name, 
         async handler(request, h) {
             return h.response(await db.collection('release').findOne({ _id: 'version' })).code(200);
         }
+    });
+
+    server.route({
+        method: 'GET',
+        path: '/keyRotate',
+        handler: keyRotate
     });
 
     server.route({
