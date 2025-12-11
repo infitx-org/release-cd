@@ -11,5 +11,20 @@ export default async function keyRotate(request, h) {
     const k8sApi = k8sConfig.makeApiClient(k8s.CustomObjectsApi);
 
     await k8sApi.deleteNamespacedSecret('secret', 'namespace');
+
+    let recreated = false;
+    for (let i = 0; i < 30; i++) { // wait up to ~30 seconds
+        try {
+            await k8sApi.getNamespacedSecret('secret', 'namespace');
+            recreated = true;
+            break;
+        } catch (err) {
+            await new Promise(res => setTimeout(res, 1000));
+        }
+    }
+    if (!recreated) {
+        return h.response({ message: 'Secret not recreated' }).code(500);
+    }
+
     return h.response({ status: 'ok' }).code(200);
 }
