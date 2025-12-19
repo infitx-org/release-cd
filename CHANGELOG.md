@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.19.0](https://github.com/infitx-org/release-cd/compare/v1.18.3...v1.19.0) (2025-12-19)
+
+
+### Features
+
+* add key rotation and cron job triggering functionality ([cb368e4](https://github.com/infitx-org/release-cd/commit/cb368e4efc55ee7dbbb8141d4bb80ce10d9c8fd2))
+* add vault-cli installation to Dockerfile ([dacd545](https://github.com/infitx-org/release-cd/commit/dacd5453e49ffae0f95bcdc9f02d1907f2296961))
+
+
+### Bug Fixes
+
+* improve report fetching logic and ensure ContentLength is set correctly ([735d77d](https://github.com/infitx-org/release-cd/commit/735d77d93da7bc54d5e7fa253ec78d7b2b2f645c))
+* update kubescape installation script version to v3.0.47 ([d9fca5c](https://github.com/infitx-org/release-cd/commit/d9fca5c0460f9f5ce3a1589d948da367936c1f50))
+
 ## [1.18.3](https://github.com/infitx-org/release-cd/compare/v1.18.2...v1.18.3) (2025-12-09)
 
 
