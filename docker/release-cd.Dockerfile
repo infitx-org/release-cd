@@ -38,6 +38,10 @@ RUN apt-get update && \
     # Install kubescape
     curl -s https://raw.githubusercontent.com/kubescape/kubescape/master/install.sh | /bin/bash -s -- -v v3.0.45 && \
     kubescape download artifacts --output /usr/local/lib/kubescape && \
+    # Install vault-cli
+    curl -LOs --show-error --fail https://releases.hashicorp.com/vault/1.21.1/vault_1.21.1_linux_amd64.zip && \
+    unzip vault_1.21.1_linux_amd64.zip -d /usr/local/bin && \
+    rm vault_1.21.1_linux_amd64.zip && \
     # Clean up
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
@@ -51,7 +55,8 @@ RUN kubectl version --client && \
     yq --version && \
     argocd version --client && \
     k6 version && \
-    kubescape version
+    kubescape version && \
+    vault --version
 
 # Build application dependencies
 FROM node:${NODE_VERSION_BUILD} AS builder
