@@ -36,7 +36,7 @@ RUN apt-get update && \
     tar -xzf vscode_cli_alpine_x64_cli.tar.gz -C /usr/local/bin && \
     rm vscode_cli_alpine_x64_cli.tar.gz && \
     # Install kubescape
-    curl -s https://raw.githubusercontent.com/kubescape/kubescape/master/install.sh | /bin/bash -s -- -v v3.0.45 && \
+    curl -s https://raw.githubusercontent.com/kubescape/kubescape/master/install.sh | /bin/bash -s -- -v v3.0.47 && \
     kubescape download artifacts --output /usr/local/lib/kubescape && \
     # Install vault-cli
     curl -LOs --show-error --fail https://releases.hashicorp.com/vault/1.21.1/vault_1.21.1_linux_amd64.zip && \
