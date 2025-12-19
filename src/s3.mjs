@@ -1,6 +1,5 @@
 import AWS from 'aws-sdk';
 import { createReadStream } from 'fs';
-import { Readable } from 'stream';
 
 import config from './config.mjs';
 
@@ -25,16 +24,19 @@ export default async (testName, reportURL) => {
 
     let report;
     let ContentType
+    let ContentLength
     if (/^https?:\/\//.test(reportURL)) {
         try {
             report = await fetch(reportURL);
             ContentType = report.headers.get('content-type')
-            report = Readable.fromWeb(report.body);
+            ContentLength = Number(report.headers.get('content-length'));
+            report = ContentLength > 0 ? Readable.fromWeb(report.body) : Buffer.from(await report.arrayBuffer());
         } catch (error) {
             console.error(`Error fetching report from ${reportURL}: ${error.message}`);
             throw error;
         }
     } else {
+        ContentLength = fs.statSync(reportURL).size;
         report = createReadStream(reportURL);
         ContentType = 'text/html';
     }
@@ -44,6 +46,7 @@ export default async (testName, reportURL) => {
         Key,
         Body: report,
         ContentType,
+        ...ContentLength > 0 && { ContentLength }
     };
 
     await s3.putObject(params).promise();
