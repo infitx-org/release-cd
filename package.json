@@ -10,7 +10,8 @@
     "vulnerability-report": "node src/vulnerabilityReport.mjs; allure generate; node src/notify.mjs",
     "kubescape-report": "kubescape scan --format json --output kubescape.json; node src/kubescapeReport.mjs; allure generate; node src/notify.mjs",
     "release-cd": "if [ $NODE_WATCH_INSPECT ] ; then node --watch --inspect=0.0.0.0:9229 src/index.mjs ; else node src/index.mjs ; fi",
-    "notify": "./notify.mjs"
+    "notify": "./src/notify.mjs",
+    "key-rotate": "./src/keyRotate.mjs"
   },
   "dependencies": {
     "@hapi/boom": "^10.0.1",
@@ -23,6 +24,7 @@
     "aws-sdk": "^2.1692.0",
     "axios": "^1.13.2",
     "axios-cookiejar-support": "^5.0.5",
+    "debug": "^4.4.3",
     "jest": "^30.2.0",
     "jest-cucumber": "^4.5.0",
     "mongo-uri-builder": "^4.0.0",

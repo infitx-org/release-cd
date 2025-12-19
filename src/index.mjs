@@ -8,8 +8,10 @@ import assert from 'node:assert';
 import semver from 'semver';
 
 import config from './config.mjs';
+import keyRotate from './keyRotateHandler.mjs';
 import copyReportToS3 from './s3.mjs';
 import notifySlack from './slack.mjs';
+import triggerCronJob from './triggerJobHandler.mjs';
 
 const octokit = new Octokit({
     auth: config.github.token
@@ -404,6 +406,18 @@ ${Object.entries(tests).map(([env, tests]) => Object.entries(tests).map(([name, 
         async handler(request, h) {
             return h.response(await db.collection('release').findOne({ _id: 'version' })).code(200);
         }
+    });
+
+    server.route({
+        method: 'GET',
+        path: '/keyRotate/{key}',
+        handler: keyRotate
+    });
+
+    server.route({
+        method: 'GET',
+        path: '/triggerCronJob/{namespace}/{job}',
+        handler: triggerCronJob
     });
 
     server.route({
