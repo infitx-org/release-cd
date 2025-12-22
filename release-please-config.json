@@ -1,7 +1,14 @@
 {
     "packages": {
-        "app/release": {},
-        "library/match": {},
-        "library/decision": {}
+        "app/release": {
+            "release-type": "node",
+            "change-log-path": "app/release/CHANGELOG.md"
+        },
+        "library/match": {
+            "release-type": "node"
+        },
+        "library/decision": {
+            "release-type": "node"
+        }
     }
 }
