@@ -1,0 +1,4 @@
+GET http://localhost:8080/keyRotate/hub
+
+###
+GET http://localhost:8080/triggerCronJob/default/hello

@@ -1,17 +1,17 @@
-POST http://localhost:8080/revision/region-dev/1
+POST http://localhost:8080/revision/region-dev/25
 Content-Type: application/json
 
 {
     "submodules": {
         "https://github.com/infitx-org/profile-cd.git": {
             "path": "profiles/z-continuous-deployment",
-            "ref": "71f3d4900a816b28832ffee9e53bc08ddb2a1f17"
+            "ref": "c17383026e840c27659b2ce7c19e624688b99071"
         }
     }
 }
 
 ###
-POST http://localhost:8080/revision/region-dev/1
+POST http://localhost:8080/revision/region-dev/25
 Content-Type: application/json
 
 {
@@ -19,6 +19,12 @@ Content-Type: application/json
         "gp_tests": {
             "totalAssertions": 5,
             "totalPassedAssertions": 5
+        },
+        "sdkFxSendE2EMin": {
+            "totalAssertions": 7,
+            "totalPassedAssertions": 7,
+            "duration": 330055.161206,
+            "report": "http://cephobjectstore.storage.ccdev.drpp-onprem.global/report-pm-dev-drpp-onprem-global/6ebfe98bd54d758580dd1a2ea7f8ac675f48d2ae.txt"
         }
     }
 }

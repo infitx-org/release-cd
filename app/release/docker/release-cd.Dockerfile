@@ -61,17 +61,17 @@ RUN kubectl version --client && \
 # Build application dependencies
 FROM node:${NODE_VERSION_BUILD} AS builder
 WORKDIR /opt/app
-COPY package*.json ./
-RUN npm ci
+COPY --parents rush.json common app/**/package.json ./
+RUN node common/scripts/install-run-rush.js install && \
+    node common/scripts/install-run-rush.js rebuild --verbose
+COPY --parents app/**/* ./
+RUN node common/scripts/install-run-rush.js deploy
 
 # Final release image
 FROM system AS release
-RUN mkdir -p /opt/app && chown -R node:node /opt/app
-WORKDIR /opt/app
+COPY --link --chown=node --from=builder --exclude=**/.rush --exclude=**/docker/ --exclude=**/rush-logs /opt/app/common/deploy /opt
+WORKDIR /opt/app/release
 USER node
-COPY --chown=node --from=builder /opt/app .
-COPY --chown=node src src
-COPY --chown=node *.*js docker/*.sh ./
 
 EXPOSE 8080
 ENTRYPOINT [ "bash", "-c" ]

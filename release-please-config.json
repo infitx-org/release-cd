@@ -1,0 +1,7 @@
+{
+    "packages": {
+        "app/release": {
+            "release-type": "node"
+        }
+    }
+}

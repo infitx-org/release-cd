@@ -13,7 +13,7 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - dockerfile: docker/release-cd.Dockerfile
+          - dockerfile: app/release/docker/release-cd.Dockerfile
             image: release-cd
             context: .
     uses: infitx-org/actions/.github/workflows/docker.yaml@main

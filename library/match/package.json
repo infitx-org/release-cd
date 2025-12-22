@@ -1,0 +1,20 @@
+{
+    "name": "@infitx/match",
+    "version": "1.0.0",
+    "description": "Object pattern matching utility",
+    "main": "index.js",
+    "scripts": {
+        "ci-unit": "JEST_JUNIT_OUTPUT_DIR=coverage jest --ci --reporters=default --reporters=jest-junit --outputFile=./coverage/junit.xml",
+        "watch": "jest --watchAll"
+    },
+    "dependencies": {
+        "lodash": "^4.17.21"
+    },
+    "devDependencies": {
+        "yaml": "2.8.1",
+        "jest": "^30.2.0",
+        "jest-junit": "16.0.0"
+    },
+    "author": "Kalin Krustev",
+    "license": "Apache-2.0"
+}

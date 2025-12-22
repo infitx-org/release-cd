@@ -8,10 +8,10 @@ import assert from 'node:assert';
 import semver from 'semver';
 
 import config from './config.mjs';
-import keyRotate from './keyRotateHandler.mjs';
+import keyRotate from './handler/keyRotate.mjs';
+import triggerCronJob from './handler/triggerJob.mjs';
 import copyReportToS3 from './s3.mjs';
 import notifySlack from './slack.mjs';
-import triggerCronJob from './triggerJobHandler.mjs';
 
 const octokit = new Octokit({
     auth: config.github.token

@@ -1,0 +1,125 @@
+# test cases for match function
+# arrays represent "any of" semantics
+- {rule: /hello/,                                 like: hello world,         unlike: goodbye}
+- {rule: /bar/,                                   like: [foo, bar],          unlike: [foo, baz]}
+- {rule: true,                                    like: true,                unlike: false}
+- {rule: 2024-06-01,                              like: 2024-06-01,          unlike: 2024-07-01}
+- {rule: 2024-06-01,                              like: '2024-06-01',        unlike: '2024-07-01'}
+- {rule: v => v > 3,                              like: 5,                   unlike: 2}
+- {rule: v => v > 2,                              like: [1, 2, 3],           unlike: [1, 2]}
+- {rule: v => v > 2,                              like: [1, 2, 3],           unlike: []}
+- {rule: [/bar/, /foo/],                          like: foo,                 unlike: baz}
+- {rule: {min: 3, max: 10},                       like: 5,                   unlike: 11}
+- {rule: {min: 3, max: 10},                       like: [1, 5],              unlike: [1, 11]}
+- {rule: {min: 3},                                like: 5,                   unlike: 2}
+- {rule: {max: 10},                               like: 5,                   unlike: 11}
+- {rule: {min: 2024-05-01, max: 2024-07-01},      like: 2024-06-01,          unlike: 2024-08-01}
+- {rule: {min: '2024-05-01', max: '2024-07-01'},  like: 2024-06-01,          unlike: 2024-08-01}
+# partial object matching
+- {rule: {a: 1},                                  like: {a: 1, b: 2},        unlike: {a: 2}}
+- {rule: {a: 1},                                  like: [{a: 1}, {b: 1}],    unlike: [{a: 2}, {b: 2}]}
+- {rule: {a: [2, 3, 4]},                          like: {a: 2, b: 2},        unlike: {a: 1}}
+- {rule: {a: {b: 2}},                             like: {a: {b: 2, c: 3}},   unlike: {a: {b: 3}}}
+- {rule: {a: {max: 2}},                           like: {a: [2, 3, 4]},      unlike: {a: [3, 4, 5]}}
+- {rule: {a: [2]},                                like: {a: [2, 3, 4]},      unlike: {a: [3, 4, 5]}}
+# tests with rule arrays
+- {rule: [/bar/, /foo/],                          like: [foo, bar],          unlike: [baz, qux]}
+- {rule: [1, 2, 3],                               like: 2,                   unlike: 4}
+# min tests with infinities (-Infinity is smaller than numbers and +Infinity, but not NaN)
+- {rule: {min: .inf},                                                        unlike: 5}
+- {rule: {min: .inf},                                                        unlike: .nan}
+- {rule: {min: .inf},                                                        unlike: .inf}
+- {rule: {min: .inf},                                                        unlike: [5, .nan, .inf]}
+- {rule: {min: -.inf},                            like: 5,                   unlike: -.inf}
+- {rule: {min: -.inf},                            like: .inf,                unlike: .nan}
+- {rule: {min: -.inf},                            like: [5, .inf],           unlike: [-.inf, .nan]}
+# max tests with infinities (+Infinity is larger than numbers and -Infinity, but not NaN)
+- {rule: {max: .inf},                             like: 5,                   unlike: .inf}
+- {rule: {max: .inf},                             like: -.inf,               unlike: .nan}
+- {rule: {max: .inf},                             like: [5, -.inf],          unlike: [.inf, .nan]}
+- {rule: {max: -.inf},                                                       unlike: 5}
+- {rule: {max: -.inf},                                                       unlike: .nan}
+- {rule: {max: -.inf},                                                       unlike: -.inf}
+- {rule: {max: -.inf},                                                       unlike: [5, .nan, -.inf]}
+# min/max tests with strings, including numeric strings
+- {rule: {min: a},                                like: c,                   unlike: _}
+- {rule: {max: m},                                like: c,                   unlike: z}
+- {rule: {min: a, max: m},                        like: d,                   unlike: p}
+- {rule: {min: '10', max: '200'},                 like: '100',               unlike: '50'}
+- {rule: {min: '2', max: '30'},                   like: '200',               unlike: '5'}
+# min/max tests with invalid dates
+- {rule: {min: 2024-05-01},                       like: 2024-06-01,          unlike: not a date}
+- {rule: {max: 2024-07-01},                       like: 2024-06-01,          unlike: not a date}
+# rule with array of two number ranges
+- {rule: [{min: 1, max: 5}, {min: 10, max: 15}],  like: 3,                   unlike: 8}
+- {rule: [{min: 1, max: 5}, {min: 10, max: 15}],  like: [3, 12],             unlike: [8, 18]}
+# rule with array of two string ranges
+- {rule: [{min: a, max: e}, {min: k, max: o}],    like: c,                   unlike: h}
+
+# define some reusable rules
+- &transfer-rule {type: transfer, amount: {min: 100, max: 1000}} # transfer with amount between 100 and 1000
+- &test-rule     {to: Test} # transfer to a Test user
+# define some reusable operations
+- &ab-500        {type: transfer, amount: 500, from: Alice, to: Bob}
+- &ab-50         {type: transfer, amount:  50, from: Alice, to: Bob}
+- &ab-pay        {type: payment,  amount: 500, from: Alice, to: Bob}
+- &at-pay        {type: payment,  amount:  50, from: Alice, to: Test}
+
+# test single rules
+- {rule: *transfer-rule,                          like: *ab-500,            unlike: [ *ab-50, *ab-pay, *at-pay ]}
+- {rule: *test-rule,                              like: *at-pay,            unlike: [ *ab-50, *ab-pay ]}
+# test disjunctions of the above rules
+- {rule: [*transfer-rule, *test-rule],            like: *ab-500,            unlike: *ab-50}
+- {rule: [*transfer-rule, *test-rule],            like: *at-pay,            unlike: *ab-pay}
+- {rule: guide,                                   like: guide,              unlike: guide ends}
+
+
+# AI suggested test cases for EFT scenarios: transfers, payments, refunds, failed transactions, limits, currencies
+
+- {rule: {type: transfer, amount: {min: 10}},                       like: {type: transfer, amount: 100},                       unlike: {type: transfer, amount: 5}}
+- {rule: {type: transfer, amount: {max: 5000}},                     like: {type: transfer, amount: 4999},                      unlike: {type: transfer, amount: 6000}}
+- {rule: {type: payment, to: Merchant},                             like: {type: payment, to: Merchant, amount: 200},          unlike: {type: payment, to: Bob, amount: 200}}
+- {rule: {type: refund,    amount: { min: 1 }},                     like: {type: refund, amount: 50  },                        unlike: {type: refund, amount: 0}}
+- {rule: {status: failed},                                          like: {type: transfer, status: failed},                    unlike: {type: transfer, status: success}}
+- {rule: {type: transfer, currency: USD},                           like: {type: transfer, currency: USD, amount: 100},        unlike: {type: transfer,currency: EUR,amount: 100}}
+- {rule: {type: payment, currency: [USD, EUR]},                     like: {type: payment, currency: EUR, amount: 50},          unlike: {type: payment, currency: GBP, amount: 50}}
+- {rule: {type: transfer, from: Alice, to: Bob},                    like: {type: transfer, from: Alice, to: Bob, amount: 100}, unlike: {type: transfer, from: Bob, to: Alice, amount: 100}}
+- {rule: {type: payment, date: {min: 2024-01-01, max: 2024-12-31}}, like: {type: payment, date: 2024-06-15},                   unlike: {type: payment, date: 2023-12-31}}
+- {rule: {type: transfer, note: /rent/},                            like: {type: transfer, note: June rent},                   unlike: {type: transfer, note: utilities}}
+- {rule: {type: transfer, amount: {min: 100, max: 1000}},           like: {type: transfer, amount: 500},                       unlike: {type: transfer, amount: 50}}
+- {rule: {type: payment, reference: '/^[A-Z]{3}-\d{4}$/'},          like: {type: payment, reference: ABC-1234},                unlike: {type: payment, reference: abc-1234}}
+- {rule: {type: refund, to: Alice},                                 like: {type: refund, to: Alice, amount: 50},               unlike: {type: refund, to: Bob, amount: 50}}
+- {rule: {type: payment, amount: '500'},                            like: {type: payment, amount: 500},                        unlike: {type: payment, amount: 501}}
+- {rule: {type: transfer, metadata: {approved: true}},              like: {type: transfer, metadata: {approved: true, id: 1}}, unlike: {type: transfer, metadata: {approved: false}}}
+
+# from and to are objects with list of tags
+- rule:
+    type: transfer
+    from: {tags: [vip]}
+    to: {tags: [business]}
+  like:
+    type: transfer
+    from: {tags: [vip, premium]}
+    to: {tags: [business, partner]}
+    amount: 100
+  unlike:
+    type: transfer
+    from: {tags: [regular]}
+    to: {tags: [business]}
+    amount: 100
+
+# more complex rule, which contains spatial data and user defined tags
+- rule:
+    type: transfer
+    from: {location: {city: NYC, country: USA}, tags: [vip, user-defined-tag]}
+    to: {location: {city: London, country: UK}, tags: [business, individual]}
+  like:
+    type: transfer
+    from: {name: Alice, location: {city: NYC, country: USA}, tags: [user-defined-tag]}  # ok
+    to: {name: Bob, location: {city: London, country: UK}, tags: [business]} # ok
+    amount: 200
+  unlike:
+    type: transfer
+    from: {name: Charlie, location: {city: NYC, country: USA}, tags: [regular]}  # missing tag
+    to: {name: David, location: {city: London, country: UK}, tags: [individual, user-defined-tag]} # ok
+    amount: 200
