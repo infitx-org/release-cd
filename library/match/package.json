@@ -4,6 +4,7 @@
     "description": "Object pattern matching utility",
     "main": "index.js",
     "scripts": {
+        "build": "true",
         "ci-unit": "JEST_JUNIT_OUTPUT_DIR=coverage jest --ci --reporters=default --reporters=jest-junit --outputFile=./coverage/junit.xml",
         "watch": "jest --watchAll"
     },
