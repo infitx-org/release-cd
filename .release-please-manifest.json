@@ -1,1 +1,5 @@
-{}
+{
+    "app/release": "1.17.2",
+    "library/match": "1.0.0",
+    "library/decision": "1.0.0"
+}
