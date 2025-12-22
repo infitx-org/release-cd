@@ -69,7 +69,7 @@ RUN node common/scripts/install-run-rush.js deploy
 
 # Final release image
 FROM system AS release
-COPY --link --chown=node --from=builder --exclude=**/.rush --exclude=**/docker/ --exclude=**/rush-logs /opt/app/common/deploy /opt
+COPY --chown=node --from=builder --exclude=**/.rush --exclude=**/docker/ --exclude=**/rush-logs /opt/app/common/deploy /opt
 WORKDIR /opt/app/release
 USER node
 
