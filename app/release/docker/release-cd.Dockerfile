@@ -61,10 +61,10 @@ RUN kubectl version --client && \
 # Build application dependencies
 FROM node:${NODE_VERSION_BUILD} AS builder
 WORKDIR /opt/app
-COPY --parents rush.json common app/**/package.json ./
+COPY --parents rush.json common app/**/package.json library/**/package.json ./
 RUN node common/scripts/install-run-rush.js install && \
     node common/scripts/install-run-rush.js rebuild --verbose
-COPY --parents app/**/* ./
+COPY --parents app/**/* library/**/* ./
 RUN node common/scripts/install-run-rush.js deploy
 
 # Final release image
