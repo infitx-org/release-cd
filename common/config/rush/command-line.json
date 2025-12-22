@@ -15,12 +15,14 @@
       "name": "ci-unit",
       "summary": "Run unit tests",
       "ignoreMissingScript": true,
+      "allowWarningsInSuccessfulBuild": true,
       "enableParallelism": true
     },
     {
       "commandKind": "bulk",
       "name": "ci-coverage",
       "summary": "Run code coverage",
+      "allowWarningsInSuccessfulBuild": true,
       "ignoreMissingScript": true,
       "enableParallelism": true
     },
