@@ -18,9 +18,9 @@ importers:
       '@hapi/hapi':
         specifier: ^21.3.12
         version: 21.4.4
-      '@infitx/match':
+      '@infitx/decision':
         specifier: workspace:*
-        version: link:../../library/match
+        version: link:../../library/decision
       '@kubernetes/client-node':
         specifier: ^1.4.0
         version: 1.4.0
