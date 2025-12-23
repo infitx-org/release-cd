@@ -1,15 +1,5 @@
-const fs = require('fs');
 const path = require('path');
-const yaml = require('yaml');
 const decision = require('./');
-const isPlainObject = require('lodash/isPlainObject');
-
-const yamlPath = path.join(__dirname, 'decision.test.yaml');
-
-const loadTestCases = () => {
-    // Load patterns and values from YAML file
-    return yaml.parse(fs.readFileSync(yamlPath, 'utf8'), { customTags: ['timestamp'] });
-};
 
 function stringify(value) {
     if (value instanceof RegExp) return value.toString();
@@ -27,11 +17,10 @@ function stringify(value) {
 }
 
 describe('decide', () => {
-    const testCases = loadTestCases();
-    const rules = Object.entries(testCases.rules).map(([id, value]) => ({ id, ...value }));
-    testCases.tests.forEach(({ fact, expected }) => {
+    const { decide, tests } = decision(path.join(__dirname, 'decision.test.yaml'));
+    tests.forEach(({ fact, expected }) => {
         test(`fact: ${stringify(fact)}`, () => {
-            expect(decision(rules, fact)).toEqual(expected);
+            expect(decide(fact)).toEqual(expected);
         });
     });
 });
