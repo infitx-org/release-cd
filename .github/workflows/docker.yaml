@@ -8,19 +8,40 @@ on:
     branches: ["main"]
 
 jobs:
+  tags: # determine image and dockerfile based on tag
+    runs-on: ubuntu-latest
+    outputs:
+      dockerfile: ${{ steps.set.outputs.dockerfile }}
+      image: ${{ steps.set.outputs.image }}
+      context: ${{ steps.set.outputs.context }}
+    steps:
+      - name: Set image and dockerfile
+        id: set
+        run: |
+          TAG=${GITHUB_REF#refs/tags/}
+          IMAGE=""
+          DOCKERFILE=""
+          CONTEXT="."
+
+          case "$TAG" in
+            release-v*.*.*)
+              IMAGE="release-cd"
+              DOCKERFILE="app/release/docker/release-cd.Dockerfile"
+              ;;
+          esac
+
+          echo "dockerfile=$DOCKERFILE" >> $GITHUB_OUTPUT
+          echo "image=$IMAGE" >> $GITHUB_OUTPUT
+          echo "context=$CONTEXT" >> $GITHUB_OUTPUT
+
   build:
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - dockerfile: app/release/docker/release-cd.Dockerfile
-            image: release-cd
-            context: .
     uses: infitx-org/actions/.github/workflows/docker.yaml@main
+    needs: tags
+    if: needs.tags.outputs.image != ''
     with:
-      dockerfile: ${{ matrix.dockerfile }}
-      image: ${{ matrix.image }}
-      context: ${{ matrix.context }}
+      dockerfile: ${{ needs.tags.outputs.dockerfile }}
+      image: ${{ needs.tags.outputs.image }}
+      context: ${{ needs.tags.outputs.context }}
       license-scan: false
       downstream: https://api.github.com/repos/infitx-org/profile-cd/actions/workflows/docker-image.yaml/dispatches
     secrets:
