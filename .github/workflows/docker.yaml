@@ -38,7 +38,7 @@ jobs:
   build:
     uses: infitx-org/actions/.github/workflows/docker.yaml@main
     needs: tags
-    if: ${{ needs.tags.outputs.image != '' || github.event_name == 'pull_request' }}
+    if: needs.tags.outputs.image != '' || github.event_name == 'pull_request'
     with:
       dockerfile: ${{ needs.tags.outputs.dockerfile }}
       image: ${{ needs.tags.outputs.image }}
