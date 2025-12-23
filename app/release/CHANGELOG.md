@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.20.0](https://github.com/infitx-org/release-cd/compare/release-v1.19.0...release-v1.20.0) (2025-12-23)
+
+
+### Features
+
+* match and decision libraries ([db62341](https://github.com/infitx-org/release-cd/commit/db623419a179b3e0ec0cbda05b2f135e01375552))
+
+
+### Bug Fixes
+
+* correct release tag pattern in Docker workflow and update package version to 1.19.0 ([d8bcee2](https://github.com/infitx-org/release-cd/commit/d8bcee2086cd532e7a0af8f2c1357777022863fa))
+* remove unnecessary --link option from COPY command in Dockerfile ([42159cd](https://github.com/infitx-org/release-cd/commit/42159cd3d81ca0d12fe6db11d723f786caf8b2ff))
+* update Dockerfile to include library package.json in build context ([7031dd3](https://github.com/infitx-org/release-cd/commit/7031dd33e9fbf3d07dc8170c78b038f24677890b))
+
 ## [1.18.0](https://github.com/infitx-org/release-cd/compare/release-v1.17.2...release-v1.18.0) (2025-12-23)
 
 
