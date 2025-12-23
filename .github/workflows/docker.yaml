@@ -4,7 +4,7 @@ run-name: Docker => ${{  github.event_name == 'pull_request' && github.event.pul
 on:
   push:
     tags:
-      - release-v*.*.*"
+      - release-v*.*.*
   pull_request:
     branches: ["main"]
 
