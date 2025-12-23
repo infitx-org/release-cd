@@ -1,4 +1,29 @@
 # test cases for match function
+# test nullish, truthy and falsy values
+- {rule: {a: null},                               like: {b: 0},              unlike: {a: false}}
+- {rule: {a: null},                               like: {a: null},           unlike: {a: 0}}
+- {rule: {a: null},                               like: {a: },               unlike: {a: ''}}
+- {rule: {a: null},                               like: {a: [null]},         unlike: {a: {}}}
+- {rule: {a: [null, false]},                      like: {a: null},           unlike: {a: 1}}
+- {rule: {a: [null, false]},                      like: {},                  unlike: {a: 1}}
+- {rule: {a: [null, false]},                      like: {a: ''},             unlike: {a: ' '}}
+- {rule: {a: [null, true]},                       like: {a: null},           unlike: {a: 0}}
+- {rule: {a: [null, true]},                       like: {},                  unlike: {a: 0}}
+- {rule: {a: [null, true]},                       like: {a: ' '},            unlike: {a: ''}}
+- {rule: {a: {b: null}},                          like: {a: {}},             unlike: {b: {}}}
+
+# test nested nullish, truthy and falsy values
+- {rule: {a: {b: null}},                          like: {a: {a: {}}},        unlike: {a: {b: false}}}
+- {rule: {a: {b: null}},                          like: {a: {b: null}},      unlike: {a: {b: 0}}}
+- {rule: {a: {b: null}},                          like: {a: {b: }},          unlike: {a: {b: ''}}}
+- {rule: {a: {b: null}},                          like: {a: {b: [null]}},    unlike: {a: {b: {}}}}
+- {rule: {a: {b: [null, false]}},                 like: {a: {b: null}},      unlike: {a: {b: 1}}}
+- {rule: {a: {b: [null, false]}},                 like: {a: {}},             unlike: {a: {b: 1}}}
+- {rule: {a: {b: [null, false]}},                 like: {a: {b: ''}},        unlike: {a: {b: ' '}}}
+- {rule: {a: {b: [null, true]}},                  like: {a: {b: null}},      unlike: {a: {b: 0}}}
+- {rule: {a: {b: [null, true]}},                  like: {a: {}},             unlike: {a: {b: 0}}}
+- {rule: {a: {b: [null, true]}},                  like: {a: {b: ' '}},       unlike: {a: {b: ''}}}
+
 # arrays represent "any of" semantics
 - {rule: /hello/,                                 like: hello world,         unlike: goodbye}
 - {rule: /bar/,                                   like: [foo, bar],          unlike: [foo, baz]}
