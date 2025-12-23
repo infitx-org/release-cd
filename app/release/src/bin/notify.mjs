@@ -1,7 +1,7 @@
 #! /usr/bin/env node
 import { readFileSync } from 'fs';
 
-import notifyRelease from './release.mjs';
+import notifyRelease from '../release.mjs';
 import copyReportToS3 from './s3.mjs';
 import notifySlack from './slack.mjs';
 

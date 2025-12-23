@@ -12,6 +12,7 @@ import keyRotate from './handler/keyRotate.mjs';
 import triggerCronJob from './handler/triggerJob.mjs';
 import copyReportToS3 from './s3.mjs';
 import notifySlack from './slack.mjs';
+import trigger from './trigger.mjs';
 
 const octokit = new Octokit({
     auth: config.github.token
@@ -25,7 +26,7 @@ const init = async () => {
 
     const client = new MongoClient(mongoUriBuilder(config.mongodb));
     await client.connect();
-    const db = client.db(config.mongodb.database);
+    server.app.db = client.db(config.mongodb.database);
 
     server.events.on({ name: 'request', channels: 'app' }, (request, event, tags) => {
         if (tags.error) {
@@ -54,7 +55,7 @@ const init = async () => {
 
     const cdCollectionGet = async (request, h) => {
         const { env, collection, id: _id } = request.params;
-        const result = await db.collection(`${collection}/${env}`).findOne({ _id });
+        const result = await request.app.db.collection(`${collection}/${env}`).findOne({ _id });
         return result
             ? h.response(result).code(200)
             : h.response({ statusCode: 404, error: 'Not Found', message: 'Release not found' }).code(404);
@@ -68,7 +69,7 @@ const init = async () => {
                 error: 'Bad Request',
                 message: 'Invalid collection'
             }).code(400);
-        await db.collection(`${collection}/${env}`).updateMany(
+        await request.app.db.collection(`${collection}/${env}`).updateMany(
             { _id },
             {
                 $currentDate: { lastModified: true },
@@ -77,9 +78,9 @@ const init = async () => {
             { upsert: true }
         );
         if (collection === 'revision') {
-            const release = await db.collection(`release/${env}`).findOne({ _id });
+            const release = await request.app.db.collection(`release/${env}`).findOne({ _id });
             if (release) return h.response(release).code(200);
-            return await cdRuleExecute(h);
+            return await cdRuleExecute(request, h);
         }
         return cdCollectionGet(request, h);
     };
@@ -139,47 +140,55 @@ ${Object.entries(tests).map(([env, tests]) => Object.entries(tests).map(([name, 
 
 `;
 
-    const cdRuleExecute = async (h) => {
+    const cdRuleExecute = async (request, h) => {
         const submoduleProps = {};
         const revisions = {};
         const tests = {};
         let iac;
         let ansible;
+        const response = {};
         for (const [env, { requiredTests = [], optionalTests = [] }] of Object.entries(config.rule.environments)) {
-            const revision = await db.collection(`revision/${env}`).findOne({}, { sort: { $natural: -1 } });
+            const revision = await request.app.db.collection(`revision/${env}`).findOne({}, { sort: { $natural: -1 } });
+            const envResponse = {};
             if (!revision || !requiredTestsPassed(requiredTests, revision))
-                return h.response(`Required tests have not passed for environment ${env}`).code(202);
+                envResponse.requiredTests = `Required tests have not passed for environment ${env}`
 
             if (optionalTests && !optionalTestsPresent(optionalTests, revision))
-                return h.response(`Optional tests are not all present for environment ${env}`).code(202);
+                envResponse.optionalTests = `Optional tests are not all present for environment ${env}`
 
             if (!revision.submodules || !Object.keys(revision.submodules).length)
-                return h.response(`No submodules info found for environment ${env}`).code(202);
+                envResponse.submodules = `No submodules info found for environment ${env}`
 
             if (revision.version)
-                return h.response(`Release ${version} already created for environment ${env}`).code(202);
+                envResponse.version = `Release ${version} already created for environment ${env}`
 
             revisions[env] = revision._id;
             tests[env] = revision.tests;
             iac ||= revision.iac_terraform_modules_tag
             if (iac !== revision.iac_terraform_modules_tag)
-                return h.response(`IAC Terraform modules tag mismatch for environment ${env}, expected ${iac}, found ${revision.iac_terraform_modules_tag}`).code(202);
+                envResponse.iac = `IAC Terraform modules tag mismatch for environment ${env}, expected ${iac}, found ${revision.iac_terraform_modules_tag}`
             ansible ||= revision.ansible_collection_tag;
             if (ansible !== revision.ansible_collection_tag)
-                return h.response(`Ansible collection tag mismatch for environment ${env}, expected ${ansible}, found ${revision.ansible_collection_tag}`).code(202);
+                envResponse.ansible = `Ansible collection tag mismatch for environment ${env}, expected ${ansible}, found ${revision.ansible_collection_tag}`
 
-            const foundMismatch = Object.entries(revision.submodules).find(([name, props]) => { // Check if submodule refs do not match
+            const foundMismatch = Object.entries(revision.submodules || {}).find(([name, props]) => { // Check if submodule refs do not match
                 if (!submoduleProps[name]) {
                     submoduleProps[name] = props;
                     return;
                 } else if (submoduleProps[name].ref === props.ref) return;
                 return true;
             })
-            if (foundMismatch) return h.response(`Submodule refs do not match for environment ${env}, revision ${revision._id}, submodule ${foundMismatch[0]}`).code(202);
+            if (foundMismatch) envResponse.submodules = `Submodule refs do not match for environment ${env}, revision ${revision._id}, submodule ${foundMismatch[0]}`
+            if (Object.keys(envResponse).length > 0) response[env] = envResponse;
+        }
+        const triggered = trigger({ tests, revisions });
+        if (Object.keys(response).length > 0) {
+            response.triggered = triggered;
+            return h.response(response).code(202);
         }
 
         console.log('Submodule refs match', submoduleProps);
-        const [version, versionResponse] = await cdSemverBump(revisions);
+        const [version, versionResponse] = await cdSemverBump(request, revisions);
         if (!version) return h.response(versionResponse).code(202);
         for (const [envName, envTests] of Object.entries(tests)) {
             for (const [testName, test] of Object.entries(envTests)) {
@@ -187,7 +196,7 @@ ${Object.entries(tests).map(([env, tests]) => Object.entries(tests).map(([name, 
             }
         }
         const releaseNotes = releaseNotesFormat(submoduleProps, tests, `v${version}`, iac, ansible);
-        await db.collection('release').updateOne({ _id: 'version' }, { $set: { version, revisions } }, { upsert: true });
+        await request.app.db.collection('release').updateOne({ _id: 'version' }, { $set: { version, revisions } }, { upsert: true });
 
         await Promise.all(Object.keys(submoduleProps).filter(url => url.startsWith('https://github.com/')).map(async (url) => {
             const [owner, repo] = url.replace(/\.git$/, '').split('/').slice(-2);
@@ -195,7 +204,7 @@ ${Object.entries(tests).map(([env, tests]) => Object.entries(tests).map(([name, 
         }));
 
         await Promise.all(Object.keys(config.rule.environments).map(env => {
-            return revisions[env] && db.collection(`release/${env}`).updateOne(
+            return revisions[env] && request.app.db.collection(`release/${env}`).updateOne(
                 { _id: revisions[env] },
                 { $set: { release: version } },
                 { upsert: true }
@@ -205,7 +214,8 @@ ${Object.entries(tests).map(([env, tests]) => Object.entries(tests).map(([name, 
             version,
             revisions,
             releaseNotes,
-            tests
+            tests,
+            triggered
         };
     };
 
@@ -231,8 +241,8 @@ ${Object.entries(tests).map(([env, tests]) => Object.entries(tests).map(([name, 
         }
     };
 
-    const cdSemverBump = async (revisions) => {
-        const current = await db.collection('release').findOne({ _id: 'version' }) || { version: config.release.start };
+    const cdSemverBump = async (request, revisions) => {
+        const current = await request.app.db.collection('release').findOne({ _id: 'version' }) || { version: config.release.start };
         if (deepEqual(revisions, current?.revisions))
             return [false, `Revisions ${JSON.stringify(revisions)} match current version ${current.version}`];
 
@@ -324,7 +334,7 @@ ${Object.entries(tests).map(([env, tests]) => Object.entries(tests).map(([name, 
         result.push('</head><body>');
         result.push('<h1>Release CD Status</h1>');
         for (const [env, { requiredTests = [], optionalTests = [] }] of Object.entries(config.rule.environments)) {
-            const revision = await db.collection(`revision/${env}`).findOne({}, { sort: { $natural: -1 } });
+            const revision = await request.app.db.collection(`revision/${env}`).findOne({}, { sort: { $natural: -1 } });
             revisions[env] = revision._id;
             tests[env] = revision.tests;
 
@@ -404,7 +414,7 @@ ${Object.entries(tests).map(([env, tests]) => Object.entries(tests).map(([name, 
         method: 'GET',
         path: '/release',
         async handler(request, h) {
-            return h.response(await db.collection('release').findOne({ _id: 'version' })).code(200);
+            return h.response(await request.app.db.collection('release').findOne({ _id: 'version' })).code(200);
         }
     });
 

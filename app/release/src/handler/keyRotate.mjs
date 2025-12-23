@@ -1,5 +1,7 @@
 import * as k8s from '@kubernetes/client-node';
 import debug from 'debug';
+import notifyRelease from './release.mjs';
+
 import config from './config.mjs';
 
 const log = debug('release-cd:keyRotate');
@@ -16,11 +18,12 @@ export default async function keyRotate(request, h) {
     }
     let namespace = '';
     let secretName = '';
+    const startTime = Date.now();
 
     switch (request.params.key) {
         case 'hub':
-            namespace = 'default';
-            secretName = 'test';
+            namespace = 'mojaloop';
+            secretName = 'switch-jws';
             break;
         default:
             return h.response({ message: 'Unknown key' }).code(400);
@@ -49,6 +52,15 @@ export default async function keyRotate(request, h) {
                     reqPromise.then(watch => watch.abort());
                     const { uid, resourceVersion, creationTimestamp, name, namespace } = obj.metadata;
                     resolve(h.response({ name, namespace, uid, resourceVersion, creationTimestamp }).code(200));
+                    notifyRelease({
+                        reportId: `key-rotate-${request.params.key}`,
+                        totalAssertions: 1,
+                        totalPassedAssertions: 1,
+                        duration: Date.now() - startTime,
+                        keyRotate: { uid, resourceVersion, creationTimestamp, name, namespace }
+                    }).catch(err => {
+                        console.error('Error notifying release of key rotation:', err);
+                    });
                 }
             },
             err => {
