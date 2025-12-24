@@ -127,7 +127,7 @@ ${Object.entries(submodules).filter(isNotIac).map(([name, { ref }]) => `* ${name
 submodules.yaml
 
 \`\`\`yaml
-${Object.entries(submodules).filter(isNotIac).map(([name, { path, ref }]) => `${path}:
+${Object.entries(submodules).filter(isNotIac).map(([name, { path }]) => `${path}:
   url: ${name}
   ref: ${version}`).join('\n')}
 \`\`\`
@@ -227,7 +227,7 @@ ${Object.entries(tests).map(([env, tests]) => Object.entries(tests).map(([name, 
                 tag
             });
             return release?.data?.url;
-        } catch (error) {
+        } catch {
             return false;
         }
     };
@@ -236,7 +236,7 @@ ${Object.entries(tests).map(([env, tests]) => Object.entries(tests).map(([name, 
         try {
             assert.deepStrictEqual(a, b);
             return true;
-        } catch (error) {
+        } catch {
             return false;
         }
     };
