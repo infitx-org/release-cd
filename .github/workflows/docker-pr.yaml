@@ -15,9 +15,12 @@ jobs:
       # Expose matched filters as job 'packages' output variable
       changes: ${{ steps.result.outputs.changes }}
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
       - name: List Dockerfiles
         id: docker-files
         run: |
+          shopt -s nullglob globstar extglob
           for file in app/**/*Dockerfile; do
             echo "$file: ${file%${file#*/*/}}package.json" >> $GITHUB_OUTPUT
           done
