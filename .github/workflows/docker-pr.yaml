@@ -21,7 +21,11 @@ jobs:
         id: docker-files
         run: |
           shopt -s nullglob globstar extglob
-          echo -e "filters<<EOF\n$(find app/**/*Dockerfile)\nEOF" >> $GITHUB_OUTPUT
+          echo -e "filters<<EOF" >> $GITHUB_OUTPUT
+          for file in app/**/*Dockerfile; do
+            echo "$file: ${file%${file#*/*/}}package.json" >> $GITHUB_OUTPUT
+          done
+          echo "EOF" >> $GITHUB_OUTPUT
       - uses: dorny/paths-filter@v3
         id: filter
         if: steps.docker-files.outputs.filters != ''
