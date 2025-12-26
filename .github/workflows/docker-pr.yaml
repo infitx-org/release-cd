@@ -37,9 +37,7 @@ jobs:
         if: steps.filter.outputs.changes != ''
         run: |
           PACKAGES="["
-          for file in ${{
-            steps.filter.outputs.changes
-          }}; do
+          for file in ${{ join(fromJson(steps.filter.outputs.changes), ' ') }}; do
             PACKAGES="$PACKAGES{\"dockerfile\":\"$file\",\"image\":\"$(basename $file | cut -d'.' -f1)\",\"context\":\"$(dirname $file)\"},"
           done
           PACKAGES="${PACKAGES%,}]"
