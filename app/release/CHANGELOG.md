@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.21.0](https://github.com/infitx-org/release-cd/compare/release-v1.20.0...release-v1.21.0) (2025-12-26)
+
+
+### Features
+
+* implement key rotation triggering ([375803d](https://github.com/infitx-org/release-cd/commit/375803d019017eac51fab0ca5493037c4bada4b0))
+
+
+### Bug Fixes
+
+* lint ([01c069d](https://github.com/infitx-org/release-cd/commit/01c069d1489d72e4a5e5a3fe8f19f01727735ee7))
+* make CD handler optional ([41ae89f](https://github.com/infitx-org/release-cd/commit/41ae89fae1f2723924dc6949a63ce037365846db))
+
 ## [1.20.0](https://github.com/infitx-org/release-cd/compare/release-v1.19.0...release-v1.20.0) (2025-12-23)
 
 
