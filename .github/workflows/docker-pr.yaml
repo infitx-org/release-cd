@@ -38,7 +38,7 @@ jobs:
         run: |
           PACKAGES="["
           for file in ${{ join(fromJson(steps.filter.outputs.changes), ' ') }}; do
-            PACKAGES="$PACKAGES{\"dockerfile\":\"$file\",\"image\":\"$(basename $file | cut -d'.' -f1)\",\"context\":\"$(dirname $file)\"},"
+            PACKAGES="$PACKAGES{\"dockerfile\":\"$file\",\"image\":\"$(basename $file | cut -d'.' -f1)\",\"context\":\"${file%${file#*/*/}}\"},"
           done
           PACKAGES="${PACKAGES%,}]"
           echo "changes=$PACKAGES" >> $GITHUB_OUTPUT
