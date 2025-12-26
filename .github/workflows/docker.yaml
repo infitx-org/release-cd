@@ -5,8 +5,6 @@ on:
   push:
     tags:
       - release-v*.*.*
-  pull_request:
-    branches: ["main"]
 
 jobs:
   tags: # determine image and dockerfile based on tag

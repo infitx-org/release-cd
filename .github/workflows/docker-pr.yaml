@@ -1,0 +1,55 @@
+name: Docker PR
+run-name: Docker PR => ${{  github.event_name == 'pull_request' && github.event.pull_request.title || github.event.head_commit.message }}
+
+on:
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  changes:
+    runs-on: ubuntu-latest
+    # Required permissions
+    permissions:
+      pull-requests: read
+    outputs:
+      # Expose matched filters as job 'packages' output variable
+      changes: ${{ steps.result.outputs.changes }}
+    steps:
+      - name: List Dockerfiles
+        id: docker-files
+        run: |
+          for file in app/**/*Dockerfile; do
+            echo "$file: ${file%${file#*/*/}}package.json" >> $GITHUB_OUTPUT
+          done
+      - uses: dorny/paths-filter@v3
+        id: filter
+        name: Filter changes
+        with:
+          filters: ${{ steps.docker-files.outputs }}
+      - name: Convert changes to JSON
+        id: result
+        if: ${{ steps.filter.outputs.changes != '' }}
+        run: |
+          PACKAGES="["
+          for file in ${{
+            steps.filter.outputs.changes
+          }}; do
+            PACKAGES="$PACKAGES{\"dockerfile\":\"$file\",\"image\":\"$(basename $file | cut -d'.' -f1)\",\"context\":\"$(dirname $file)\"},"
+          done
+          PACKAGES="${PACKAGES%,}]"
+          echo "changes=$PACKAGES" >> $GITHUB_OUTPUT
+
+  build:
+    needs: changes
+    if: needs.changes.outputs.changes != ''
+    strategy:
+      matrix:
+        include: ${{ fromJson(needs.changes.outputs.changes) }}
+    uses: infitx-org/actions/.github/workflows/docker.yaml@main
+    with:
+      dockerfile: ${{ matrix.dockerfile }}
+      license-scan: false
+      downstream: https://api.github.com/repos/infitx-org/profile-cd/actions/workflows/docker-image.yaml/dispatches
+    secrets:
+      REGISTRY_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
+      TRIGGER_DOWNSTREAM: ${{ secrets.TRIGGER_DOWNSTREAM }}
