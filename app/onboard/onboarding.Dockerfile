@@ -14,7 +14,7 @@ RUN node common/scripts/install-run-rush.js deploy
 # Final release image
 FROM node:${NODE_VERSION_BUILD} as release
 COPY --chown=node --from=builder --exclude=**/.rush --exclude=**/docker/ --exclude=**/rush-logs /opt/app/common/deploy /opt
-WORKDIR /opt/app/build
+WORKDIR /opt/app/onboard
 USER node
 
 EXPOSE 8080
