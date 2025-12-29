@@ -88,7 +88,7 @@ ${Object.entries(tests).map(([env, tests]) => Object.entries(tests).map(([name, 
         }
     };
     const cdSemverBump = async (request, revisions) => {
-        const current = await request.app.db.collection('release').findOne({ _id: 'version' }) || { version: config.release.start };
+        const current = await request.server.app.db.collection('release').findOne({ _id: 'version' }) || { version: config.release.start };
         if (deepEqual(revisions, current?.revisions))
             return [false, `Revisions ${JSON.stringify(revisions)} match current version ${current.version}`];
 
@@ -132,7 +132,7 @@ ${Object.entries(tests).map(([env, tests]) => Object.entries(tests).map(([name, 
         let ansible;
         const response = {};
         for (const [env, { requiredTests = [], optionalTests = [] }] of Object.entries(config.rule.environments)) {
-            const revision = await request.app.db.collection(`revision/${env}`).findOne({}, { sort: { $natural: -1 } });
+            const revision = await request.server.app.db.collection(`revision/${env}`).findOne({}, { sort: { $natural: -1 } });
             const envResponse = {};
             if (!revision || !requiredTestsPassed(requiredTests, revision))
                 envResponse.requiredTests = `Required tests have not passed for environment ${env}`
@@ -180,7 +180,7 @@ ${Object.entries(tests).map(([env, tests]) => Object.entries(tests).map(([name, 
             }
         }
         const releaseNotes = releaseNotesFormat(submoduleProps, tests, `v${version}`, iac, ansible);
-        await request.app.db.collection('release').updateOne({ _id: 'version' }, { $set: { version, revisions } }, { upsert: true });
+        await request.server.app.db.collection('release').updateOne({ _id: 'version' }, { $set: { version, revisions } }, { upsert: true });
 
         await Promise.all(Object.keys(submoduleProps).filter(url => url.startsWith('https://github.com/')).map(async (url) => {
             const [owner, repo] = url.replace(/\.git$/, '').split('/').slice(-2);
@@ -188,7 +188,7 @@ ${Object.entries(tests).map(([env, tests]) => Object.entries(tests).map(([name, 
         }));
 
         await Promise.all(Object.keys(config.rule.environments).map(env => {
-            return revisions[env] && request.app.db.collection(`release/${env}`).updateOne(
+            return revisions[env] && request.server.app.db.collection(`release/${env}`).updateOne(
                 { _id: revisions[env] },
                 { $set: { release: version } },
                 { upsert: true }
@@ -205,7 +205,7 @@ ${Object.entries(tests).map(([env, tests]) => Object.entries(tests).map(([name, 
 
     const cdCollectionGet = async (request, h) => {
         const { env, collection, id: _id } = request.params;
-        const result = await request.app.db.collection(`${collection}/${env}`).findOne({ _id });
+        const result = await request.server.app.db.collection(`${collection}/${env}`).findOne({ _id });
         return result
             ? h.response(result).code(200)
             : h.response({ statusCode: 404, error: 'Not Found', message: 'Release not found' }).code(404);
@@ -219,7 +219,7 @@ ${Object.entries(tests).map(([env, tests]) => Object.entries(tests).map(([name, 
                 error: 'Bad Request',
                 message: 'Invalid collection'
             }).code(400);
-        await request.app.db.collection(`${collection}/${env}`).updateMany(
+        await request.server.app.db.collection(`${collection}/${env}`).updateMany(
             { _id },
             {
                 $currentDate: { lastModified: true },
@@ -228,7 +228,7 @@ ${Object.entries(tests).map(([env, tests]) => Object.entries(tests).map(([name, 
             { upsert: true }
         );
         if (collection === 'revision') {
-            const release = await request.app.db.collection(`release/${env}`).findOne({ _id });
+            const release = await request.server.app.db.collection(`release/${env}`).findOne({ _id });
             if (release) return h.response(release).code(200);
             return await cdRuleExecute(request, h);
         }
@@ -251,7 +251,7 @@ ${Object.entries(tests).map(([env, tests]) => Object.entries(tests).map(([name, 
         method: 'GET',
         path: '/release',
         async handler(request, h) {
-            return h.response(await request.app.db.collection('release').findOne({ _id: 'version' })).code(200);
+            return h.response(await request.server.app.db.collection('release').findOne({ _id: 'version' })).code(200);
         }
     });
 }
