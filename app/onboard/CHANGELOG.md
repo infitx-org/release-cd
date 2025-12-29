@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.1.0](https://github.com/infitx-org/release-cd/compare/onboard-v1.0.0...onboard-v1.1.0) (2025-12-29)
+
+
+### Features
+
+* onboard ([9ad7aa5](https://github.com/infitx-org/release-cd/commit/9ad7aa59b57cf01f3f527ecb7aa85f237dcb47dc))
+
+
+### Bug Fixes
+
+* image name ([9f88a54](https://github.com/infitx-org/release-cd/commit/9f88a547d9356cf6f9015ab1cd7b1259bdbfe695))
+
 ## 1.0.0 (2025-12-29)
 
 
