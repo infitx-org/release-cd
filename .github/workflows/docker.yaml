@@ -30,7 +30,7 @@ jobs:
               ;;
             onboard-v*.*.*)
               IMAGE="onboard"
-              DOCKERFILE="app/onboard/docker/onboard.Dockerfile"
+              DOCKERFILE="app/onboard/onboard.Dockerfile"
               ;;
           esac
 
