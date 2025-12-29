@@ -5,6 +5,7 @@ on:
   push:
     tags:
       - release-v*.*.*
+      - onboard-v*.*.*
 
 jobs:
   tags: # determine image and dockerfile based on tag
