@@ -3,7 +3,7 @@ import Hapi from '@hapi/hapi';
 
 import config from './config.mjs';
 import keyRotate from './handler/keyRotate.mjs';
-import cdRevisionGet from './handler/revision.mjs';
+import { cdRevisionGet } from './handler/revision.mjs';
 import triggerCronJob from './handler/triggerJob.mjs';
 
 const init = async () => {
@@ -13,7 +13,7 @@ const init = async () => {
     });
 
     if (config.github?.token) {
-        const { initCd } = await import('./handler/cd.mjs');
+        const { default: initCd } = await import('./handler/cd.mjs');
         await initCd(server);
     }
 

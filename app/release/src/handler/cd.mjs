@@ -5,11 +5,11 @@ import { MongoClient } from 'mongodb';
 import assert from 'node:assert';
 import semver from 'semver';
 
-import { formatTime } from '../lib/formatTime.mjs';
-import config from './config.mjs';
-import copyReportToS3 from './s3.mjs';
-import notifySlack from './slack.mjs';
-import trigger from './trigger.mjs';
+import config from '../config.mjs';
+import { formatTime } from '../fn/formatTime.mjs';
+import copyReportToS3 from '../s3.mjs';
+import notifySlack from '../slack.mjs';
+import trigger from '../trigger.mjs';
 
 export default async function initCd(server) {
     const octokit = new Octokit({

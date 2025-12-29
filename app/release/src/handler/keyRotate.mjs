@@ -1,8 +1,8 @@
 import * as k8s from '@kubernetes/client-node';
 import debug from 'debug';
-import notifyRelease from './release.mjs';
+import notifyRelease from '../release.mjs';
 
-import config from './config.mjs';
+import config from '../config.mjs';
 
 const log = debug('release-cd:keyRotate');
 

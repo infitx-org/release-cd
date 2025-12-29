@@ -1,5 +1,5 @@
 import { exec } from 'child_process';
-import config from './config.mjs';
+import config from '../config.mjs';
 
 export default async function triggerCronJob(request, h) {
     if (config.server?.auth) {

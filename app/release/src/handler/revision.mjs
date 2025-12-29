@@ -1,5 +1,5 @@
-import { formatTime } from '../lib/formatTime.mjs';
-import config from './config.mjs';
+import config from '../config.mjs';
+import { formatTime } from '../fn/formatTime.mjs';
 
 export const cdRevisionGet = async (request, h) => {
     const submoduleProps = {};

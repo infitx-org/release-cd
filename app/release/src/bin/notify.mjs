@@ -2,8 +2,8 @@
 import { readFileSync } from 'fs';
 
 import notifyRelease from '../release.mjs';
-import copyReportToS3 from './s3.mjs';
-import notifySlack from './slack.mjs';
+import copyReportToS3 from '../s3.mjs';
+import notifySlack from '../slack.mjs';
 
 export default async function notify({
     report,
