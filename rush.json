@@ -312,6 +312,10 @@
       "projectFolder": "app/release"
     },
     {
+      "packageName": "@infitx/onboard",
+      "projectFolder": "app/onboard"
+    },
+    {
       "packageName": "@infitx/match",
       "projectFolder": "library/match"
     },

@@ -1,0 +1,7 @@
+ignore:
+    - vulnerability: GHSA-fjxv-7rqg-78g4
+
+# Set output format defaults
+output:
+    - 'table'
+    - 'json'

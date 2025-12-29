@@ -1,0 +1,20 @@
+{
+  "name": "@infitx/onboard",
+  "version": "2.3.5",
+  "main": "index.js",
+  "scripts": {
+    "build": "true"
+  },
+  "keywords": [],
+  "author": "",
+  "type": "module",
+  "license": "ISC",
+  "description": "Onboarding script for test DFSPs, FXPs and proxies",
+  "dependencies": {
+    "@keycloak/keycloak-admin-client": "^26.2.0",
+    "@kubernetes/client-node": "^1.1.2",
+    "axios": "^1.8.4",
+    "jsonwebtoken": "^9.0.2",
+    "rc": "^1.2.8"
+  }
+}
