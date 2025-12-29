@@ -27,6 +27,10 @@ jobs:
               IMAGE="release-cd"
               DOCKERFILE="app/release/docker/release-cd.Dockerfile"
               ;;
+            onboard-v*.*.*)
+              IMAGE="onboard"
+              DOCKERFILE="app/onboard/docker/onboard.Dockerfile"
+              ;;
           esac
 
           echo "dockerfile=$DOCKERFILE" >> $GITHUB_OUTPUT
