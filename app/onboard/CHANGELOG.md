@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.2](https://github.com/infitx-org/release-cd/compare/onboard-v1.1.1...onboard-v1.1.2) (2025-12-29)
+
+
+### Bug Fixes
+
+* specify package for rush deploy in Dockerfiles ([b4b662d](https://github.com/infitx-org/release-cd/commit/b4b662d0dc4055681f577b590bf61decf50d6137))
+
 ## [1.1.1](https://github.com/infitx-org/release-cd/compare/onboard-v1.1.0...onboard-v1.1.1) (2025-12-29)
 
 

@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.21.2](https://github.com/infitx-org/release-cd/compare/release-v1.21.1...release-v1.21.2) (2025-12-29)
+
+
+### Bug Fixes
+
+* import paths ([ca7bbdf](https://github.com/infitx-org/release-cd/commit/ca7bbdf5e40f10dfe015ac6890e8a23b871319c4))
+* specify package for rush deploy in Dockerfiles ([b4b662d](https://github.com/infitx-org/release-cd/commit/b4b662d0dc4055681f577b590bf61decf50d6137))
+
 ## [1.21.1](https://github.com/infitx-org/release-cd/compare/release-v1.21.0...release-v1.21.1) (2025-12-29)
 
 
