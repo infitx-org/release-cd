@@ -11,10 +11,10 @@
   "license": "ISC",
   "description": "Onboarding script for test DFSPs, FXPs and proxies",
   "dependencies": {
-    "@keycloak/keycloak-admin-client": "^26.2.0",
-    "@kubernetes/client-node": "^1.1.2",
-    "axios": "^1.8.4",
-    "jsonwebtoken": "^9.0.2",
+    "@keycloak/keycloak-admin-client": "^26.4.7",
+    "@kubernetes/client-node": "^1.4.0",
+    "axios": "^1.13.2",
+    "jsonwebtoken": "^9.0.3",
     "rc": "^1.2.8"
   }
 }

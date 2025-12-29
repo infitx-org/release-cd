@@ -13,16 +13,16 @@ importers:
   ../../app/onboard:
     dependencies:
       '@keycloak/keycloak-admin-client':
-        specifier: ^26.2.0
+        specifier: ^26.4.7
         version: 26.4.7
       '@kubernetes/client-node':
-        specifier: ^1.1.2
+        specifier: ^1.4.0
         version: 1.4.0
       axios:
-        specifier: ^1.8.4
+        specifier: ^1.13.2
         version: 1.13.2(debug@4.4.3)
       jsonwebtoken:
-        specifier: ^9.0.2
+        specifier: ^9.0.3
         version: 9.0.3
       rc:
         specifier: ^1.2.8
