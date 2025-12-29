@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.1](https://github.com/infitx-org/release-cd/compare/onboard-v1.1.0...onboard-v1.1.1) (2025-12-29)
+
+
+### Bug Fixes
+
+* docker workdir ([8792b8b](https://github.com/infitx-org/release-cd/commit/8792b8bef83c9e57a45756f2710f4edb78fc251a))
+
 ## [1.1.0](https://github.com/infitx-org/release-cd/compare/onboard-v1.0.0...onboard-v1.1.0) (2025-12-29)
 
 
