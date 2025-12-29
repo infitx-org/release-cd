@@ -29,8 +29,8 @@ jobs:
               DOCKERFILE="app/release/docker/release-cd.Dockerfile"
               ;;
             onboard-v*.*.*)
-              IMAGE="onboard"
-              DOCKERFILE="app/onboard/onboard.Dockerfile"
+              IMAGE="onboarding"
+              DOCKERFILE="app/onboard/onboarding.Dockerfile"
               ;;
           esac
 
