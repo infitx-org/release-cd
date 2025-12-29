@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.0.0 (2025-12-29)
+
+
+### Features
+
+* onboard ([9ad7aa5](https://github.com/infitx-org/release-cd/commit/9ad7aa59b57cf01f3f527ecb7aa85f237dcb47dc))
+
 ## [2.3.5](https://github.com/infitx-org/onboard/compare/v2.3.4...v2.3.5) (2025-05-28)
 
 

@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.21.1](https://github.com/infitx-org/release-cd/compare/release-v1.21.0...release-v1.21.1) (2025-12-29)
+
+
+### Bug Fixes
+
+* move scripts ([3f512cb](https://github.com/infitx-org/release-cd/commit/3f512cbf41a292d92fe93d9b0cd402254c924766))
+
 ## [1.21.0](https://github.com/infitx-org/release-cd/compare/release-v1.20.0...release-v1.21.0) (2025-12-26)
 
 
