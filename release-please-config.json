@@ -2,6 +2,7 @@
     "bootstrap-sha": "6927ad2bb1f9613e5e1079f72dbc9ebf3b79295c",
     "packages": {
         "app/release": {},
+        "app/onboard": {},
         "library/match": {},
         "library/decision": {}
     }
