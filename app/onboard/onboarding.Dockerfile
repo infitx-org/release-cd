@@ -9,7 +9,7 @@ COPY --parents rush.json common app/**/package.json library/**/package.json ./
 RUN node common/scripts/install-run-rush.js install && \
     node common/scripts/install-run-rush.js rebuild --verbose
 COPY --parents app/**/* library/**/* ./
-RUN node common/scripts/install-run-rush.js deploy
+RUN node common/scripts/install-run-rush.js deploy -p @infitx/onboard
 
 # Final release image
 FROM node:${NODE_VERSION_BUILD} as release

@@ -65,7 +65,7 @@ COPY --parents rush.json common app/**/package.json library/**/package.json ./
 RUN node common/scripts/install-run-rush.js install && \
     node common/scripts/install-run-rush.js rebuild --verbose
 COPY --parents app/**/* library/**/* ./
-RUN node common/scripts/install-run-rush.js deploy
+RUN node common/scripts/install-run-rush.js deploy -p @infitx/release
 
 # Final release image
 FROM system AS release
