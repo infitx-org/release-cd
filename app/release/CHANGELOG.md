@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.21.3](https://github.com/infitx-org/release-cd/compare/release-v1.21.2...release-v1.21.3) (2025-12-29)
+
+
+### Bug Fixes
+
+* update database reference from request.app.db to request.server.app.db ([e84f2e5](https://github.com/infitx-org/release-cd/commit/e84f2e5e4120fdc2444e3902d2184bb057360f78))
+
 ## [1.21.2](https://github.com/infitx-org/release-cd/compare/release-v1.21.1...release-v1.21.2) (2025-12-29)
 
 
