@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.24.0](https://github.com/infitx-org/release-cd/compare/release-v1.23.0...release-v1.24.0) (2025-12-30)
+
+
+### Features
+
+* add @hapi/inert dependency to package.json and update pnpm-lock.yaml ([f3c9a8e](https://github.com/infitx-org/release-cd/commit/f3c9a8ef8a3577360bc11b9a553be971a5db6ad0))
+
 ## [1.23.0](https://github.com/infitx-org/release-cd/compare/release-v1.22.1...release-v1.23.0) (2025-12-30)
 
 
