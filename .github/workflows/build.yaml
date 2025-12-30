@@ -6,5 +6,5 @@ on:
     branches: ["main"]
 
 jobs:
-  node:
+  build:
     uses: infitx-org/actions/.github/workflows/rush.yaml@main
