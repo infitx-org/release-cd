@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.23.0](https://github.com/infitx-org/release-cd/compare/release-v1.22.1...release-v1.23.0) (2025-12-30)
+
+
+### Features
+
+* add ky dependency to package.json and update pnpm-lock.yaml ([9e0fa7f](https://github.com/infitx-org/release-cd/commit/9e0fa7fca185152003fb6f73f24fe64aa4ad83bd))
+
 ## [1.22.1](https://github.com/infitx-org/release-cd/compare/release-v1.22.0...release-v1.22.1) (2025-12-30)
 
 
