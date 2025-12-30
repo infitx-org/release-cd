@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.25.0](https://github.com/infitx-org/release-cd/compare/release-v1.24.0...release-v1.25.0) (2025-12-30)
+
+
+### Features
+
+* update build and release workflows to simplify branch specification and add yaml dependency ([9732da3](https://github.com/infitx-org/release-cd/commit/9732da3d3b7be660bd10fe68be574ee3efe2e1ca))
+
 ## [1.24.0](https://github.com/infitx-org/release-cd/compare/release-v1.23.0...release-v1.24.0) (2025-12-30)
 
 
