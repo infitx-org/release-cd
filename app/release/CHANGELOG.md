@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.22.1](https://github.com/infitx-org/release-cd/compare/release-v1.22.0...release-v1.22.1) (2025-12-30)
+
+
+### Bug Fixes
+
+* update dependencies ([79f0b0f](https://github.com/infitx-org/release-cd/commit/79f0b0f6c14a09b8393e79e0d409dc5be170d833))
+
 ## [1.22.0](https://github.com/infitx-org/release-cd/compare/release-v1.21.4...release-v1.22.0) (2025-12-30)
 
 
