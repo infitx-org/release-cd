@@ -1,9 +1,9 @@
 name: Build
-run-name: Build => ${{  github.event_name == 'pull_request' && github.event.pull_request.title || github.event.head_commit.message }}
+run-name: Build => ${{ github.event.pull_request.title }}
 
 on:
   pull_request:
-    branches: ["main"]
+    branches: [main]
 
 jobs:
   build:
