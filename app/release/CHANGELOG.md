@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.22.0](https://github.com/infitx-org/release-cd/compare/release-v1.21.4...release-v1.22.0) (2025-12-30)
+
+
+### Features
+
+* add notify handler and route for sending notifications ([fe91f52](https://github.com/infitx-org/release-cd/commit/fe91f521f389c76e6734b89f2d15d2cf11d13ed2))
+
 ## [1.21.4](https://github.com/infitx-org/release-cd/compare/release-v1.21.3...release-v1.21.4) (2025-12-30)
 
 
