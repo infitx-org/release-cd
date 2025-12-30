@@ -3,6 +3,7 @@ import Hapi from '@hapi/hapi';
 
 import config from './config.mjs';
 import keyRotate from './handler/keyRotate.mjs';
+import notify from './handler/notify.mjs';
 import { cdRevisionGet } from './handler/revision.mjs';
 import triggerCronJob from './handler/triggerJob.mjs';
 
@@ -61,6 +62,12 @@ const init = async () => {
         handler: (request, h) => {
             return h.response({ status: 'ok' }).code(200);
         }
+    });
+
+    server.route({
+        method: 'POST',
+        path: '/notify',
+        handler: notify
     });
 
     server.route({

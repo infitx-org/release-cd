@@ -1,0 +1,12 @@
+rotate-region-hub-keys:
+    when:
+        tests:
+            region-dev:
+                gp_tests:
+                    isPassed: true
+            key-rotate-hub: [null, false]
+    then:
+        - action: keyRotate
+          params:
+              env: region-dev
+              key: hub
