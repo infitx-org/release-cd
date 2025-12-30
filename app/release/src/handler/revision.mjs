@@ -57,7 +57,7 @@ export const cdRevisionGet = async (request, h) => {
     result.push('</head><body>');
     result.push('<h1>Release CD Status</h1>');
     for (const [env, { requiredTests = [], optionalTests = [] }] of Object.entries(config.rule.environments)) {
-        const revision = await request.app.db.collection(`revision/${env}`).findOne({}, { sort: { $natural: -1 } });
+        const revision = await request.server.app.db.collection(`revision/${env}`).findOne({}, { sort: { $natural: -1 } });
         revisions[env] = revision._id;
         tests[env] = revision.tests;
 

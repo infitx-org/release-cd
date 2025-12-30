@@ -1,0 +1,10 @@
+name: Build
+run-name: Build => ${{  github.event_name == 'pull_request' && github.event.pull_request.title || github.event.head_commit.message }}
+
+on:
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  node:
+    uses: infitx-org/actions/.github/workflows/rush.yaml@main

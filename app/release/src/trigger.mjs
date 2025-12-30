@@ -12,7 +12,7 @@ export default function trigger(request, fact) {
     return Promise.all([...decide(fact)].map(async ({ id, action, params }) => {
         if (!['keyRotate'].includes(action)) throw new Error(`Unknown action: ${action}`);
         if (fact.revisions[params.env]?.actions?.[id]) return; // Action already in progress
-        await request.app.db.collection(`revision/${params.env}`).updateMany(
+        await request.server.app.db.collection(`revision/${params.env}`).updateMany(
             { _id: fact.revisions[params.env] },
             {
                 $currentDate: { lastModified: true },
@@ -36,7 +36,7 @@ export default function trigger(request, fact) {
                     throw new Error(`Unknown action: ${action}`);
             }
         } finally {
-            await request.app.db.collection(`revision/${params.env}`).updateMany(
+            await request.server.app.db.collection(`revision/${params.env}`).updateMany(
                 { _id: fact.revisions[params.env] },
                 {
                     $currentDate: { lastModified: true },

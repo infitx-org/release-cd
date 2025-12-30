@@ -8,6 +8,8 @@ on:
 
 jobs:
   release:
-    uses: infitx-org/actions/.github/workflows/release.yaml@main
+    uses: infitx-org/actions/.github/workflows/release-docker.yaml@main
     secrets:
       token: ${{ secrets.RELEASE_PLEASE_TOKEN }}
+      REGISTRY_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
+      TRIGGER_DOWNSTREAM: ${{ secrets.TRIGGER_DOWNSTREAM }}
