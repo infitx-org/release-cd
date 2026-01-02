@@ -4,6 +4,7 @@ import Hapi from '@hapi/hapi';
 import config from './config.mjs';
 import keyRotate from './handler/keyRotate.mjs';
 import notify from './handler/notify.mjs';
+import reonboard from './handler/reonboard.mjs';
 import { cdRevisionGet } from './handler/revision.mjs';
 import triggerCronJob from './handler/triggerJob.mjs';
 
@@ -68,6 +69,12 @@ const init = async () => {
         method: 'POST',
         path: '/notify',
         handler: notify
+    });
+
+    server.route({
+        method: 'POST',
+        path: '/reonboard',
+        handler: reonboard
     });
 
     server.route({
