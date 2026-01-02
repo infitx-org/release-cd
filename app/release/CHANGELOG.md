@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.27.0](https://github.com/infitx-org/release-cd/compare/release-v1.26.0...release-v1.27.0) (2026-01-02)
+
+
+### Features
+
+* add app health endpoint ([704b068](https://github.com/infitx-org/release-cd/commit/704b06821711d838c4eec734f2955072752feb3c))
+* add reonboard handler ([6b4e1b9](https://github.com/infitx-org/release-cd/commit/6b4e1b92821791819b3e795833b6bcd96f03326b))
+
 ## [1.26.0](https://github.com/infitx-org/release-cd/compare/release-v1.25.0...release-v1.26.0) (2026-01-02)
 
 
