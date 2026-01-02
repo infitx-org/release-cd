@@ -13,6 +13,9 @@ export default rc('dev', {
     github: {
         token: ''
     },
+    prometheus: {
+        url: 'http://prom-kube-prometheus-prometheus.monitoring.svc.cluster.local:9090'
+    },
     rule: {
         environments: {
             // 'region-dev': {
