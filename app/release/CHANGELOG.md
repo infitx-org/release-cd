@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.26.0](https://github.com/infitx-org/release-cd/compare/release-v1.25.0...release-v1.26.0) (2026-01-02)
+
+
+### Features
+
+* implement reonboard handler and add decision logic for key rotation ([d6ebc14](https://github.com/infitx-org/release-cd/commit/d6ebc14b062f3837431252ba9807631692860bb7))
+
 ## [1.25.0](https://github.com/infitx-org/release-cd/compare/release-v1.24.0...release-v1.25.0) (2025-12-30)
 
 
