@@ -11,7 +11,7 @@ export default rc('dev', {
         port: 27017
     },
     github: {
-        token: 'your-github-token'
+        token: ''
     },
     rule: {
         environments: {

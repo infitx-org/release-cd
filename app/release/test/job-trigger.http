@@ -1,0 +1,2 @@
+GET https://release-cd.int.region-dev.drpp-onprem.global/triggerCronJob/addons-sec/zap-baseline-mcm
+Authorization: {{release-cd-auth}}

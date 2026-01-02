@@ -1,0 +1,9 @@
+### re-onboard proxies
+GET https://release-cd.int.region-dev.drpp-onprem.global/reonboard
+    ?pm=proxy-zmw-management-api-a.proxy-zmw,proxy-zmw-management-api-b.proxy-zmw
+Authorization: {{release-cd-auth}}
+
+### re-onboard payment managers
+GET https://release-cd.int.pm-dev.drpp-onprem.global/reonboard
+    ?pm=test-mwk-dfsp,test-zmw-dfsp,test-fxp
+Authorization: {{release-cd-auth}}
