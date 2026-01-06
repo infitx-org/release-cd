@@ -35,6 +35,12 @@ export default rc('dev', {
     slack: {
         url: ''
     },
+    env: {
+        //'region-dev': 'https://release-cd.region-dev.example.com',
+        //'mw-dev': 'https://release-cd.mw-dev.example.com',
+        //'zm-dev': 'https://release-cd.zm-dev.example.com',
+        //'pm-dev': 'https://release-cd.pm-dev.example.com'
+    },
     report: {
         s3: {
             region: 'us-east-1',

@@ -1,2 +1,2 @@
-GET https://release-cd.int.region-dev.drpp-onprem.global/keyRotate/hub
+POST https://release-cd.int.region-dev.{{release-cd-domain}}/keyRotate/hub
 Authorization: {{release-cd-auth}}

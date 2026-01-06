@@ -56,6 +56,7 @@ export default async function keyRotate(request, h) {
                         reportId: `key-rotate-${request.params.key}`,
                         totalAssertions: 1,
                         totalPassedAssertions: 1,
+                        isPassed: true,
                         duration: Date.now() - startTime,
                         keyRotate: { uid, resourceVersion, creationTimestamp, name, namespace }
                     }).catch(err => {

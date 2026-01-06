@@ -1,4 +1,34 @@
-GET http://localhost:8080/keyRotate/hub
+POST http://localhost:8080/keyRotate/hub
 
 ###
-GET http://localhost:8080/triggerCronJob/default/hello
+POST http://localhost:8080/triggerCronJob/default/hello
+
+###
+POST http://localhost:8080/revision/region-dev/a292c24165e0b44b75260333d9cdd7cb4ce43243
+
+{
+    "tests.key-rotate-hub": {
+        "isPassed": true
+    }
+}
+
+###
+POST http://localhost:8080/revision/mw-dev/346f05e756cf2e64eff8b39689a37d2fe2ecf14d
+
+{
+    "tests.key-rotate-hub": {
+        "isPassed": true
+    }
+}
+
+###
+POST http://localhost:8080/revision/zm-dev/6918c2d72a5dfc8108b1d184ec6397c5552fcc7f
+
+{
+    "tests.key-rotate-hub": {
+        "isPassed": true
+    }
+}
+
+###
+GET http://localhost:8080/revision/region-dev/1d29f9bc1767016aa4505f76ef428710b6cccbb8

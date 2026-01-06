@@ -1,0 +1,71 @@
+rotate-region-hub-keys:
+    when:
+        tests:
+            region-dev:
+                gp_tests:
+                    isPassed: true # trigger after gp_tests passed
+            key-rotate-hub: null
+        actions:
+            region-dev:
+                rotate-region-hub-keys: null # trigger only once
+    then:
+        rotate-hub-keys:
+            action: keyRotate # rotate region-dev hub keys
+            params:
+                env: region-dev
+                key: hub
+rotate-zm-hub-keys:
+    when:
+        tests:
+            zm-dev:
+                gp_tests:
+                    isPassed: true # trigger after gp_tests passed
+            key-rotate-hub: null
+        actions:
+            zm-dev:
+                rotate-zm-hub-keys: null # trigger only once
+    then:
+        rotate-hub-keys:
+            action: keyRotate # rotate zm-dev hub keys
+            params:
+                env: zm-dev
+                key: hub
+rotate-mw-hub-keys:
+    when:
+        tests:
+            mw-dev:
+                gp_tests:
+                    isPassed: true # trigger after gp_tests passed
+            key-rotate-hub: null
+        actions:
+            mw-dev:
+                rotate-mw-hub-keys: null # trigger only once
+    then:
+        rotate-hub-keys:
+            action: keyRotate # rotate mw-dev hub keys
+            params:
+                env: mw-dev
+                key: hub
+trigger-e2e-tests:
+    when:
+        tests:
+            region-dev:
+                key-rotate-hub:
+                    isPassed: true # trigger after hub keys rotated
+            zm-dev:
+                key-rotate-hub:
+                    isPassed: true # trigger after hub keys rotated
+            mw-dev:
+                key-rotate-hub:
+                    isPassed: true # trigger after hub keys rotated
+            pm-dev: [null, e2e_test: null] # check if e2e_test was not run yet
+        actions:
+            pm-dev:
+                trigger-e2e-tests: null # trigger only once
+    then:
+        e2e-tests:
+            action: triggerJob # trigger comesa tests in pm-dev
+            params:
+                env: pm-dev
+                namespace: comesa-tests
+                job: comesa-tests-cronjob

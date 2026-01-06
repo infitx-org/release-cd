@@ -5,45 +5,75 @@ import { existsSync } from 'fs';
 import config from './config.mjs';
 
 const triggerConfig = 'decision.yaml'
-const decide = existsSync(triggerConfig) && decision(triggerConfig);
+const { decide } = existsSync(triggerConfig) ? decision(triggerConfig) : {};
 
-export default function trigger(request, fact) {
+export default async function trigger(request, fact) {
     if (!decide) return;
-    return Promise.all([...decide(fact)].map(async ({ id, action, params }) => {
-        if (!['keyRotate'].includes(action)) throw new Error(`Unknown action: ${action}`);
-        if (fact.revisions[params.env]?.actions?.[id]) return; // Action already in progress
-        await request.server.app.db.collection(`revision/${params.env}`).updateMany(
-            { _id: fact.revisions[params.env] },
-            {
-                $currentDate: { lastModified: true },
-                $set: { actions: { [id]: Date.now() } }
-            },
-            { upsert: true }
-        );
-        try {
-            switch (action) {
-                case 'keyRotate': {
-                    const baseUrl = config.env[params.env];
-                    if (!baseUrl) throw new Error(`No server URL configured for environment ${params.env}`);
-                    if (!params.key) throw new Error('No key specified for rotation');
-                    const url = new URL('/keyRotate/' + params.key, baseUrl).toString();
-                    const headers = config.auth ? { 'Authorization': config.auth } : {};
-                    const rotateResult = await axios.get(url, { headers, timeout: 300000 });
-                    console.log(`Key ${params.key} rotated for ${params.env} (${url}):`, rotateResult.data);
-                    return id;
-                }
-                default:
-                    throw new Error(`Unknown action: ${action}`);
-            }
-        } finally {
-            await request.server.app.db.collection(`revision/${params.env}`).updateMany(
-                { _id: fact.revisions[params.env] },
+    const decisions = [].concat(decide(fact, true)).filter(Boolean);
+    if (decisions.length) console.log('Trigger decisions:', decisions);
+    return Promise.allSettled(decisions.map(async ({ rule, decision, action, params: { env, namespace, job, key, args } = {}, params }) => {
+        if (!['keyRotate', 'triggerJob'].includes(action)) throw new Error(`Unknown action: ${action}`);
+        if (fact.revisions[env]?.actions?.[rule]) return; // Action already in progress
+
+        const revisionColl = request.server.app.db.collection(`revision/${env}`);
+        const revisionId = fact.revisions[env];
+
+        const updateActionStatus = async (value) => {
+            await revisionColl.updateMany(
+                { _id: revisionId },
                 {
                     $currentDate: { lastModified: true },
-                    $set: { actions: { [id]: null } }
+                    $set: { actions: { [rule]: value } }
                 },
                 { upsert: true }
             );
+        };
+
+        try {
+            await updateActionStatus(Date.now());
+            try {
+                const baseUrl = config.env[env];
+                if (!env) throw new Error('No environment specified');
+                if (!baseUrl) throw new Error(`No server URL configured for environment ${env}`);
+                const headers = config.auth ? { 'Authorization': config.auth } : {};
+
+                switch (action) {
+                    case 'keyRotate': {
+                        if (!key) throw new Error('No key specified for rotation');
+                        const url = new URL('/keyRotate/' + key, baseUrl).toString();
+                        const result = await axios.post(url, null, { headers, timeout: 300000 });
+                        console.log(`Key ${key} rotated for ${env} (${url}):`, result.data);
+                        return { rule, decision, result: result.data };
+                    }
+                    case 'triggerJob': {
+                        if (!job) throw new Error('No job specified for job trigger');
+                        if (!namespace) throw new Error('No namespace specified for job trigger');
+                        const url = new URL('/triggerCronJob/' + namespace + '/' + job, baseUrl).toString();
+                        const result = await axios.post(url, args ? { args } : null, { headers });
+                        console.log(`job ${namespace}/${job} triggered for ${env} (${url}):`, result.data);
+                        return { rule, decision, result: result.data };
+                    }
+                }
+            } finally {
+                await updateActionStatus(false);
+            };
+        } catch (err) {
+            err.config = {
+                rule,
+                decision,
+                response: err.response?.data,
+                action: {
+                    url: err.config?.url,
+                    method: err.config?.method,
+                    action,
+                    params
+                }
+            }
+            delete err.request;
+            delete err.response;
+            console.error(err);
+            delete err.stack;
+            throw err;
         }
     }));
 }

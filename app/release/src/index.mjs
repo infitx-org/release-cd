@@ -47,13 +47,13 @@ const init = async () => {
 
 
     server.route({
-        method: 'GET',
+        method: 'POST',
         path: '/keyRotate/{key}',
         handler: keyRotate
     });
 
     server.route({
-        method: 'GET',
+        method: 'POST',
         path: '/triggerCronJob/{namespace}/{job}',
         handler: triggerCronJob
     });

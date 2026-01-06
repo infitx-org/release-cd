@@ -24,7 +24,7 @@ Content-Type: application/json
             "totalAssertions": 7,
             "totalPassedAssertions": 7,
             "duration": 330055.161206,
-            "report": "http://cephobjectstore.storage.ccdev.drpp-onprem.global/report-pm-dev-drpp-onprem-global/6ebfe98bd54d758580dd1a2ea7f8ac675f48d2ae.txt"
+            "report": "http://cephobjectstore.storage.ccdev.{{release-cd-domain}}/{{release-cd-bucket}}/6ebfe98bd54d758580dd1a2ea7f8ac675f48d2ae.txt"
         }
     }
 }

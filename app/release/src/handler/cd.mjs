@@ -127,6 +127,7 @@ ${Object.entries(tests).map(([env, tests]) => Object.entries(tests).map(([name, 
     const cdRuleExecute = async (request, h) => {
         const submoduleProps = {};
         const revisions = {};
+        const actions = {};
         const tests = {};
         let iac;
         let ansible;
@@ -147,6 +148,7 @@ ${Object.entries(tests).map(([env, tests]) => Object.entries(tests).map(([name, 
                 envResponse.version = `Release ${version} already created for environment ${env}`
 
             revisions[env] = revision._id;
+            actions[env] = revision.actions || {};
             tests[env] = revision.tests;
             iac ||= revision.iac_terraform_modules_tag
             if (iac !== revision.iac_terraform_modules_tag)
@@ -165,7 +167,7 @@ ${Object.entries(tests).map(([env, tests]) => Object.entries(tests).map(([name, 
             if (foundMismatch) envResponse.submodules = `Submodule refs do not match for environment ${env}, revision ${revision._id}, submodule ${foundMismatch[0]}`
             if (Object.keys(envResponse).length > 0) response[env] = envResponse;
         }
-        const triggered = trigger({ tests, revisions });
+        const triggered = await trigger(request, { tests, revisions, actions });
         if (Object.keys(response).length > 0) {
             response.triggered = triggered;
             return h.response(response).code(202);
