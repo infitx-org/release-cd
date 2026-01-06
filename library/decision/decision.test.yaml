@@ -1,22 +1,55 @@
 rules:
     transfer-approval:
         when: { type: transfer, amount: { min: 100, max: 1000 } }
-        then: { approved: true, reason: approved }
+        then: { expect: { approved: true, reason: approved } }
     transfer-rejection:
         when: { type: transfer, amount: { min: 1001 } }
-        then: { approved: false, reason: limit }
+        then: { expect: { approved: false, reason: limit } }
     withdrawal-approval:
         when: { type: withdrawal, amount: { max: 500 } }
-        then: { approved: true, reason: small }
+        then: { expect: { approved: true, reason: small } }
     withdrawal-rejection:
         when: { type: withdrawal, amount: { min: 501 } }
-        then: { approved: false, reason: large }
+        then: { expect: { approved: false, reason: large }, notification: true }
 tests:
     - fact: { type: transfer, amount: 500 }
-      expected: { approved: true, reason: approved, id: transfer-approval }
+      expected:
+          [
+              {
+                  approved: true,
+                  reason: approved,
+                  rule: transfer-approval,
+                  decision: expect,
+              },
+          ]
     - fact: { type: transfer, amount: 1500 }
-      expected: { approved: false, reason: limit, id: transfer-rejection }
+      expected:
+          [
+              {
+                  approved: false,
+                  reason: limit,
+                  rule: transfer-rejection,
+                  decision: expect,
+              },
+          ]
     - fact: { type: withdrawal, amount: 300 }
-      expected: { approved: true, reason: small, id: withdrawal-approval }
+      expected:
+          [
+              {
+                  approved: true,
+                  reason: small,
+                  rule: withdrawal-approval,
+                  decision: expect,
+              },
+          ]
     - fact: { type: withdrawal, amount: 700 }
-      expected: { approved: false, reason: large, id: withdrawal-rejection }
+      expected:
+          [
+              {
+                  approved: false,
+                  reason: large,
+                  rule: withdrawal-rejection,
+                  decision: expect,
+              },
+              { rule: withdrawal-rejection, decision: notification },
+          ]
