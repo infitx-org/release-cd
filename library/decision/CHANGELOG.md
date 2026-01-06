@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.0](https://github.com/infitx-org/release-cd/compare/decision-v1.1.0...decision-v1.2.0) (2026-01-06)
+
+
+### Features
+
+* implement multiple decisions ([74cb3b6](https://github.com/infitx-org/release-cd/commit/74cb3b6bcc5cc15fb59fd28843cf920897b27c9c))
+
 ## [1.1.0](https://github.com/infitx-org/release-cd/compare/decision-v1.0.0...decision-v1.1.0) (2025-12-23)
 
 

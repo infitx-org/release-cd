@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.28.0](https://github.com/infitx-org/release-cd/compare/release-v1.27.0...release-v1.28.0) (2026-01-06)
+
+
+### Features
+
+* implement triggering of jobs and key rotation ([4383cd9](https://github.com/infitx-org/release-cd/commit/4383cd907cce34baf5d79a24f74d314d2a6f314a))
+
 ## [1.27.0](https://github.com/infitx-org/release-cd/compare/release-v1.26.0...release-v1.27.0) (2026-01-02)
 
 

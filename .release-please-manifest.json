@@ -1,6 +1,6 @@
 {
-    "app/release": "1.27.0",
+    "app/release": "1.28.0",
     "library/match": "1.1.1",
-    "library/decision": "1.1.0",
+    "library/decision": "1.2.0",
     "app/onboard": "1.1.2"
 }
