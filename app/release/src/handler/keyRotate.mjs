@@ -25,8 +25,11 @@ export default async function keyRotate(request, h) {
     }
 
     let version;
+    let secret;
+    const fieldSelector = `metadata.name=${secretName}`;
     try {
-        const existing = await k8sApi.readNamespacedSecret({ name: secretName, namespace });
+        const existing = await k8sApi.listNamespacedSecret({ namespace, fieldSelector });
+        secret = existing.items[0];
         version = existing.metadata.resourceVersion;
     } catch (error) {
         if (error.code !== 404) throw error;
@@ -35,16 +38,16 @@ export default async function keyRotate(request, h) {
 
     return new Promise((resolve, reject) => {
         let timeout
-
-        const reqPromise = watcher.watch(
+        let watch
+        watcher.watch(
             `/api/v1/namespaces/${namespace}/secrets`,
-            { fieldSelector: `metadata.name=${secretName}`, ...version && { resourceVersion: version } },
+            { fieldSelector, ...version && { resourceVersion: version } },
             (type, obj) => {
                 log(`Event: ${type}`, obj);
                 if (type === 'ADDED') {
                     if (timeout) clearTimeout(timeout);
                     timeout = null;
-                    reqPromise.then(watch => watch.abort());
+                    watch?.abort();
                     const { uid, resourceVersion, creationTimestamp, name, namespace } = obj.metadata;
                     resolve(h.response({ name, namespace, uid, resourceVersion, creationTimestamp }).code(200));
                     notifyRelease({
@@ -57,6 +60,12 @@ export default async function keyRotate(request, h) {
                     }).catch(err => {
                         console.error('Error notifying release of key rotation:', err);
                     });
+                } else if (type === 'ERROR') {
+                    if (timeout) clearTimeout(timeout);
+                    timeout = null;
+                    watch?.abort();
+                    log('Watch error event:', obj);
+                    resolve(h.response({ message: obj?.message }).code(500));
                 }
             },
             err => {
@@ -64,15 +73,14 @@ export default async function keyRotate(request, h) {
                     if (timeout) clearTimeout(timeout);
                     timeout = null;
                     log('Watch error:', err);
-                    reqPromise.then(watch => {
-                        resolve(h.response({ message: watch?.signal?.reason || err.message }).code(500));
-                    }).catch(reject);
+                    resolve(h.response({ message: watch?.signal?.reason || err.message }).code(500));
                 }
             }
         ).then(req => {
+            watch = req;
             timeout = setTimeout(() => req.abort('Timeout waiting for secret recreation'), 300_000);
-            if (version) k8sApi.deleteNamespacedSecret({ name: secretName, namespace }).catch(console.error);
+            if (secret) k8sApi.deleteNamespacedSecret({ name: secretName, namespace }).catch(console.error);
             return req;
-        });
+        }).catch(reject);
     });
 }
