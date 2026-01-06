@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.29.1](https://github.com/infitx-org/release-cd/compare/release-v1.29.0...release-v1.29.1) (2026-01-06)
+
+
+### Bug Fixes
+
+* improve key rotation logic and error handling ([4a8a1e6](https://github.com/infitx-org/release-cd/commit/4a8a1e62a19f427e0282cc65c891c38cb4771914))
+
 ## [1.29.0](https://github.com/infitx-org/release-cd/compare/release-v1.28.0...release-v1.29.0) (2026-01-06)
 
 
