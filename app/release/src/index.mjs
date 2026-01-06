@@ -1,4 +1,5 @@
 #! /usr/bin/env node
+import Boom from '@hapi/boom';
 import Hapi from '@hapi/hapi';
 
 import config from './config.mjs';
@@ -14,6 +15,19 @@ const init = async () => {
         port: config.server.port,
         host: config.server.host
     });
+
+    server.auth.scheme('authorization-header', () => {
+        return {
+            authenticate: (request, h) => {
+                const authHeader = request.headers['authorization'];
+                if (authHeader === config.server.auth && authHeader) {
+                    return h.authenticated({ credentials: {} });
+                }
+                throw Boom.unauthorized('Unauthorized');
+            }
+        };
+    });
+    server.auth.strategy('service', 'authorization-header');
 
     if (config.github?.token) {
         const { default: initCd } = await import('./handler/cd.mjs');
@@ -45,20 +59,22 @@ const init = async () => {
         return h.continue;
     });
 
-
     server.route({
+        options: config.server.post,
         method: 'POST',
         path: '/keyRotate/{key}',
         handler: keyRotate
     });
 
     server.route({
+        options: config.server.post,
         method: 'POST',
         path: '/triggerCronJob/{namespace}/{job}',
         handler: triggerCronJob
     });
 
     server.route({
+        options: config.server.get,
         method: 'GET',
         path: '/health',
         handler: (request, h) => {
@@ -67,28 +83,34 @@ const init = async () => {
     });
 
     server.route({
+        options: config.server.post,
         method: 'POST',
         path: '/notify',
         handler: notify
     });
 
     server.route({
+        options: config.server.post,
         method: 'POST',
         path: '/reonboard',
         handler: reonboard
     });
 
     server.route({
+        options: config.server.get,
         method: 'GET',
         path: '/app',
         handler: app
     });
 
-    server.route({
-        method: 'GET',
-        path: '/',
-        handler: cdRevisionGet
-    });
+    if (config.github?.token) {
+        server.route({
+            options: config.server.get,
+            method: 'GET',
+            path: '/',
+            handler: cdRevisionGet
+        });
+    }
 
     await server.start();
     console.log('Server running on %s', server.info.uri);

@@ -11,7 +11,7 @@ export default async function notifyRelease({
         url,
         {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 'Content-Type': 'application/json', Authorization: config.server?.auth },
             body: JSON.stringify({ [`tests.${reportId}`]: summary })
         }
     );

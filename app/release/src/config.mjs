@@ -3,7 +3,13 @@ import rc from 'rc';
 export default rc('dev', {
     server: {
         port: 8080,
-        host: '0.0.0.0'
+        host: '0.0.0.0',
+        post: {
+            auth: 'service'
+        },
+        get: {
+            auth: false
+        }
     },
     mongodb: {
         host: 'host.docker.internal',
@@ -14,7 +20,7 @@ export default rc('dev', {
         token: ''
     },
     prometheus: {
-        url: 'http://prom-kube-prometheus-prometheus.monitoring.svc.cluster.local:9090'
+        url: 'http://prom-kube-prometheus-stack-prometheus.monitoring.svc.cluster.local:9090'
     },
     rule: {
         environments: {

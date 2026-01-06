@@ -2,7 +2,6 @@ import * as k8s from '@kubernetes/client-node';
 import debug from 'debug';
 import notifyRelease from '../release.mjs';
 
-import config from '../config.mjs';
 
 const log = debug('release-cd:keyRotate');
 
@@ -12,10 +11,6 @@ const watcher = new k8s.Watch(k8sConfig);
 const k8sApi = k8sConfig.makeApiClient(k8s.CoreV1Api);
 
 export default async function keyRotate(request, h) {
-    if (config.server?.auth) {
-        const authHeader = request.headers['authorization'];
-        if (authHeader !== config.server.auth) return h.response({ message: 'Unauthorized' }).code(401);
-    }
     let namespace = '';
     let secretName = '';
     const startTime = Date.now();

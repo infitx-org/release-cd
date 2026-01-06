@@ -1,11 +1,6 @@
 import { exec } from 'child_process';
-import config from '../config.mjs';
 
 export default async function triggerCronJob(request, h) {
-    if (config.server?.auth) {
-        const authHeader = request.headers['authorization'];
-        if (authHeader !== config.server.auth) return h.response({ message: 'Unauthorized' }).code(401);
-    }
     const command = request.body?.args
         ? `kubectl -n ${request.params.namespace} create job --from=cronjob/${request.params.job} ${request.params.job}-release-cd-$(date +%s) --dry-run=client -o yaml | kubectl patch --dry-run=client -o yaml --type json --patch '[{ "op": "replace", "path": "/spec/template/spec/containers/0/args", "value": ${JSON.stringify(request.body.args)} }]' -f - | kubectl apply -f -`
         : `kubectl -n ${request.params.namespace} create job --from=cronjob/${request.params.job} ${request.params.job}-release-cd-$(date +%s)`

@@ -35,7 +35,7 @@ export default async function trigger(request, fact) {
                 const baseUrl = config.env[env];
                 if (!env) throw new Error('No environment specified');
                 if (!baseUrl) throw new Error(`No server URL configured for environment ${env}`);
-                const headers = config.auth ? { 'Authorization': config.auth } : {};
+                const headers = config.server?.auth ? { Authorization: config.server.auth } : {};
 
                 switch (action) {
                     case 'keyRotate': {

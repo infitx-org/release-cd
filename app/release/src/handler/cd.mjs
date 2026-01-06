@@ -238,18 +238,21 @@ ${Object.entries(tests).map(([env, tests]) => Object.entries(tests).map(([name, 
     };
 
     server.route({
+        // options: config.server.post, # todo: implement auth in /workspace/mojaloop/ml-testing-toolkit-client-lib, ml-core-test-harness and ml-e2e-test-runner
         method: 'POST',
         path: '/{collection}/{env}/{id}',
         handler: cdCollectionMerge
     });
 
     server.route({
+        options: config.server.get,
         method: 'GET',
         path: '/{collection}/{env}/{id}',
         handler: cdCollectionGet
     });
 
     server.route({
+        options: config.server.get,
         method: 'GET',
         path: '/release',
         async handler(request, h) {

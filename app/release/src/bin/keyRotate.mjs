@@ -16,8 +16,8 @@ if (servers.length > 0) {
     await Promise.all(servers.map(async serverUrl => {
         try {
             const url = new URL('/keyRotate/' + config.key, serverUrl).toString();
-            const headers = config.auth ? { 'Authorization': config.auth } : {};
-            const response = await axios.get(url, { headers, timeout: 300000 });
+            const headers = config.auth ? { Authorization: config.auth } : {};
+            const response = await axios.post(url, null, { headers, timeout: 300000 });
             console.log(`Key rotated for ${serverUrl}:`, response.data);
         } catch (error) {
             if (error.response) {

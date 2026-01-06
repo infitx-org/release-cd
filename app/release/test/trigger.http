@@ -1,10 +1,12 @@
 POST http://localhost:8080/keyRotate/hub
+Authorization: test
 
 ###
 POST http://localhost:8080/triggerCronJob/default/hello
-
+Authorization: test
 ###
 POST http://localhost:8080/revision/region-dev/a292c24165e0b44b75260333d9cdd7cb4ce43243
+Authorization: test
 
 {
     "tests.key-rotate-hub": {
@@ -14,6 +16,7 @@ POST http://localhost:8080/revision/region-dev/a292c24165e0b44b75260333d9cdd7cb4
 
 ###
 POST http://localhost:8080/revision/mw-dev/346f05e756cf2e64eff8b39689a37d2fe2ecf14d
+Authorization: test
 
 {
     "tests.key-rotate-hub": {
@@ -23,6 +26,7 @@ POST http://localhost:8080/revision/mw-dev/346f05e756cf2e64eff8b39689a37d2fe2ecf
 
 ###
 POST http://localhost:8080/revision/zm-dev/6918c2d72a5dfc8108b1d184ec6397c5552fcc7f
+Authorization: test
 
 {
     "tests.key-rotate-hub": {
