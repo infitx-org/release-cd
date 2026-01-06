@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.29.0](https://github.com/infitx-org/release-cd/compare/release-v1.28.0...release-v1.29.0) (2026-01-06)
+
+
+### Features
+
+* enhance authentication handling ([96526c3](https://github.com/infitx-org/release-cd/commit/96526c3a0c03101ea1e3474b0d7e6c2e0a149c13))
+
 ## [1.28.0](https://github.com/infitx-org/release-cd/compare/release-v1.27.0...release-v1.28.0) (2026-01-06)
 
 
