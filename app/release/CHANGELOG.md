@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.29.2](https://github.com/infitx-org/release-cd/compare/release-v1.29.1...release-v1.29.2) (2026-01-07)
+
+
+### Bug Fixes
+
+* update notifyRelease function to fetch URL from a config map ([e393a25](https://github.com/infitx-org/release-cd/commit/e393a259859b120dba194714c884f2eacb46a5f6))
+
 ## [1.29.1](https://github.com/infitx-org/release-cd/compare/release-v1.29.0...release-v1.29.1) (2026-01-06)
 
 
