@@ -1,14 +1,10 @@
-import * as k8s from '@kubernetes/client-node';
 import debug from 'debug';
-import notifyRelease from '../release.mjs';
 
+import { k8sApi, watcher } from '../k8s.mjs';
+import notifyRelease from '../release.mjs';
 
 const log = debug('release-cd:keyRotate');
 
-const k8sConfig = new k8s.KubeConfig();
-k8sConfig.loadFromDefault();
-const watcher = new k8s.Watch(k8sConfig);
-const k8sApi = k8sConfig.makeApiClient(k8s.CoreV1Api);
 
 export default async function keyRotate(request, h) {
     let namespace = '';
