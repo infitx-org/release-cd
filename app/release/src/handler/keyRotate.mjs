@@ -43,9 +43,12 @@ export default async function keyRotate(request, h) {
                 if (type === 'ADDED') {
                     if (timeout) clearTimeout(timeout);
                     timeout = null;
-                    watch?.abort();
                     const { uid, resourceVersion, creationTimestamp, name, namespace } = obj.metadata;
-                    resolve(h.response({ name, namespace, uid, resourceVersion, creationTimestamp }).code(200));
+                    try {
+                        resolve(h.response({ name, namespace, uid, resourceVersion, creationTimestamp }).code(200));
+                    } finally {
+                        watch?.abort();
+                    }
                     notifyRelease({
                         reportId: `key-rotate-${request.params.key}`,
                         totalAssertions: 1,
