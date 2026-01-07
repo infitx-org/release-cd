@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.29.3](https://github.com/infitx-org/release-cd/compare/release-v1.29.2...release-v1.29.3) (2026-01-07)
+
+
+### Bug Fixes
+
+* resolve before aborting ([c7de2c0](https://github.com/infitx-org/release-cd/commit/c7de2c02d754fa5590b67a680f174b2a15bd64d9))
+
 ## [1.29.2](https://github.com/infitx-org/release-cd/compare/release-v1.29.1...release-v1.29.2) (2026-01-07)
 
 
