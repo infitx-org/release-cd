@@ -1,6 +1,6 @@
 {
   "name": "@infitx/release",
-  "version": "1.29.3",
+  "version": "1.29.4",
   "main": "src/index.mjs",
   "private": true,
   "scripts": {
