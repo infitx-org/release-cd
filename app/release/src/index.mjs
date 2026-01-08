@@ -15,6 +15,7 @@ const init = async () => {
         port: config.server.port,
         host: config.server.host
     });
+    const masked = ['/app', '/'];
 
     server.auth.scheme('authorization-header', () => {
         return {
@@ -54,7 +55,7 @@ const init = async () => {
         if (response.isBoom) {
             request.log(['error'], response);
         } else {
-            request.log(['info'], `<= ${request.method.toUpperCase()} ${request.path} ${response.statusCode} ${JSON.stringify(response.source)}`);
+            request.log(['info'], `<= ${request.method.toUpperCase()} ${request.path} ${response.statusCode} ${masked.includes(request.path) ? '[body]' : JSON.stringify(response.source)}`);
         }
         return h.continue;
     });
