@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.29.4](https://github.com/infitx-org/release-cd/compare/release-v1.29.3...release-v1.29.4) (2026-01-08)
+
+
+### Bug Fixes
+
+* mask response body logging for specific paths ([ce54952](https://github.com/infitx-org/release-cd/commit/ce54952ee037192e52d5e5da259a4b4dc9d89a97))
+
 ## [1.29.3](https://github.com/infitx-org/release-cd/compare/release-v1.29.2...release-v1.29.3) (2026-01-07)
 
 
