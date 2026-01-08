@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.29.5](https://github.com/infitx-org/release-cd/compare/release-v1.29.4...release-v1.29.5) (2026-01-08)
+
+
+### Bug Fixes
+
+* import statSync for file size retrieval ([30209d4](https://github.com/infitx-org/release-cd/commit/30209d4f53ab1509b4daa6bb7b9d062661dbc223))
+
 ## [1.29.4](https://github.com/infitx-org/release-cd/compare/release-v1.29.3...release-v1.29.4) (2026-01-08)
 
 
