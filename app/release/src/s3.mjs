@@ -1,5 +1,5 @@
 import AWS from 'aws-sdk';
-import { createReadStream } from 'fs';
+import { createReadStream, statSync } from 'fs';
 
 import config from './config.mjs';
 
@@ -36,7 +36,7 @@ export default async (testName, reportURL) => {
             throw error;
         }
     } else {
-        ContentLength = fs.statSync(reportURL).size;
+        ContentLength = statSync(reportURL).size;
         report = createReadStream(reportURL);
         ContentType = 'text/html';
     }
