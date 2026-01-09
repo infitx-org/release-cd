@@ -122,4 +122,14 @@ process.on('unhandledRejection', (err) => {
     process.exit(1);
 });
 
+process.on('SIGINT', () => {
+    console.log('Received SIGINT, exiting...');
+    process.exit(0);
+});
+
+process.on('SIGTERM', () => {
+    console.log('Received SIGTERM, exiting...');
+    process.exit(0);
+});
+
 init();
