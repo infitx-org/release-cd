@@ -16,6 +16,10 @@ export default async function keyRotate(request, h) {
             namespace = 'mojaloop';
             secretName = 'switch-jws';
             break;
+        case 'tls-server':
+            namespace = 'mcm';
+            secretName = 'vault-tls-cert';
+            break;
         default:
             return h.response({ message: 'Unknown key' }).code(400);
     }
