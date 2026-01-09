@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.30.0](https://github.com/infitx-org/release-cd/compare/release-v1.29.5...release-v1.30.0) (2026-01-09)
+
+
+### Features
+
+* rotate TLS server cert ([fb32710](https://github.com/infitx-org/release-cd/commit/fb32710028a99081e6a408b8a8c707104ab8d9f4))
+
+
+### Bug Fixes
+
+* handle SIGINT and SIGTERM signals for graceful shutdown ([580a46d](https://github.com/infitx-org/release-cd/commit/580a46de60fdb8d3c3bdf61dc54fa8f3423a5586))
+
 ## [1.29.5](https://github.com/infitx-org/release-cd/compare/release-v1.29.4...release-v1.29.5) (2026-01-08)
 
 
