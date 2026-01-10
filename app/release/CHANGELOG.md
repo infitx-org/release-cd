@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.30.1](https://github.com/infitx-org/release-cd/compare/release-v1.30.0...release-v1.30.1) (2026-01-10)
+
+
+### Bug Fixes
+
+* improve action claiming logic in trigger function ([4f9be0b](https://github.com/infitx-org/release-cd/commit/4f9be0bd9b5a3f3deaf6134d755868b51343d3a5))
+
 ## [1.30.0](https://github.com/infitx-org/release-cd/compare/release-v1.29.5...release-v1.30.0) (2026-01-09)
 
 
