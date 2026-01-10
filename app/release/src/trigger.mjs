@@ -13,24 +13,35 @@ export default async function trigger(request, fact) {
     if (decisions.length) console.log('Trigger decisions:', decisions);
     return Promise.allSettled(decisions.map(async ({ rule, decision, action, params: { env, namespace, job, key, args } = {}, params }) => {
         if (!['keyRotate', 'triggerJob'].includes(action)) throw new Error(`Unknown action: ${action}`);
-        if (fact.revisions[env]?.actions?.[rule]) return; // Action already in progress
 
         const revisionColl = request.server.app.db.collection(`revision/${env}`);
         const revisionId = fact.revisions[env];
+        const staleThreshold = Date.now() - (35 * 60 * 1000); // 35 minutes
 
-        const updateActionStatus = async (value) => {
-            await revisionColl.updateMany(
-                { _id: revisionId },
+        try {
+            // Atomically claim the action slot - only update if action is not running or is stale
+            const claimResult = await revisionColl.updateOne(
+                {
+                    _id: revisionId,
+                    $or: [
+                        { [`actions.${rule}`]: { $exists: false } },
+                        { [`actions.${rule}`]: false },
+                        { [`actions.${rule}`]: { $lt: staleThreshold } }
+                    ]
+                },
                 {
                     $currentDate: { lastModified: true },
-                    $set: { actions: { [rule]: value } }
+                    $set: { [`actions.${rule}`]: Date.now() }
                 },
                 { upsert: true }
             );
-        };
 
-        try {
-            await updateActionStatus(Date.now());
+            // If we didn't modify the document, another request is already running this action
+            if (claimResult.modifiedCount === 0 && claimResult.upsertedCount === 0) {
+                console.log(`Action ${rule} already running for ${env}, skipping`);
+                return;
+            }
+
             try {
                 const baseUrl = config.env[env];
                 if (!env) throw new Error('No environment specified');
@@ -55,7 +66,14 @@ export default async function trigger(request, fact) {
                     }
                 }
             } finally {
-                await updateActionStatus(false);
+                // Release the action slot
+                await revisionColl.updateOne(
+                    { _id: revisionId },
+                    {
+                        $currentDate: { lastModified: true },
+                        $set: { [`actions.${rule}`]: false }
+                    }
+                );
             };
         } catch (err) {
             err.config = {
