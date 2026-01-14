@@ -3,6 +3,7 @@ import debug from 'debug';
 import { k8sApi, watcher } from '../k8s.mjs';
 import notifyRelease from '../release.mjs';
 import { boomify } from '@hapi/boom';
+import axios from 'axios';
 
 const log = debug('release-cd:keyRotate');
 
