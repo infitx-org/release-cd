@@ -1,9 +1,9 @@
 import debug from 'debug';
 
-import { k8sApi, watcher } from '../k8s.mjs';
-import notifyRelease from '../release.mjs';
 import { boomify } from '@hapi/boom';
 import axios from 'axios';
+import { k8sApi, watcher } from '../k8s.mjs';
+import notifyRelease from '../release.mjs';
 
 const log = debug('release-cd:keyRotate');
 
@@ -13,13 +13,15 @@ export default async function keyRotateDFSP(request, h) {
     try {
         const results = [];
         const dfsps = request.body?.args?.dfsps || [];
-        
+        const startTime = Date.now();
+
         switch (request.params.key) {
             case 'tls-server': {
                 const result = await Promise.all(dfsps.map(dfsp => {
-                    return deleteSecretAndAwaitRecreation(`${dfsp}-vault-tls-cert`, dfsp, 'tls-server');
+                    return deleteSecretAndAwaitRecreation(`${dfsp}-vault-tls-cert`, dfsp);
                 }))
                 results.push(...result.map((res, index) => ({ dfsp: dfsps[index], ...res })));
+                notify(request.params.key, Date.now() - startTime, dfsps);
                 break;
             }
             case 'jws': {
@@ -27,6 +29,7 @@ export default async function keyRotateDFSP(request, h) {
                     return rotateJWS(dfsp);
                 }))
                 results.push(...result.map((res, index) => ({ dfsp: dfsps[index], ...res })));
+                notify(request.params.key, Date.now() - startTime, dfsps);
                 break;
             }
             case 'outboundTLS': {
@@ -34,6 +37,7 @@ export default async function keyRotateDFSP(request, h) {
                     return rotateOutboundTLS(dfsp);
                 }))
                 results.push(...result.map((res, index) => ({ dfsp: dfsps[index], ...res })));
+                notify(request.params.key, Date.now() - startTime, dfsps);
                 break;
             }
             case 'all': {
@@ -49,16 +53,30 @@ export default async function keyRotateDFSP(request, h) {
                     return deleteSecretAndAwaitRecreation(`${dfsp}-vault-tls-cert`, dfsp, 'tls-server');
                 }))
                 results.push(...result3.map((res, index) => ({ dfsp: dfsps[index], ...res })));
+                notify(request.params.key, Date.now() - startTime, dfsps);
                 break;
             }
             default:
                 return h.response({ message: 'Unknown key' }).code(400);
         }
-        
+
         return h.response(results).code(200);
     } catch (error) {
         return h.response({ message: error.message }).code(500);
     }
+}
+
+async function notify(keyName, duration, dfsps) {
+    notifyRelease({
+        reportId: `key-rotate-${keyName}`,
+        totalAssertions: 1,
+        totalPassedAssertions: 1,
+        isPassed: true,
+        duration,
+        keyRotateDFSP: { dfsps }
+    }).catch(err => {
+        console.error('Error notifying release of key rotation:', err);
+    });
 }
 
 async function rotateCredential(dfspName, credentialType) {
@@ -96,11 +114,11 @@ async function rotateCredential(dfspName, credentialType) {
 
         while (attempts < maxAttempts) {
             await new Promise(resolve => setTimeout(resolve, delay));
-            
+
             try {
                 const currentResponse = await axios.get(`http://${dfspName}-management-api.${dfspName}.svc.cluster.local:9050/state`);
                 const currentValue = currentResponse.data?.[stateProperty]?.[identifierKey];
-                
+
                 if (currentValue && currentValue !== initialValue) {
                     return {
                         success: true,
@@ -113,13 +131,13 @@ async function rotateCredential(dfspName, credentialType) {
             } catch (error) {
                 log(`Attempt ${attempts + 1} failed to get state for ${dfspName}:`, error.message);
             }
-            
+
             attempts++;
         }
 
         // If we reach here, credential didn't change within the timeout
         throw new Error(`${errorMessage} for ${dfspName} after ${maxAttempts} attempts`);
-        
+
     } catch (error) {
         throw boomify(error, {
             message: `Error rotating ${credentialType} for PM ${dfspName}`,
@@ -136,8 +154,7 @@ async function rotateOutboundTLS(dfspName) {
     return rotateCredential(dfspName, 'outboundTLS');
 }
 
-async function deleteSecretAndAwaitRecreation(secretName, namespace, keyName) {
-    const startTime = Date.now();
+async function deleteSecretAndAwaitRecreation(secretName, namespace) {
     let version;
     let secret;
     const fieldSelector = `metadata.name=${secretName}`;
@@ -167,16 +184,6 @@ async function deleteSecretAndAwaitRecreation(secretName, namespace, keyName) {
                     } finally {
                         watch?.abort();
                     }
-                    notifyRelease({
-                        reportId: `key-rotate-${keyName}`,
-                        totalAssertions: 1,
-                        totalPassedAssertions: 1,
-                        isPassed: true,
-                        duration: Date.now() - startTime,
-                        keyRotate: { uid, resourceVersion, creationTimestamp, name, namespace }
-                    }).catch(err => {
-                        console.error('Error notifying release of key rotation:', err);
-                    });
                 } else if (type === 'ERROR') {
                     if (timeout) clearTimeout(timeout);
                     timeout = null;
