@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.31.1](https://github.com/infitx-org/release-cd/compare/release-v1.31.0...release-v1.31.1) (2026-01-14)
+
+
+### Bug Fixes
+
+* notify ([8781e1d](https://github.com/infitx-org/release-cd/commit/8781e1d2dfa751ed71cf540e7b2b78fed1fbd0e8))
+
 ## [1.31.0](https://github.com/infitx-org/release-cd/compare/release-v1.30.1...release-v1.31.0) (2026-01-14)
 
 
