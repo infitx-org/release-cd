@@ -18,36 +18,36 @@ export default async function keyRotateDFSP(request, h) {
                 const result = await Promise.all(dfsps.map(dfsp => {
                     return deleteSecretAndAwaitRecreation(`${dfsp}-vault-tls-cert`, dfsp, 'tls-server');
                 }))
-                results.push(...result.map(res => ({ dfsp, ...res })));
+                results.push(...result.map((res, index) => ({ dfsp: dfsps[index], ...res })));
                 break;
             }
             case 'jws': {
                 const result = await Promise.all(dfsps.map(dfsp => {
                     return rotateJWS(dfsp);
                 }))
-                results.push(...result.map(res => ({ dfsp, ...res })));
+                results.push(...result.map((res, index) => ({ dfsp: dfsps[index], ...res })));
                 break;
             }
             case 'outboundTLS': {
                 const result = await Promise.all(dfsps.map(dfsp => {
                     return rotateOutboundTLS(dfsp);
                 }))
-                results.push(...result.map(res => ({ dfsp, ...res })));
+                results.push(...result.map((res, index) => ({ dfsp: dfsps[index], ...res })));
                 break;
             }
             case 'all': {
                 const result1 = await Promise.all(dfsps.map(dfsp => {
                     return rotateJWS(dfsp);
                 }))
-                results.push(...result1.map(res => ({ dfsp, ...res })));
+                results.push(...result1.map((res, index) => ({ dfsp: dfsps[index], ...res })));
                 const result2 = await Promise.all(dfsps.map(dfsp => {
                     return rotateOutboundTLS(dfsp);
                 }))
-                results.push(...result2.map(res => ({ dfsp, ...res })));
+                results.push(...result2.map((res, index) => ({ dfsp: dfsps[index], ...res })));
                 const result3 = await Promise.all(dfsps.map(dfsp => {
                     return deleteSecretAndAwaitRecreation(`${dfsp}-vault-tls-cert`, dfsp, 'tls-server');
                 }))
-                results.push(...result3.map(res => ({ dfsp, ...res })));
+                results.push(...result3.map((res, index) => ({ dfsp: dfsps[index], ...res })));
                 break;
             }
             default:
