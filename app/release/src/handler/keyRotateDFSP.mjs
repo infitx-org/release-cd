@@ -12,7 +12,7 @@ export default async function keyRotateDFSP(request, h) {
 
     try {
         const results = [];
-        const dfsps = request.body?.args?.dfsps || [];
+        const dfsps = request.payload?.args?.dfsps || [];
         const startTime = Date.now();
 
         switch (request.params.key) {

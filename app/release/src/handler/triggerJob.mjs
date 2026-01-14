@@ -1,7 +1,7 @@
 import { exec } from 'child_process';
 
 export default async function triggerCronJob(request, h) {
-    const command = request.body?.args
+    const command = request.payload?.args
         ? `kubectl -n ${request.params.namespace} create job --from=cronjob/${request.params.job} ${request.params.job}-release-cd-$(date +%s) --dry-run=client -o yaml | kubectl patch --dry-run=client -o yaml --type json --patch '[{ "op": "replace", "path": "/spec/template/spec/containers/0/args", "value": ${JSON.stringify(request.body.args)} }]' -f - | kubectl apply -f -`
         : `kubectl -n ${request.params.namespace} create job --from=cronjob/${request.params.job} ${request.params.job}-release-cd-$(date +%s)`
     // use kubectl to trigger the cronjob
