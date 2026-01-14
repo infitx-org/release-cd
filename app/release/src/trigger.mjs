@@ -12,7 +12,7 @@ export default async function trigger(request, fact) {
     const decisions = [].concat(decide(fact, true)).filter(Boolean);
     if (decisions.length) console.log('Trigger decisions:', decisions);
     return Promise.allSettled(decisions.map(async ({ rule, decision, action, params: { env, namespace, job, key, args } = {}, params }) => {
-        if (!['keyRotate', 'triggerJob'].includes(action)) throw new Error(`Unknown action: ${action}`);
+        if (!['keyRotate', 'keyRotateDFSP', 'triggerJob'].includes(action)) throw new Error(`Unknown action: ${action}`);
 
         const revisionColl = request.server.app.db.collection(`revision/${env}`);
         const revisionId = fact.revisions[env];
@@ -52,6 +52,13 @@ export default async function trigger(request, fact) {
                     case 'keyRotate': {
                         if (!key) throw new Error('No key specified for rotation');
                         const url = new URL('/keyRotate/' + key, baseUrl).toString();
+                        const result = await axios.post(url, null, { headers, timeout: 300000 });
+                        console.log(`Key ${key} rotated for ${env} (${url}):`, result.data);
+                        return { rule, decision, result: result.data };
+                    }
+                    case 'keyRotateDFSP': {
+                        if (!key) throw new Error('No key specified for rotation');
+                        const url = new URL('/keyRotateDFSP/' + key, baseUrl).toString();
                         const result = await axios.post(url, null, { headers, timeout: 300000 });
                         console.log(`Key ${key} rotated for ${env} (${url}):`, result.data);
                         return { rule, decision, result: result.data };
