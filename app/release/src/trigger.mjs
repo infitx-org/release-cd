@@ -59,7 +59,7 @@ export default async function trigger(request, fact) {
                     case 'keyRotateDFSP': {
                         if (!key) throw new Error('No key specified for rotation');
                         const url = new URL('/keyRotateDFSP/' + key, baseUrl).toString();
-                        const result = await axios.post(url, null, { headers, timeout: 300000 });
+                        const result = await axios.post(url, args ? { args } : null, { headers, timeout: 300000 });
                         console.log(`Key ${key} rotated for ${env} (${url}):`, result.data);
                         return { rule, decision, result: result.data };
                     }

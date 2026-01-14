@@ -11,7 +11,7 @@ export default async function keyRotateDFSP(request, h) {
 
     try {
         const results = [];
-        const dfsps = request.params.dfsps || [];
+        const dfsps = request.body?.args?.dfsps || [];
         
         switch (request.params.key) {
             case 'tls-server': {
