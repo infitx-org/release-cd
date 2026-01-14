@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.31.3](https://github.com/infitx-org/release-cd/compare/release-v1.31.2...release-v1.31.3) (2026-01-14)
+
+
+### Bug Fixes
+
+* update request handling in keyRotateDFSP and trigger functions ([9dbc886](https://github.com/infitx-org/release-cd/commit/9dbc88610ea87787162cc4e097c61b3366730a50))
+* update request property from body to payload in keyRotateDFSP and triggerJob handlers ([7105cdc](https://github.com/infitx-org/release-cd/commit/7105cdc211dbf5149bda74c473434e3b461f9065))
+
 ## [1.31.2](https://github.com/infitx-org/release-cd/compare/release-v1.31.1...release-v1.31.2) (2026-01-14)
 
 
