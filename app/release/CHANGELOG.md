@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.31.2](https://github.com/infitx-org/release-cd/compare/release-v1.31.1...release-v1.31.2) (2026-01-14)
+
+
+### Bug Fixes
+
+* add missing import ([cfdb53b](https://github.com/infitx-org/release-cd/commit/cfdb53b0cf72b9d428a4a3e7c7f00284f17ef33f))
+
 ## [1.31.1](https://github.com/infitx-org/release-cd/compare/release-v1.31.0...release-v1.31.1) (2026-01-14)
 
 
