@@ -11,7 +11,7 @@ export default async function trigger(request, fact) {
     if (!decide) return;
     const decisions = [].concat(decide(fact, true)).filter(Boolean);
     if (decisions.length) console.log('Trigger decisions:', decisions);
-    return Promise.allSettled(decisions.map(async ({ rule, decision, action, params: { env, namespace, job, key, args } = {}, params }) => {
+    return Promise.allSettled(decisions.map(async ({ rule, decision, action, params: { env, namespace, job, key, body } = {}, params }) => {
         if (!['keyRotate', 'keyRotateDFSP', 'triggerJob'].includes(action)) throw new Error(`Unknown action: ${action}`);
 
         const revisionColl = request.server.app.db.collection(`revision/${env}`);
@@ -49,17 +49,11 @@ export default async function trigger(request, fact) {
                 const headers = config.server?.auth ? { Authorization: config.server.auth } : {};
 
                 switch (action) {
-                    case 'keyRotate': {
-                        if (!key) throw new Error('No key specified for rotation');
-                        const url = new URL('/keyRotate/' + key, baseUrl).toString();
-                        const result = await axios.post(url, null, { headers, timeout: 300000 });
-                        console.log(`Key ${key} rotated for ${env} (${url}):`, result.data);
-                        return { rule, decision, result: result.data };
-                    }
+                    case 'keyRotate':
                     case 'keyRotateDFSP': {
                         if (!key) throw new Error('No key specified for rotation');
-                        const url = new URL('/keyRotateDFSP/' + key, baseUrl).toString();
-                        const result = await axios.post(url, args ? { args } : null, { headers, timeout: 300000 });
+                        const url = new URL(`/${action}/` + key, baseUrl).toString();
+                        const result = await axios.post(url, body, { headers, timeout: 300000 });
                         console.log(`Key ${key} rotated for ${env} (${url}):`, result.data);
                         return { rule, decision, result: result.data };
                     }
@@ -67,7 +61,7 @@ export default async function trigger(request, fact) {
                         if (!job) throw new Error('No job specified for job trigger');
                         if (!namespace) throw new Error('No namespace specified for job trigger');
                         const url = new URL('/triggerCronJob/' + namespace + '/' + job, baseUrl).toString();
-                        const result = await axios.post(url, args ? { args } : null, { headers });
+                        const result = await axios.post(url, body, { headers });
                         console.log(`job ${namespace}/${job} triggered for ${env} (${url}):`, result.data);
                         return { rule, decision, result: result.data };
                     }
