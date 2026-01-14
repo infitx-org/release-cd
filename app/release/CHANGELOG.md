@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.31.0](https://github.com/infitx-org/release-cd/compare/release-v1.30.1...release-v1.31.0) (2026-01-14)
+
+
+### Features
+
+* add dfsp jws rotate ([4d76ece](https://github.com/infitx-org/release-cd/commit/4d76ece4d7edc7adb65e641b48ea431be552ff03))
+* add dfsp jws rotate ([507842c](https://github.com/infitx-org/release-cd/commit/507842c4088b12a2c6644be4ee1c8a33c0e67dcc))
+* validation ([14c0b5e](https://github.com/infitx-org/release-cd/commit/14c0b5ed38be2a98376c23807acb44f8612a48d2))
+
+
+### Bug Fixes
+
+* import ([8ff7ce8](https://github.com/infitx-org/release-cd/commit/8ff7ce8cee3905360cb435fd942ff9492f71fcb6))
+* pm4mls in args ([9a68c16](https://github.com/infitx-org/release-cd/commit/9a68c16a6667c43265235b65e7121e7acf3ac514))
+
 ## [1.30.1](https://github.com/infitx-org/release-cd/compare/release-v1.30.0...release-v1.30.1) (2026-01-10)
 
 
