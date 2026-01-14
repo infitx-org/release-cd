@@ -5,6 +5,7 @@ import Hapi from '@hapi/hapi';
 import config from './config.mjs';
 import app from './handler/app.mjs';
 import keyRotate from './handler/keyRotate.mjs';
+import keyRotateDFSP from './handler/keyRotateDFSP.mjs';
 import notify from './handler/notify.mjs';
 import reonboard from './handler/reonboard.mjs';
 import { cdRevisionGet } from './handler/revision.mjs';
@@ -65,6 +66,13 @@ const init = async () => {
         method: 'POST',
         path: '/keyRotate/{key}',
         handler: keyRotate
+    });
+
+    server.route({
+        options: config.server.post,
+        method: 'POST',
+        path: '/keyRotateDFSP/{key}',
+        handler: keyRotateDFSP
     });
 
     server.route({
