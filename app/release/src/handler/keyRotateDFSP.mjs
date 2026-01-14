@@ -61,25 +61,105 @@ export default async function keyRotateDFSP(request, h) {
 }
 
 async function rotateJWS(dfspName) {
-        return axios.post(`http://${dfspName}-management-api.${dfspName}.svc.cluster.local/recreate/JWS`, {
+    try {
+        // Get initial state
+        const initialResponse = await axios.get(`http://${dfspName}-management-api.${dfspName}.svc.cluster.local:9050/state`);
+        const initialCreatedAt = initialResponse.data?.dfspJWS?.createdAt || 0;
+
+        // Trigger JWS recreation
+        const recreateResponse = await axios.post(`http://${dfspName}-management-api.${dfspName}.svc.cluster.local/recreate/JWS`, {
             reason: 'release-cd-triggered recreate'
-        })
-        .then(response => (response.data))
-        .catch(error => boomify(error, {
-            message: `Error re-creating JWS for PM ${dfspName}`,
+        });
+
+        // Poll for changes with delay
+        let attempts = 0;
+        const maxAttempts = 20;
+        const delay = 3000; // 3 seconds
+
+        while (attempts < maxAttempts) {
+            await new Promise(resolve => setTimeout(resolve, delay));
+            
+            try {
+                const currentResponse = await axios.get(`http://${dfspName}-management-api.${dfspName}.svc.cluster.local:9050/state`);
+                const currentCreatedAt = currentResponse.data?.dfspJWS?.createdAt;
+                
+                if (currentCreatedAt && currentCreatedAt !== initialCreatedAt) {
+                    return {
+                        success: true,
+                        initialCreatedAt,
+                        newCreatedAt: currentCreatedAt,
+                        attempts: attempts + 1,
+                        recreateResponse: recreateResponse.data
+                    };
+                }
+            } catch (error) {
+                log(`Attempt ${attempts + 1} failed to get state for ${dfspName}:`, error.message);
+            }
+            
+            attempts++;
+        }
+
+        // If we reach here, JWS didn't change within the timeout
+        throw new Error(`JWS createdAt did not change for ${dfspName} after ${maxAttempts} attempts`);
+        
+    } catch (error) {
+        throw boomify(error, {
+            message: `Error rotating JWS for PM ${dfspName}`,
             data: error.response?.data
-        }))
+        });
+    }
+
 }
 
 async function rotateOutboundTLS(dfspName) {
-        axios.post(`http://${dfspName}-management-api.${dfspName}.svc.cluster.local/recreate/outboundTLS`, {
+
+    try {
+        // Get initial state
+        const initialResponse = await axios.get(`http://${dfspName}-management-api.${dfspName}.svc.cluster.local:9050/state`);
+        const initialId = initialResponse.data?.dfspClientCert?.id || 0;
+
+        // Trigger JWS recreation
+        const recreateResponse = await axios.post(`http://${dfspName}-management-api.${dfspName}.svc.cluster.local/recreate/outboundTLS`, {
             reason: 'release-cd-triggered recreate'
-        })
-        .then(response => (response.data))
-        .catch(error => boomify(error, {
-            message: `Error re-creating outboundTLS for PM ${dfspName}`,
+        });
+
+        // Poll for changes with delay
+        let attempts = 0;
+        const maxAttempts = 20;
+        const delay = 3000; // 3 seconds
+
+        while (attempts < maxAttempts) {
+            await new Promise(resolve => setTimeout(resolve, delay));
+            
+            try {
+                const currentResponse = await axios.get(`http://${dfspName}-management-api.${dfspName}.svc.cluster.local:9050/state`);
+                const currentId = currentResponse.data?.dfspClientCert?.id;
+                
+                if (currentId && currentId !== initialId) {
+                    return {
+                        success: true,
+                        initialId,
+                        newCreatedAt: currentId,
+                        attempts: attempts + 1,
+                        recreateResponse: recreateResponse.data
+                    };
+                }
+            } catch (error) {
+                log(`Attempt ${attempts + 1} failed to get state for ${dfspName}:`, error.message);
+            }
+            
+            attempts++;
+        }
+
+        // If we reach here, outboundTLS didn't change within the timeout
+        throw new Error(`outboundTLS id did not change for ${dfspName} after ${maxAttempts} attempts`);
+        
+    } catch (error) {
+        throw boomify(error, {
+            message: `Error rotating outboundTLS for PM ${dfspName}`,
             data: error.response?.data
-        }))
+        });
+    }
 }
 
 async function deleteSecretAndAwaitRecreation(secretName, namespace, keyName) {
