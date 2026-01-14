@@ -1,5 +1,6 @@
 import AWS from 'aws-sdk';
 import { createReadStream, statSync } from 'fs';
+import { Readable } from 'stream';
 
 import config from './config.mjs';
 
