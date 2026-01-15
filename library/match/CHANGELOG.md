@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.2.0](https://github.com/infitx-org/release-cd/compare/match-v1.1.1...match-v1.2.0) (2026-01-15)
+
+
+### Features
+
+* add negation support with 'not' property in match function ([31fddc6](https://github.com/infitx-org/release-cd/commit/31fddc6ae4e7661bf71e37e40490e6baf0ce38aa))
+* add support for Grafana-style time intervals in match function ([ef622bb](https://github.com/infitx-org/release-cd/commit/ef622bba120978b3cf5950a08d34dd5e47dbbea5))
+
 ## [1.1.1](https://github.com/infitx-org/release-cd/compare/match-v1.1.0...match-v1.1.1) (2025-12-26)
 
 
