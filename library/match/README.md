@@ -341,6 +341,179 @@ match(
 ); // true
 ```
 
+### Grafana-Style Time Intervals
+
+The `min` and `max` properties support Grafana-style relative time intervals
+for convenient time-based matching:
+
+```javascript
+// Current time
+match(new Date(), { min: 'now-1h', max: 'now' });
+// true - current time is within the last hour
+
+// Future time check
+match(new Date(), { max: 'now+1d' });
+// true - current time is before tomorrow
+
+// Past time check
+match(new Date(), { min: 'now-1w' });
+// true - current time is within the last week
+
+// Time range
+match(
+  new Date(),
+  { min: 'now-1d', max: 'now+1d' }
+); // true - current time is within ±1 day
+
+// In nested structures
+match(
+  { event: { timestamp: new Date() } },
+  { event: { timestamp: { min: 'now-5m' } } }
+); // true - event occurred within the last 5 minutes
+
+match(
+  { event: { timestamp: new Date(Date.now() - 10 * 60 * 1000) } },
+  { event: { timestamp: { min: 'now-5m' } } }
+); // false - event occurred more than 5 minutes ago
+```
+
+#### Supported Time Units
+
+| Unit | Description    | Example     |
+| ---- | -------------- | ----------- |
+| `ms` | Milliseconds   | `now-500ms` |
+| `s`  | Seconds        | `now-30s`   |
+| `m`  | Minutes        | `now-5m`    |
+| `h`  | Hours          | `now-2h`    |
+| `d`  | Days           | `now-7d`    |
+| `w`  | Weeks          | `now-2w`    |
+| `M`  | Months (30d)   | `now-3M`    |
+| `y`  | Years (365d)   | `now-1y`    |
+
+#### Rounding Units
+
+When using the `/` operator, you can round to these time units:
+
+| Unit | Rounds To            | Example                          |
+| ---- | -------------------- | -------------------------------- |
+| `s`  | Start of second      | `now/s` = current second at .000 |
+| `m`  | Start of minute      | `now/m` = current minute at :00  |
+| `h`  | Start of hour        | `now/h` = current hour at :00:00 |
+| `d`  | Start of day         | `now/d` = today at 00:00:00      |
+| `w`  | Start of week        | `now/w` = Monday at 00:00:00     |
+| `M`  | Start of month       | `now/M` = 1st of month 00:00:00  |
+| `y`  | Start of year        | `now/y` = Jan 1st at 00:00:00    |
+
+**Note**: Week rounding always rounds to Monday as the first day of the week.
+
+#### Time Interval Format
+
+- **`now`**: Current time
+- **`now-<amount><unit>`**: Time in the past (e.g., `now-5m` = 5 minutes ago)
+- **`now+<amount><unit>`**: Time in the future (e.g., `now+1h` = 1 hour from now)
+- **`now/<unit>`**: Current time rounded to start of unit (e.g., `now/d` = start of today)
+- **`now[+-]<amount><unit>/<roundUnit>`**: Time with offset, rounded (e.g., `now-5d/d` = 5 days ago at midnight)
+
+#### Time Rounding
+
+The `/` operator rounds timestamps to the start of the specified time unit, following Grafana's approach:
+
+```javascript
+// Round to start of current day (midnight)
+match(new Date('2025-06-15T14:30:00'), { min: 'now/d', max: 'now' });
+// Compares against start of current day
+
+// Round to start of current hour
+match(new Date(), { min: 'now/h' });
+// Matches times from the start of the current hour
+
+// Combine offset and rounding
+// Example: 5 days ago, rounded to midnight of that day
+match(new Date(), { min: 'now-5d/d' });
+
+// Week rounding (rounds to Monday)
+match(new Date(), { min: 'now/w' });
+// Matches times from the start of the current week
+
+// Month rounding
+match(new Date(), { min: 'now-1M/M' });
+// Matches times from the start of last month
+
+// Rounding units: s (second), m (minute), h (hour), d (day),
+// w (week), M (month), y (year)
+```
+
+```javascript
+// Examples with different units
+match(new Date(), { min: 'now-500ms' }); // Last 500 milliseconds
+match(new Date(), { min: 'now-30s' }); // Last 30 seconds
+match(new Date(), { min: 'now-5m' }); // Last 5 minutes
+match(new Date(), { min: 'now-2h' }); // Last 2 hours
+match(new Date(), { min: 'now-7d' }); // Last 7 days
+match(new Date(), { min: 'now-2w' }); // Last 2 weeks
+match(new Date(), { min: 'now-3M' }); // Last 3 months (approx)
+match(new Date(), { min: 'now-1y' }); // Last year (approx)
+
+// Future times
+match(new Date(), { max: 'now+1h' }); // Within next hour
+match(new Date(), { max: 'now+7d' }); // Within next 7 days
+
+// Examples with rounding
+match(new Date(), { min: 'now/d' }); // Since midnight today
+match(new Date(), { min: 'now-7d/d', max: 'now/d' }); // Last 7 full days
+match(new Date(), { min: 'now/M' }); // Since start of current month
+match(new Date(), { min: 'now-1y/y', max: 'now/y' }); // Last full year
+
+// Practical examples
+// Check if log entry is recent (last 15 minutes)
+match(
+  { log: { timestamp: new Date() } },
+  { log: { timestamp: { min: 'now-15m' } } }
+); // true
+
+// Check if event occurred today (since midnight)
+match(
+  { event: { timestamp: new Date() } },
+  { event: { timestamp: { min: 'now/d' } } }
+); // true if event is from today
+
+// Check if data is from the current month
+match(
+  { report: { date: new Date() } },
+  { report: { date: { min: 'now/M', max: 'now' } } }
+); // true if report is from current month
+
+// Check if scheduled event is upcoming (next 24 hours)
+match(
+  { event: { scheduledAt: new Date(Date.now() + 12 * 60 * 60 * 1000) } },
+  { event: { scheduledAt: { min: 'now', max: 'now+1d' } } }
+); // true
+
+// Check if user session is still valid (created within last 30 minutes)
+match(
+  { session: { createdAt: new Date(Date.now() - 10 * 60 * 1000) } },
+  { session: { createdAt: { min: 'now-30m' } } }
+); // true
+
+// Daily reports: match events from start of day until now
+match(
+  { log: { timestamp: new Date() } },
+  { log: { timestamp: { min: 'now/d', max: 'now' } } }
+); // Matches anything that happened today
+
+// Weekly reports: last 7 complete days
+match(
+  { metric: { recorded: new Date() } },
+  { metric: { recorded: { min: 'now-7d/d', max: 'now/d' } } }
+); // Matches data from last 7 full days (midnight to midnight)
+
+// Business hours check: events during current hour
+match(
+  { transaction: { timestamp: new Date() } },
+  { transaction: { timestamp: { min: 'now/h', max: 'now' } } }
+); // Matches transactions from start of current hour
+```
+
 ## Function Predicates
 
 Use functions for custom matching logic:

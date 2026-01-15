@@ -12,7 +12,7 @@ const loadTestCases = () => {
         .filter(({ rule }) => rule)
         .map(({ rule, like, unlike }) => {
             // Convert any string in rule that looks like /pattern/ to RegExp also convert arrow functions
-            const convertRegex = obj => {
+            const convertRegex = (obj, call) => {
                 if (typeof obj === 'string') {
                     const regexMatch = obj.match(/^\/(.+)\/([gimsuy]*)$/);
                     if (regexMatch) {
@@ -22,14 +22,14 @@ const loadTestCases = () => {
                     const fnMatch = obj.match(/^\s*\(?[\w\s,]*\)?\s*=>/);
                     if (fnMatch) {
                         // eslint-disable-next-line no-new-func
-                        return eval(obj);
+                        return call ? eval(obj)() : eval(obj);
                     }
                     return obj;
                 } else if (Array.isArray(obj)) {
-                    return obj.map(convertRegex);
+                    return obj.map(item => convertRegex(item, call));
                 } else if (isPlainObject(obj)) {
                     return Object.fromEntries(
-                        Object.entries(obj).map(([k, v]) => [k, convertRegex(v)])
+                        Object.entries(obj).map(([k, v]) => [k, convertRegex(v, call)])
                     );
                 }
                 return obj;
@@ -37,8 +37,8 @@ const loadTestCases = () => {
 
             return {
                 rule: convertRegex(rule),
-                like: convertRegex(like),
-                unlike: convertRegex(unlike),
+                like: convertRegex(like, true),
+                unlike: convertRegex(unlike, true),
             };
         });
 };
@@ -72,3 +72,4 @@ describe('match', () => {
             });
     });
 });
+

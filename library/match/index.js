@@ -1,6 +1,87 @@
 const isMatchWith = require('lodash/isMatchWith');
 const isPlainObject = require('lodash/isPlainObject');
 
+// Round a date to the start of a time unit
+function roundToUnit(date, unit) {
+    const d = new Date(date);
+
+    switch (unit) {
+        case 's': // Round to start of second
+            d.setMilliseconds(0);
+            break;
+        case 'm': // Round to start of minute
+            d.setSeconds(0, 0);
+            break;
+        case 'h': // Round to start of hour
+            d.setMinutes(0, 0, 0);
+            break;
+        case 'd': // Round to start of day
+            d.setHours(0, 0, 0, 0);
+            break;
+        case 'w': // Round to start of week (Monday)
+            d.setHours(0, 0, 0, 0);
+            const day = d.getDay();
+            const diff = day === 0 ? 6 : day - 1; // Monday is 1, Sunday is 0
+            d.setDate(d.getDate() - diff);
+            break;
+        case 'M': // Round to start of month
+            d.setDate(1);
+            d.setHours(0, 0, 0, 0);
+            break;
+        case 'y': // Round to start of year
+            d.setMonth(0, 1);
+            d.setHours(0, 0, 0, 0);
+            break;
+    }
+
+    return d;
+}
+
+// Parse Grafana-style time intervals (now, now-5m, now+1h, now/d, now-5d/d, etc.)
+function parseTimeInterval(str, referenceTime = Date.now()) {
+    if (typeof str !== 'string') return null;
+
+    // Handle "now" without modifiers
+    if (str === 'now') return new Date(referenceTime);
+
+    // Handle "now/unit" (rounding without offset)
+    const roundOnlyMatch = /^now\/([smhdwMy])$/.exec(str);
+    if (roundOnlyMatch) {
+        const [, unit] = roundOnlyMatch;
+        return roundToUnit(new Date(referenceTime), unit);
+    }
+
+    // Handle "now[+-]amount(unit)" or "now[+-]amount(unit)/roundUnit"
+    const match = /^now([+-])(\d+)(ms|s|m|h|d|w|M|y)(?:\/([smhdwMy]))?$/.exec(str);
+    if (!match) return null;
+
+    const [, sign, amount, unit, roundUnit] = match;
+    const value = parseInt(amount, 10);
+    const multiplier = sign === '+' ? 1 : -1;
+
+    // Convert to milliseconds
+    const unitMultipliers = {
+        ms: 1,
+        s: 1000,
+        m: 60 * 1000,
+        h: 60 * 60 * 1000,
+        d: 24 * 60 * 60 * 1000,
+        w: 7 * 24 * 60 * 60 * 1000,
+        M: 30 * 24 * 60 * 60 * 1000, // Approximate month
+        y: 365 * 24 * 60 * 60 * 1000  // Approximate year
+    };
+
+    const offset = multiplier * value * unitMultipliers[unit];
+    const resultTime = new Date(referenceTime + offset);
+
+    // Apply rounding if specified
+    if (roundUnit) {
+        return roundToUnit(resultTime, roundUnit);
+    }
+
+    return resultTime;
+}
+
 function match(value, condition) {
     if (value == null && condition == null) {
         return true
@@ -32,6 +113,17 @@ function match(value, condition) {
         case 'object': {
             let { min, max, not } = condition;
             if (not != null) return !module.exports(value, not);
+
+            // Parse Grafana-style time intervals for min and max
+            if (typeof min === 'string') {
+                const parsed = parseTimeInterval(min);
+                if (parsed) min = parsed;
+            }
+            if (typeof max === 'string') {
+                const parsed = parseTimeInterval(max);
+                if (parsed) max = parsed;
+            }
+
             if (value instanceof Date) {
                 value = value.getTime();
                 if (!Number.isFinite(value)) return false;
