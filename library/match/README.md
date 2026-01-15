@@ -363,6 +363,149 @@ match(
 ); // true
 ```
 
+## Negation with `not`
+
+Use the `not` property in an object condition to negate any match:
+
+```javascript
+// Basic negation
+match(3, { not: 5 }); // true - 3 is not 5
+match(5, { not: 5 }); // false - 5 is 5
+
+// Negate string match
+match('goodbye', { not: 'hello' }); // true
+match('hello', { not: 'hello' }); // false
+
+// Negate boolean
+match(false, { not: true }); // true
+match(true, { not: true }); // false
+match(0, { not: true }); // true - 0 is falsy, not true
+match(1, { not: true }); // false - 1 coerces to true
+
+// Negate null
+match(0, { not: null }); // true - 0 is not null
+match(null, { not: null }); // false
+match(undefined, { not: null }); // false - undefined treated as null
+
+// In nested structures
+match(
+  { status: 'inactive' },
+  { status: { not: 'active' } }
+); // true
+
+match(
+  { status: 'active' },
+  { status: { not: 'active' } }
+); // false
+```
+
+### Negating Complex Conditions
+
+The `not` property works with all match types including arrays, ranges,
+functions, and regex:
+
+```javascript
+// Negate regex
+match('goodbye', { not: /hello/ }); // true
+match('hello world', { not: /hello/ }); // false
+
+match(
+  { email: 'user@domain.org' },
+  { email: { not: /@example\.com$/ } }
+); // true - doesn't end with @example.com
+
+// Negate array (none of)
+match(5, { not: [1, 2, 3] }); // true - 5 is not in the list
+match(2, { not: [1, 2, 3] }); // false - 2 is in the list
+
+match(
+  { role: 'guest' },
+  { role: { not: ['admin', 'moderator'] } }
+); // true - guest is neither admin nor moderator
+
+match(
+  { role: 'admin' },
+  { role: { not: ['admin', 'moderator'] } }
+); // false - admin is in the list
+
+// Negate range
+match(3, { not: { min: 5, max: 10 } }); // true - 3 is outside the range
+match(7, { not: { min: 5, max: 10 } }); // false - 7 is in the range
+match(15, { not: { min: 5, max: 10 } }); // true - 15 is outside the range
+
+match(
+  { age: 15 },
+  { age: { not: { min: 18, max: 65 } } }
+); // true - age is below minimum
+
+match(
+  { age: 25 },
+  { age: { not: { min: 18, max: 65 } } }
+); // false - age is in range
+
+// Negate function predicate
+match(3, { not: (v) => v > 5 }); // true - 3 is not > 5
+match(10, { not: (v) => v > 5 }); // false - 10 is > 5
+
+match(
+  { price: 25 },
+  { price: { not: (p) => p >= 100 } }
+); // true - price is not >= 100
+
+// Negate object match
+match(
+  { user: { role: 'guest' } },
+  { user: { not: { role: 'admin' } } }
+); // true - role is not admin
+
+match(
+  { user: { role: 'admin' } },
+  { user: { not: { role: 'admin' } } }
+); // false - role is admin
+
+// Complex negation in nested structures
+match(
+  {
+    user: {
+      email: 'user@custom.com',
+      role: 'user'
+    }
+  },
+  {
+    user: {
+      email: { not: /@example\.com$/ },
+      role: { not: ['admin', 'moderator'] }
+    }
+  }
+); // true - email doesn't end with @example.com and role is not admin/moderator
+```
+
+### Combining `not` with Other Conditions
+
+You can combine `not` with other conditions in complex matching scenarios:
+
+```javascript
+// Exclude certain values while checking other properties
+match(
+  { status: 'pending', priority: 2 },
+  {
+    status: { not: ['cancelled', 'completed'] },
+    priority: { min: 1, max: 3 }
+  }
+); // true - status is not cancelled/completed and priority is in range
+
+// Array values with negation
+match(
+  { tags: ['javascript', 'backend'] },
+  { tags: { not: 'frontend' } }
+); // true - none of the tags are 'frontend'
+
+match(
+  { tags: ['javascript', 'frontend'] },
+  { tags: { not: 'frontend' } }
+); // false - 'frontend' is in the tags
+```
+
 ## Regular Expression Matching
 
 ```javascript
@@ -440,6 +583,7 @@ Compares a fact value against a rule value with flexible matching semantics.
 - **Objects**: Recursively matches properties (partial matching allowed)
 - **Type coercion**: Values are coerced to match rule type
 - **Ranges**: Objects with `min`/`max` properties enable range matching
+- **Negation**: Objects with `not` property negate any match condition
 - **Functions**: Rule functions are called with fact value as predicate
 - **RegExp**: Tests string values against regex patterns
 

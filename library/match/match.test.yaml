@@ -11,6 +11,7 @@
 - {rule: {a: [null, true]},                       like: {},                  unlike: {a: 0}}
 - {rule: {a: [null, true]},                       like: {a: ' '},            unlike: {a: ''}}
 - {rule: {a: {b: null}},                          like: {a: {}},             unlike: {b: {}}}
+- {rule: null,                                    like: null,                unlike: [false, 0, '']}
 
 # test nested nullish, truthy and falsy values
 - {rule: {a: {b: null}},                          like: {a: {a: {}}},        unlike: {a: {b: false}}}
@@ -23,6 +24,33 @@
 - {rule: {a: {b: [null, true]}},                  like: {a: {b: null}},      unlike: {a: {b: 0}}}
 - {rule: {a: {b: [null, true]}},                  like: {a: {}},             unlike: {a: {b: 0}}}
 - {rule: {a: {b: [null, true]}},                  like: {a: {b: ' '}},       unlike: {a: {b: ''}}}
+
+# test "not" semantic for negation
+- {rule: {not: 5},                                like: 3,                   unlike: 5}
+- {rule: {not: hello},                            like: goodbye,             unlike: hello}
+- {rule: {not: true},                             like: false,               unlike: true}
+- {rule: {not: true},                             like: 0,                   unlike: 1}
+- {rule: {not: false},                            like: true,                unlike: false}
+- {rule: {not: null},                             like: 0,                   unlike: null}
+- {rule: {not: null},                             like: false,               unlike: [null]}
+- {rule: {a: {not: 5}},                           like: {a: 3},              unlike: {a: 5}}
+- {rule: {a: {not: 5}},                           like: {a: 'x'},            unlike: {a: 5}}
+- {rule: {a: {not: hello}},                       like: {a: world},          unlike: {a: hello}}
+- {rule: {not: /hello/},                          like: goodbye,             unlike: hello world}
+- {rule: {a: {not: /foo/}},                       like: {a: bar},            unlike: {a: foo}}
+- {rule: {not: [1, 2, 3]},                        like: 5,                   unlike: 2}
+- {rule: {not: [1, 2, 3]},                        like: 0,                   unlike: 3}
+- {rule: {a: {not: [1, 2, 3]}},                   like: {a: 5},              unlike: {a: 2}}
+- {rule: {not: {min: 5, max: 10}},                like: 3,                   unlike: 7}
+- {rule: {not: {min: 5, max: 10}},                like: 15,                  unlike: 5}
+- {rule: {a: {not: {min: 5}}},                    like: {a: 3},              unlike: {a: 10}}
+- {rule: {not: v => v > 5},                       like: 3,                   unlike: 10}
+- {rule: {a: {not: v => v > 5}},                  like: {a: 3},              unlike: {a: 10}}
+- {rule: {not: {a: 1}},                           like: {a: 2},              unlike: {a: 1}}
+- {rule: {not: {a: 1}},                           like: {b: 1},              unlike: {a: 1, b: 2}}
+- {rule: {a: {b: {not: 5}}},                      like: {a: {b: 3}},         unlike: {a: {b: 5}}}
+- {rule: {not: [true]},                           like: null,                unlike: true}
+- {rule: {not: [false]},                          like: 1,                   unlike: 0}
 
 # arrays represent "any of" semantics
 - {rule: /hello/,                                 like: hello world,         unlike: goodbye}

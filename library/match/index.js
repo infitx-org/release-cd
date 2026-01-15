@@ -30,7 +30,8 @@ function match(value, condition) {
         case 'function':
             return condition(value);
         case 'object': {
-            let { min, max } = condition;
+            let { min, max, not } = condition;
+            if (not != null) return !module.exports(value, not);
             if (value instanceof Date) {
                 value = value.getTime();
                 if (!Number.isFinite(value)) return false;
@@ -56,6 +57,7 @@ function match(value, condition) {
 
 module.exports = function (factValue, ruleValue) {
     if (factValue === ruleValue) return true;
+    if (ruleValue && typeof ruleValue === 'object' && 'not' in ruleValue && Object.keys(ruleValue).length === 1) return !module.exports(factValue, ruleValue.not);
     if (
         Array.isArray(factValue) ||
         Array.isArray(ruleValue) ||
