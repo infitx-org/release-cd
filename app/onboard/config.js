@@ -1,6 +1,8 @@
 import rc from 'rc';
 
 export default rc('onboard', {
+    retryIntervalSeconds: 300,
+    refreshIntervalSeconds: 3600,
     keycloak: {
         realmName: 'master',
         grantType: 'password',

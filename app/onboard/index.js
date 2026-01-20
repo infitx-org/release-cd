@@ -1,9 +1,9 @@
 import AdminClient from '@keycloak/keycloak-admin-client';
-import http from 'http';
-import axios from 'axios';
-import jwt from 'jsonwebtoken';
 import * as k8s from '@kubernetes/client-node';
+import axios from 'axios';
+import http from 'http';
 import https from 'https';
+import jwt from 'jsonwebtoken';
 import util from 'node:util';
 
 import config from './config.js';
@@ -177,6 +177,7 @@ async function getAccessToken(client_secret) {
 
 async function onboardLoop(access_token, secret) {
     const remaining = new Set(dfsps[env]);
+    const all = Array.from(remaining);
 
     console.log('Get MCM virtual service');
     const mcmVS = await k8sClient.read({
@@ -195,7 +196,6 @@ async function onboardLoop(access_token, secret) {
     let result;
     while (true) {
         console.log('Processing DFSPs:', Array.from(remaining).join(','));
-        const all = Array.from(remaining);
         for (const dfsp of all) {
             try {
                 console.log(`Get ${dfsp} CSR`);
@@ -253,8 +253,8 @@ async function onboardLoop(access_token, secret) {
             result = [onboarded, true];
             break;
         }
-        console.log('Waiting for 5 minutes before checking again');
-        await new Promise(resolve => setTimeout(resolve, 5 * 60 * 1000));
+        console.log('Waiting for ' + config.retryIntervalSeconds + ' seconds before checking again');
+        await new Promise(resolve => setTimeout(resolve, config.retryIntervalSeconds * 1000));
         console.log('Get new token');
         access_token = await getAccessToken(secret);
     }
@@ -432,19 +432,19 @@ async function secrets() {
 function tryPushSecrets() {
     secrets().then(([secrets, retry]) => {
         secrets && console.log('Secrets pushed to vault:', secrets);
-        if ( retry === undefined) return;
+        if (retry === undefined) return;
         if (retry) {
-            console.log('Retrying secrets in 5 minutes...');
-            setTimeout(tryPushSecrets, 5 * 60 * 1000);
+            console.log('Retrying secrets in ' + (config.retryIntervalSeconds) + ' seconds...');
+            setTimeout(tryPushSecrets, config.retryIntervalSeconds * 1000);
         } else {
-            console.log('Refreshing secrets in 1 hour...');
-            setTimeout(tryPushSecrets, 60 * 60 * 1000);
+            console.log('Refreshing secrets in ' + (config.refreshIntervalSeconds) + ' seconds...');
+            setTimeout(tryPushSecrets, config.refreshIntervalSeconds * 1000);
         }
     }).catch((error) => {
         logError('Error pushing secrets:', error);
         if (error.retry) {
-            console.log('Retrying secrets in 5 minutes...');
-            setTimeout(tryPushSecrets, 5 * 60 * 1000);
+            console.log('Retrying secrets in ' + (config.retryIntervalSeconds) + ' seconds...');
+            setTimeout(tryPushSecrets, config.retryIntervalSeconds * 1000);
         } else process.exit(1);
     });
 }
@@ -452,19 +452,19 @@ function tryPushSecrets() {
 function tryOnboard() {
     onboard().then(([dfsps, retry]) => {
         dfsps && console.log('Onboarding completed for:', dfsps);
-        if ( retry === undefined) return;
+        if (retry === undefined) return;
         if (retry) {
-            console.log('Retrying onboarding in 5 minutes...');
-            setTimeout(tryOnboard, 5 * 60 * 1000);
+            console.log('Retrying onboarding in ' + (config.retryIntervalSeconds) + ' seconds...');
+            setTimeout(tryOnboard, config.retryIntervalSeconds * 1000);
         } else {
-            console.log('Refreshing onboarding in 1 hour...');
-            setTimeout(tryOnboard, 60 * 60 * 1000);
+            console.log('Refreshing onboarding in ' + (config.refreshIntervalSeconds) + ' seconds...');
+            setTimeout(tryOnboard, config.refreshIntervalSeconds * 1000);
         }
     }).catch((error) => {
         logError('Error during onboarding:', error);
         if (error.retry) {
-            console.log('Retrying onboarding in 5 minutes...');
-            setTimeout(tryOnboard, 5 * 60 * 1000);
+            console.log('Retrying onboarding in ' + (config.retryIntervalSeconds) + ' seconds...');
+            setTimeout(tryOnboard, config.retryIntervalSeconds * 1000);
         } else process.exit(1);
     });
 }
