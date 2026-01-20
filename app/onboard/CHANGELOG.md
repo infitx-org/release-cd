@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.2.0](https://github.com/infitx-org/release-cd/compare/onboard-v1.1.2...onboard-v1.2.0) (2026-01-20)
+
+
+### Features
+
+* update retry and refresh intervals to use configurable values ([9afdc5b](https://github.com/infitx-org/release-cd/commit/9afdc5b5da89b6afd7971f804b830ca8b8316f6a))
+
+
+### Bug Fixes
+
+* remove duplicate CVE-2025-21311 from vulnerability ignore list and add CVE-2025-13836 ([ca340f7](https://github.com/infitx-org/release-cd/commit/ca340f7ada7b15191c4047018c4a26852d21e088))
+* update Node.js version to 24.13.0 in Dockerfile ([8fa2d58](https://github.com/infitx-org/release-cd/commit/8fa2d5829d597b6f8b6918c75dcc6e7dc1a93599))
+
 ## [1.1.2](https://github.com/infitx-org/release-cd/compare/onboard-v1.1.1...onboard-v1.1.2) (2025-12-29)
 
 
