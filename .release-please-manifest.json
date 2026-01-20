@@ -2,5 +2,5 @@
     "app/release": "1.31.3",
     "library/match": "1.2.0",
     "library/decision": "1.2.0",
-    "app/onboard": "1.1.2"
+    "app/onboard": "1.2.0"
 }
