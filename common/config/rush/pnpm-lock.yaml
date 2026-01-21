@@ -102,6 +102,9 @@ importers:
       tough-cookie:
         specifier: ^5.1.2
         version: 5.1.2
+      ulidx:
+        specifier: ^2.4.1
+        version: 2.4.1
       uuid:
         specifier: ^13.0.0
         version: 13.0.0
@@ -2468,6 +2471,9 @@ packages:
     resolution: {integrity: sha512-q3RBbsO5A5zrPhB6CaCS8ZUv+NWCXv6JJT4Em0i264G9W0fdPB8YRfnnEi7Dm7X7omAkBIPojzYJ2D1oHTHqug==}
     engines: {node: '>=18'}
 
+  layerr@3.0.0:
+    resolution: {integrity: sha512-tv754Ki2dXpPVApOrjTyRo4/QegVb9eVFq4mjqp4+NM5NaX7syQvN5BBNfV/ZpAHCEHV24XdUVrBAoka4jt3pA==}
+
   leven@3.1.0:
     resolution: {integrity: sha512-qsda+H8jTaUaN/x5vzW2rzc+8Rw4TAQ/4KjB46IwK5VH+IlVeeeje/EoZRpiXvIqjFgK84QffqPztGI3VBLG1A==}
     engines: {node: '>=6'}
@@ -3270,6 +3276,10 @@ packages:
     resolution: {integrity: sha512-v3Xu+yuwBXisp6QYTcH4UbH+xYJXqnq2m/LtQVWKWzYc1iehYnLixoQDN9FH6/j9/oybfd6W9Ghwkl8+UMKTKQ==}
     engines: {node: '>=0.8.0'}
     hasBin: true
+
+  ulidx@2.4.1:
+    resolution: {integrity: sha512-xY7c8LPyzvhvew0Fn+Ek3wBC9STZAuDI/Y5andCKi9AX6/jvfaX45PhsDX8oxgPL0YFp0Jhr8qWMbS/p9375Xg==}
+    engines: {node: '>=16'}
 
   underscore@1.13.7:
     resolution: {integrity: sha512-GMXzWtsc57XAtguZgaQViUOzs0KTkk8ojr3/xAxXLITqf/3EMwxC0inyETfDFjH/Krbhuep0HNbbjI9i/q3F3g==}
@@ -6565,6 +6575,8 @@ snapshots:
 
   ky@1.14.2: {}
 
+  layerr@3.0.0: {}
+
   leven@3.1.0: {}
 
   levn@0.4.1:
@@ -7471,6 +7483,10 @@ snapshots:
 
   uglify-js@3.19.3:
     optional: true
+
+  ulidx@2.4.1:
+    dependencies:
+      layerr: 3.0.0
 
   underscore@1.13.7: {}
 

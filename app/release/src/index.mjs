@@ -9,6 +9,7 @@ import keyRotate from './handler/keyRotate.mjs';
 import keyRotateDFSP from './handler/keyRotateDFSP.mjs';
 import notify from './handler/notify.mjs';
 import onboard from './handler/onboard.mjs';
+import ping from './handler/ping.mjs';
 import reonboard from './handler/reonboard.mjs';
 import report from './handler/report.mjs';
 import { cdRevisionGet } from './handler/revision.mjs';
@@ -134,6 +135,13 @@ const init = async () => {
         method: 'POST',
         path: '/onboard/{dfsp}',
         handler: onboard
+    });
+
+    server.route({
+        options: config.server.post,
+        method: 'POST',
+        path: '/ping/{dfsp}',
+        handler: ping
     });
 
     if (config.github?.token) {
