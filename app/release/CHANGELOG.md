@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.32.0](https://github.com/infitx-org/release-cd/compare/release-v1.31.3...release-v1.32.0) (2026-01-21)
+
+
+### Features
+
+* implement report endpoint ([c75b49b](https://github.com/infitx-org/release-cd/commit/c75b49b69557143198bf2cd12285c4bbf394dd59))
+
 ## [1.31.3](https://github.com/infitx-org/release-cd/compare/release-v1.31.2...release-v1.31.3) (2026-01-14)
 
 
