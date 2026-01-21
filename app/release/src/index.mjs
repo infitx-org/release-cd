@@ -8,6 +8,7 @@ import app from './handler/app.mjs';
 import keyRotate from './handler/keyRotate.mjs';
 import keyRotateDFSP from './handler/keyRotateDFSP.mjs';
 import notify from './handler/notify.mjs';
+import onboard from './handler/onboard.mjs';
 import reonboard from './handler/reonboard.mjs';
 import report from './handler/report.mjs';
 import { cdRevisionGet } from './handler/revision.mjs';
@@ -126,6 +127,13 @@ const init = async () => {
         method: 'GET',
         path: '/report/{key*}',
         handler: report
+    });
+
+    server.route({
+        options: config.server.post,
+        method: 'POST',
+        path: '/onboard/{dfsp}',
+        handler: onboard
     });
 
     if (config.github?.token) {

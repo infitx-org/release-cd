@@ -56,6 +56,12 @@ export default rc('dev', {
         bucket: {},
         name: 'report'
     },
+    mcm: {
+        realm: 'hub-operators'
+    },
+    keycloak: {
+        realm: 'master'
+    },
     release: {
         url: '',
         prerelease: 'dev',

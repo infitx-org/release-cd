@@ -9,7 +9,8 @@
         "mcmadmin",
         "monetaryzones",
         "servercerts",
-        "ttyd"
+        "ttyd",
+        "virtualservices"
     ],
     "editor.formatOnSave": true,
     "editor.codeActionsOnSave": {
