@@ -1,4 +1,5 @@
 #! /usr/bin/env node
+import basic from '@hapi/basic';
 import Boom from '@hapi/boom';
 import Hapi from '@hapi/hapi';
 
@@ -8,6 +9,7 @@ import keyRotate from './handler/keyRotate.mjs';
 import keyRotateDFSP from './handler/keyRotateDFSP.mjs';
 import notify from './handler/notify.mjs';
 import reonboard from './handler/reonboard.mjs';
+import report from './handler/report.mjs';
 import { cdRevisionGet } from './handler/revision.mjs';
 import triggerCronJob from './handler/triggerJob.mjs';
 
@@ -16,7 +18,7 @@ const init = async () => {
         port: config.server.port,
         host: config.server.host
     });
-    const masked = ['/app', '/'];
+    const masked = ['/app', '/', '/report/{key*}'];
 
     server.auth.scheme('authorization-header', () => {
         return {
@@ -30,6 +32,13 @@ const init = async () => {
         };
     });
     server.auth.strategy('service', 'authorization-header');
+    server.register(basic);
+    server.auth.strategy('report', 'basic', {
+        validate: (request, username, password) => (username === 'admin' && password === config.server.auth) ? {
+            isValid: true,
+            credentials: { user: username }
+        } : { isValid: false }
+    });
 
     if (config.github?.token) {
         const { default: initCd } = await import('./handler/cd.mjs');
@@ -56,7 +65,7 @@ const init = async () => {
         if (response.isBoom) {
             request.log(['error'], response);
         } else {
-            request.log(['info'], `<= ${request.method.toUpperCase()} ${request.path} ${response.statusCode} ${masked.includes(request.path) ? '[body]' : JSON.stringify(response.source)}`);
+            request.log(['info'], `<= ${request.method.toUpperCase()} ${request.path} ${response.statusCode} ${masked.includes(request.route.path) ? '[body]' : JSON.stringify(response.source)}`);
         }
         return h.continue;
     });
@@ -110,6 +119,13 @@ const init = async () => {
         method: 'GET',
         path: '/app',
         handler: app
+    });
+
+    server.route({
+        options: { auth: 'report' },
+        method: 'GET',
+        path: '/report/{key*}',
+        handler: report
     });
 
     if (config.github?.token) {

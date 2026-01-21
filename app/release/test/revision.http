@@ -73,3 +73,15 @@ GET http://localhost:8080/release
 
 ###
 GET http://localhost:8080/health
+
+###
+POST http://localhost:8080/revision/region-dev/test
+Content-Type: application/json
+Authorization: {{release-cd-auth}}
+
+{
+    "tests.vulnerability": {
+        "totalAssertions": 1,
+        "totalPassedAssertions": 1
+    }
+}

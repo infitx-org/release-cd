@@ -3,7 +3,18 @@ POST https://release-cd.int.region-dev.{{release-cd-domain}}/reonboard
     ?pm=proxy-zmw-management-api-a.proxy-zmw,proxy-zmw-management-api-b.proxy-zmw,proxy-mwk-management-api-a.proxy-mwk,proxy-mwk-management-api-b.proxy-mwk
 Authorization: {{release-cd-auth}}
 
-### re-onboard payment managers
+### re-onboard payment managers mwk
 POST https://release-cd.int.pm-dev.{{release-cd-domain}}/reonboard
-    ?pm=test-mwk-dfsp-management-api.test-mwk-dfsp,test-zmw-dfsp-management-api.test-zmw-dfsp,test-fxp-management-api.test-fxp,test-fxp2-management-api.test-fxp2,perf-zmw-dfsp1-management-api.perf-zmw-dfsp1,perf-mwk-dfsp1-management-api.perf-mwk-dfsp1
+    ?pm=test-mwk-dfsp-management-api.test-mwk-dfsp,test-mwk-dfsp2-management-api.test-mwk-dfsp2,perf-mwk-dfsp1-management-api.perf-mwk-dfsp1
 Authorization: {{release-cd-auth}}
+
+### re-onboard payment managers zmw
+POST https://release-cd.int.pm-dev.{{release-cd-domain}}/reonboard
+    ?pm=test-zmw-dfsp-management-api.test-zmw-dfsp,test-zmw-dfsp2-management-api.test-zmw-dfsp2,perf-zmw-dfsp1-management-api.perf-zmw-dfsp1
+Authorization: {{release-cd-auth}}
+
+### re-onboard payment managers fxp
+POST https://release-cd.int.pm-dev.{{release-cd-domain}}/reonboard
+    ?pm=test-fxp-management-api.test-fxp,test-fxp2-management-api.test-fxp2
+Authorization: {{release-cd-auth}}
+

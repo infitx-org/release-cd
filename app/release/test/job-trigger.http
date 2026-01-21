@@ -1,2 +1,7 @@
-GET https://release-cd.int.region-dev.{{release-cd-domain}}/triggerCronJob/addons-sec/zap-baseline-mcm
+### zap-baseline-mcm
+POST https://release-cd.int.region-dev.{{release-cd-domain}}/triggerCronJob/addons-sec/zap-baseline-mcm
+Authorization: {{release-cd-auth}}
+
+### comesa-gp
+POST https://release-cd.int.pm-dev.{{release-cd-domain}}/triggerCronJob/comesa-tests/test-e2e
 Authorization: {{release-cd-auth}}

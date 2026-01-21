@@ -1,2 +1,10 @@
-POST https://release-cd.int.region-dev.{{release-cd-domain}}/keyRotate/hub
+POST https://release-cd.int.zm-dev.{{release-cd-domain}}/keyRotate/hub
+Authorization: {{release-cd-auth}}
+
+### rotate dfsp TLS
+POST https://release-cd.int.zm-dev.{{release-cd-domain}}/keyRotate/tls-server
+Authorization: {{release-cd-auth}}
+
+### rotate dfsp keys
+POST https://release-cd.int.zm-dev.{{release-cd-domain}}/keyRotateDFSP/jws
 Authorization: {{release-cd-auth}}
