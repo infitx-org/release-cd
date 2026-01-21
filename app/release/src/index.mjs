@@ -34,7 +34,7 @@ const init = async () => {
         };
     });
     server.auth.strategy('service', 'authorization-header');
-    server.register(basic);
+    await server.register(basic);
     server.auth.strategy('report', 'basic', {
         validate: (request, username, password) => (username === 'admin' && password === config.server.auth) ? {
             isValid: true,
