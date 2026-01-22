@@ -4,9 +4,12 @@ import axios from 'axios';
 import https from 'https';
 
 import config from '../config.mjs';
+import pingDFSP from '../fn/ping.mjs';
 import { k8sApi, k8sCustom } from '../k8s.mjs';
 
+axios.defaults.timeout = 60000; // Set default timeout to 60 seconds
 const onboardClientId = 'onboard';
+
 async function getAccessToken(client_secret, realm, baseUrl) {
     return (await axios.post(new URL(`/realms/${realm}/protocol/openid-connect/token`, baseUrl), {
         client_id: onboardClientId,
@@ -24,7 +27,7 @@ let keycloakAdminVS = null;
 let onboardClientSecret = null;
 
 // this function will sign any pending CSRs and onboard the DFSP
-export default async function onboard(dfsp) {
+export default async function onboard(dfsp, pingTimeout) {
     if (!mcmVS) {
         console.log(new Date(), '... Get MCM virtual service');
         mcmVS = await k8sCustom.getNamespacedCustomObject({
@@ -120,6 +123,9 @@ export default async function onboard(dfsp) {
             }
         }
     );
+
+    console.log(new Date(), `... Pinging ${dfsp} to verify onboarding`);
+    console.log(new Date(), `... ${await pingDFSP(dfsp, pingTimeout)}`);
 }
 
 if (import.meta.url === process.argv[1] || import.meta.url === `file://${process.argv[1]}`) {

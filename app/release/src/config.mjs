@@ -11,6 +11,9 @@ export default rc('dev', {
             auth: false
         }
     },
+    service: {
+        ping: 'http://moja-ml-participant-connection-test-svc.mojaloop.svc.cluster.local/ping'
+    },
     mongodb: {
         host: 'host.docker.internal',
         database: 'release-cd',

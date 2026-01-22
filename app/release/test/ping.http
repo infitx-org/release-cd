@@ -1,2 +1,2 @@
-POST http://localhost:8080/ping/test-fxp
+POST http://localhost:8080/ping/test-fxp2?timeout=5
 Authorization: test

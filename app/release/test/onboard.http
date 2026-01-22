@@ -1,2 +1,2 @@
-POST http://localhost:8080/onboard/perf-fxp
+POST http://localhost:8080/onboard/test-fxp2?ping=45
 Authorization: test
