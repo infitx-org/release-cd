@@ -207,9 +207,10 @@ ${Object.entries(tests).map(([env, tests]) => Object.entries(tests).map(([name, 
 
     const cdCollectionGet = async (request, h) => {
         const { env, collection, id: _id } = request.params;
+        const hide = request.query.hide ? request.query.hide.split(',') : [];
         const result = await request.server.app.db.collection(`${collection}/${env}`).findOne({ _id });
         return result
-            ? h.response(result).code(200)
+            ? h.response(JSON.stringify(result, (key, value) => hide.includes(key) ? '*****' : value, 2)).code(200).type('application/json')
             : h.response({ statusCode: 404, error: 'Not Found', message: 'Release not found' }).code(404);
     };
 

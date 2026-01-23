@@ -60,7 +60,35 @@ export default rc('dev', {
         name: 'report'
     },
     mcm: {
-        realm: 'hub-operators'
+        realm: 'hub-operators',
+        db: {
+            client: 'mysql2',
+            asyncStackTraces: true,
+            connection: {
+                host: 'mcm-db-svc.stateful-resources.svc.cluster.local',
+                port: 3306,
+                user: 'devdat1asql1',
+                database: 'mcm',
+                ssl: {
+                    rejectUnauthorized: false,
+                }
+            }
+        }
+    },
+    mojaloop: {
+        db: {
+            client: 'mysql2',
+            asyncStackTraces: true,
+            connection: {
+                host: 'central-ledger-db-svc.stateful-resources.svc.cluster.local',
+                port: 3306,
+                user: 'central_ledger',
+                database: 'central_ledger',
+                ssl: {
+                    rejectUnauthorized: false,
+                }
+            }
+        }
     },
     keycloak: {
         realm: 'master'

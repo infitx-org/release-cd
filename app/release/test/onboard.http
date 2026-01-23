@@ -1,2 +1,7 @@
+### onboard
 POST http://localhost:8080/onboard/test-fxp2?ping=45
+Authorization: test
+
+### offboard
+POST http://localhost:8080/offboard/{$inputs.PERF_SDK_FXP_ID}
 Authorization: test

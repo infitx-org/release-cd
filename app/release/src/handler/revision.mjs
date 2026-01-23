@@ -63,7 +63,7 @@ export const cdRevisionGet = async (request, h) => {
 
         result.push(`<h2>${env}</h2>`);
         result.push('<ul>');
-        result.push(`<li>ℹ️ Revision ID: <code>${revision._id}</code></li>`);
+        result.push(`<li>ℹ️ Revision ID: <a href="/revision/${env}/${revision._id}?hide=assertions" target="_blank">${revision._id}</a></li>`);
         if (revision.version)
             result.push(`<li>✅ Release: ${revision.version} already created</li>`);
         iac ||= revision.iac_terraform_modules_tag
