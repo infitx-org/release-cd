@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.34.0](https://github.com/infitx-org/release-cd/compare/release-v1.33.0...release-v1.34.0) (2026-01-23)
+
+
+### Features
+
+* implement offboard handler ([97fcf00](https://github.com/infitx-org/release-cd/commit/97fcf00c441023e877e86a46035cb5fa36448eae))
+
 ## [1.33.0](https://github.com/infitx-org/release-cd/compare/release-v1.32.0...release-v1.33.0) (2026-01-23)
 
 
