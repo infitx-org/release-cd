@@ -6,6 +6,7 @@ import https from 'https';
 import config from '../config.mjs';
 import pingDFSP from '../fn/ping.mjs';
 import { k8sApi, k8sCustom } from '../k8s.mjs';
+import notifyRelease from '../release.mjs';
 
 axios.defaults.timeout = 60000; // Set default timeout to 60 seconds
 const onboardClientId = 'onboard';
@@ -28,8 +29,14 @@ let onboardClientSecret = null;
 
 // this function will sign any pending CSRs and onboard the DFSP
 export default async function onboard(dfsp, pingTimeout) {
+    const startTime = Date.now();
+    const result = [];
+    const log = string => {
+        console.log(new Date(), '... ' + string);
+        result.push(string);
+    }
     if (!mcmVS) {
-        console.log(new Date(), '... Get MCM virtual service');
+        log('Get MCM virtual service');
         mcmVS = await k8sCustom.getNamespacedCustomObject({
             apiVersion: 'networking.istio.io/v1alpha3',
             group: 'networking.istio.io',
@@ -43,7 +50,7 @@ export default async function onboard(dfsp, pingTimeout) {
     const mcmBaseUrl = 'https://' + mcmVS.spec.hosts[0];
 
     if (!keycloakAdminVS) {
-        console.log(new Date(), '... Get Keycloak admin virtual service');
+        log('Get Keycloak admin virtual service');
         keycloakAdminVS = await k8sCustom.getNamespacedCustomObject({
             group: 'networking.istio.io',
             version: 'v1alpha3',
@@ -56,7 +63,7 @@ export default async function onboard(dfsp, pingTimeout) {
 
     const baseUrl = 'https://' + keycloakAdminVS.spec.hosts[0]
     if (!onboardClientSecret) {
-        console.log(new Date(), '... Get onboard client secret from Keycloak');
+        log('Get onboard client secret from Keycloak');
         const keycloakSecret = await k8sApi.readNamespacedSecret({
             name: 'switch-keycloak-initial-admin',
             namespace: 'keycloak'
@@ -71,7 +78,7 @@ export default async function onboard(dfsp, pingTimeout) {
                 })
             }
         });
-        console.log(new Date(), '... Authenticate to Keycloak');
+        log('Authenticate to Keycloak');
         await keycloak.auth({
             username: Buffer.from(keycloakSecret.data.username, 'base64').toString('utf-8'),
             password: Buffer.from(keycloakSecret.data.password, 'base64').toString('utf-8'),
@@ -83,10 +90,10 @@ export default async function onboard(dfsp, pingTimeout) {
         onboardClientSecret = found[0].secret;
     }
 
-    console.log(new Date(), '... Get MCM access token');
+    log('Get MCM access token');
     const access_token = await getAccessToken(onboardClientSecret, config.mcm.realm, baseUrl);
 
-    console.log(new Date(), `... Get ${dfsp} CSR`);
+    log(`Get ${dfsp} CSR`);
     const { data: csr } = await axios.get(
         new URL(`/api/dfsps/${dfsp}/enrollments/inbound?state=CSR_LOADED`, mcmBaseUrl),
         {
@@ -97,9 +104,9 @@ export default async function onboard(dfsp, pingTimeout) {
     );
 
     for (const item of csr || []) {
-        console.log(new Date(), `... ${dfsp} CSR:`, item?.id, item?.validationState, item?.state);
+        log(`${dfsp} CSR:`, item?.id, item?.validationState, item?.state);
         if (item?.state === 'CSR_LOADED') {
-            console.log(new Date(), `... Signing ${dfsp} CSR`);
+            log(`Signing ${dfsp} CSR`);
             await axios.post(
                 new URL(`/api/dfsps/${dfsp}/enrollments/inbound/${item?.id}/sign`, mcmBaseUrl),
                 {},
@@ -112,7 +119,7 @@ export default async function onboard(dfsp, pingTimeout) {
             );
         }
     }
-    console.log(new Date(), `... Onboarding ${dfsp} `);
+    log(`Onboarding ${dfsp} `);
     await axios.post(
         new URL(`/api/dfsps/${dfsp}/onboard`, mcmBaseUrl),
         {},
@@ -124,8 +131,21 @@ export default async function onboard(dfsp, pingTimeout) {
         }
     );
 
-    console.log(new Date(), `... Pinging ${dfsp} to verify onboarding`);
-    console.log(new Date(), `... ${await pingDFSP(dfsp, pingTimeout)}`);
+    log(`Pinging ${dfsp} to verify onboarding`);
+    log(`${await pingDFSP(dfsp, pingTimeout)}`);
+
+    notifyRelease({
+        reportId: 'onboard',
+        totalAssertions: 1,
+        totalPassedAssertions: 1,
+        isPassed: true,
+        duration: Date.now() - startTime,
+        onboard: result.join('\n')
+    }).catch(err => {
+        console.error('Error notifying release:', err);
+    });
+
+    return result.join('\n');
 }
 
 if (import.meta.url === process.argv[1] || import.meta.url === `file://${process.argv[1]}`) {

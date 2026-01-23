@@ -11,8 +11,8 @@ export default async function trigger(request, fact) {
     if (!decide) return;
     const decisions = [].concat(decide(fact, true)).filter(Boolean);
     if (decisions.length) console.log('Trigger decisions:', decisions);
-    return Promise.allSettled(decisions.map(async ({ rule, decision, action, params: { env, namespace, job, key, body } = {}, params }) => {
-        if (!['keyRotate', 'keyRotateDFSP', 'triggerJob'].includes(action)) throw new Error(`Unknown action: ${action}`);
+    return Promise.allSettled(decisions.map(async ({ rule, decision, action, params: { env, namespace, job, key, dfsp, timeout, body } = {}, params }) => {
+        if (!['keyRotate', 'keyRotateDFSP', 'triggerJob', 'onboard'].includes(action)) throw new Error(`Unknown action: ${action}`);
 
         const revisionColl = request.server.app.db.collection(`revision/${env}`);
         const revisionId = fact.revisions[env];
@@ -63,6 +63,13 @@ export default async function trigger(request, fact) {
                         const url = new URL('/triggerCronJob/' + namespace + '/' + job, baseUrl).toString();
                         const result = await axios.post(url, body, { headers });
                         console.log(`job ${namespace}/${job} triggered for ${env} (${url}):`, result.data);
+                        return { rule, decision, result: result.data };
+                    }
+                    case 'onboard': {
+                        if (!dfsp) throw new Error('No dfsp specified for onboard');
+                        const url = new URL(`/onboard/${dfsp}?ping=${timeout || 45}`, baseUrl).toString();
+                        const result = await axios.post(url, body, { headers, timeout: timeout ? (timeout + 15) * 1000 : 60000 });
+                        console.log(`DFSP ${dfsp} onboarded for ${env} (${url}):`, result.data);
                         return { rule, decision, result: result.data };
                     }
                 }

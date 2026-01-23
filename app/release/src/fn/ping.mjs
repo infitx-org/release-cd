@@ -15,7 +15,7 @@ export default async function pingDFSP(dfsp, timeout) {
         try {
             const status = await sendPingRequest(dfsp);
             if (status === 'SUCCESS') {
-                return `Ping ${status} after ${(Date.now() - now) / 1000} seconds, on try ${retries})`;
+                return `Ping to DFSP ${dfsp} ${status} after ${(Date.now() - now) / 1000} seconds, on try ${retries}`;
             } else {
                 lastError = `Unexpected ping status: ${status}`;
             }
