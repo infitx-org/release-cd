@@ -13,8 +13,8 @@ importers:
   ../../app/onboard:
     dependencies:
       '@keycloak/keycloak-admin-client':
-        specifier: ^26.4.7
-        version: 26.4.7
+        specifier: ^26.5.1
+        version: 26.5.1
       '@kubernetes/client-node':
         specifier: ^1.4.0
         version: 1.4.0
@@ -740,10 +740,6 @@ packages:
     engines: {node: '>= 10.16.0'}
     peerDependencies:
       jsep: ^0.4.0||^1.0.0
-
-  '@keycloak/keycloak-admin-client@26.4.7':
-    resolution: {integrity: sha512-6AqwZjWuWBzM0nPVggWDV4Oep+CO8ATfNEvVhXgC1dH7PkBCl/4hCRj9ZFHnX1OtQJ+zozD6LQ1giwArcAU6qQ==}
-    engines: {node: '>=18'}
 
   '@keycloak/keycloak-admin-client@26.5.1':
     resolution: {integrity: sha512-9c1N/5UZK0zIz5CIFnjrlR2Qbb/CJervmPEMi04hF87VWmAKivMcsI68DxWSTrkht8Zd9z9lgWxwieDL5QP73g==}
@@ -4644,11 +4640,6 @@ snapshots:
   '@jsep-plugin/regex@1.0.4(jsep@1.4.0)':
     dependencies:
       jsep: 1.4.0
-
-  '@keycloak/keycloak-admin-client@26.4.7':
-    dependencies:
-      camelize-ts: 3.0.0
-      url-template: 3.1.1
 
   '@keycloak/keycloak-admin-client@26.5.1':
     dependencies:
