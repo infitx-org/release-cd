@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.33.0](https://github.com/infitx-org/release-cd/compare/release-v1.32.0...release-v1.33.0) (2026-01-23)
+
+
+### Features
+
+* enhance onboarding and ping functionality with logging and notification support ([d0526a5](https://github.com/infitx-org/release-cd/commit/d0526a5d8e6f69a2a20a0c37f8dcbd16f20074aa))
+* enhance onboarding and ping functionality with timeout support ([40a9923](https://github.com/infitx-org/release-cd/commit/40a9923711072fe0d3856f052c26b64ca810377c))
+* onboard handler ([5122688](https://github.com/infitx-org/release-cd/commit/51226888a95130bc05422217e8bc3fb650c5464f))
+* ping handler ([81ac10e](https://github.com/infitx-org/release-cd/commit/81ac10e0bfcd98c1c06386dad950d7a6bd0283c2))
+
+
+### Bug Fixes
+
+* await server registration for basic auth ([2e5e98a](https://github.com/infitx-org/release-cd/commit/2e5e98a4cca86bb9d1a7123828c8898bfe9d79a1))
+
 ## [1.32.0](https://github.com/infitx-org/release-cd/compare/release-v1.31.3...release-v1.32.0) (2026-01-21)
 
 
