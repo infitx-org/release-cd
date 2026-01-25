@@ -2,6 +2,8 @@
 import basic from '@hapi/basic';
 import Boom from '@hapi/boom';
 import Hapi from '@hapi/hapi';
+import restFsPlugin from '@infitx/rest-fs';
+import path from 'path';
 
 import config from './config.mjs';
 import app from './handler/app.mjs';
@@ -71,6 +73,17 @@ const init = async () => {
             request.log(['info'], `<= ${request.method.toUpperCase()} ${request.path} ${response.statusCode} ${masked.includes(request.route.path) ? '[body]' : JSON.stringify(response.source)}`);
         }
         return h.continue;
+    });
+
+    // Register the REST filesystem plugin
+    await server.register({
+        plugin: restFsPlugin,
+        options: {
+            options: config.server.fs,
+            baseDir: path.resolve('.'),
+            routePrefix: '/rest-fs',
+            maxFileSize: 52428800 // 50MB
+        }
     });
 
     server.route({

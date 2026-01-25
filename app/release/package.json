@@ -22,6 +22,7 @@
     "@hapi/hapi": "^21.4.4",
     "@hapi/inert": "^7.1.0",
     "@infitx/decision": "workspace:*",
+    "@infitx/rest-fs": "workspace:*",
     "@keycloak/keycloak-admin-client": "^26.5.1",
     "@kubernetes/client-node": "^1.4.0",
     "@octokit/rest": "^21.1.1",

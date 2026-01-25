@@ -322,6 +322,10 @@
     {
       "packageName": "@infitx/decision",
       "projectFolder": "library/decision"
+    },
+    {
+      "packageName": "@infitx/rest-fs",
+      "projectFolder": "library/rest-fs"
     }
     // {
     //   /**

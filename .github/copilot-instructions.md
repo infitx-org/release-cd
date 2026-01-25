@@ -7,12 +7,15 @@ This is a **Rush monorepo** for release automation and onboarding tooling used i
 ### Package Structure
 
 **Applications** (`app/`):
+
 - `@infitx/release` (v1.31.3): Release orchestration service with test execution, Kubernetes integration, and Slack notifications
 - `@infitx/onboard` (v1.1.2): Automated DFSP/FXP onboarding via Keycloak and Kubernetes
 
 **Libraries** (`library/`):
+
 - `@infitx/match` (v1.1.1): Object pattern matching utility with support for nested structures, arrays, and type coercion
 - `@infitx/decision` (v1.2.0): Rule engine for evaluating facts against YAML-configured rules, depends on `@infitx/match`
+- `@infitx/rest-fs` (v1.0.0): Rest filesystem plugin
 
 ### Technology Stack
 
@@ -58,11 +61,13 @@ rush update
 ### Testing Patterns
 
 **Unit tests**: All libraries use Jest with coverage reporting
+
 - Test files: `*.test.js` colocated with source
 - Coverage output: `./coverage/` directory
 - JUnit XML: `./coverage/junit.xml` for CI integration
 
 **Application tests**: `@infitx/release` uses Jest with Allure reporting
+
 ```bash
 cd app/release
 npm test              # Run tests + generate Allure report
@@ -75,12 +80,13 @@ npm run kubescape-report     # Kubernetes security scan
 ### Package Dependencies
 
 **Workspace references**: Use `workspace:*` in package.json for internal dependencies
+
 ```json
 {
-  "dependencies": {
-    "@infitx/match": "workspace:*",
-    "@infitx/decision": "workspace:*"
-  }
+    "dependencies": {
+        "@infitx/match": "workspace:*",
+        "@infitx/decision": "workspace:*"
+    }
 }
 ```
 
@@ -107,6 +113,7 @@ NODE_WATCH_INSPECT=1 npm run release-cd
 ```
 
 **Key API endpoints**:
+
 - `POST /keyRotate/{key}`: Rotate Vault/Kubernetes secrets
 - `POST /keyRotateDFSP/{key}`: DFSP-specific key rotation
 - `POST /triggerCronJob/{namespace}/{job}`: Trigger Kubernetes CronJobs
@@ -122,6 +129,7 @@ NODE_WATCH_INSPECT=1 npm run release-cd
 **Purpose**: Flexible pattern matching for objects, arrays, and primitives
 
 **Key features**:
+
 - Partial matching: `{ a: 1 }` matches `{ a: 1, b: 2 }`
 - Type coercion: String `"123"` matches number `123` with `coerceTypes: true`
 - Range matching: `{ age: { min: 18, max: 65 } }`
@@ -129,6 +137,7 @@ NODE_WATCH_INSPECT=1 npm run release-cd
 - Nested structure matching with recursive comparison
 
 **Usage example**:
+
 ```javascript
 const match = require('@infitx/match');
 
@@ -136,11 +145,7 @@ const match = require('@infitx/match');
 match({ a: 1 }, { a: 1, b: 2 }); // true (partial match)
 
 // With options
-match(
-  { age: { min: 18 } },
-  { age: 25 },
-  { compareStrategy: 'partial' }
-); // true
+match({ age: { min: 18 } }, { age: 25 }, { compareStrategy: 'partial' }); // true
 ```
 
 ### @infitx/decision
@@ -148,12 +153,14 @@ match(
 **Purpose**: Rule engine for decision-making based on YAML configurations
 
 **Key features**:
+
 - Priority-based rule evaluation (explicit or implicit)
 - Pattern matching via `@infitx/match` in `when` clauses
 - Multiple decision strategies: first match or all matches
 - YAML-defined rules for maintainability
 
 **Usage example**:
+
 ```javascript
 const decision = require('@infitx/decision');
 const { decide, rules } = decision('./rules.yaml');
@@ -166,12 +173,13 @@ console.log(rules());
 ```
 
 **YAML structure**:
+
 ```yaml
 rules:
-  rule-name:
-    priority: 10  # Optional, higher = evaluated first
-    when: { type: transfer, amount: { max: 1000 } }
-    then: { approved: true, reason: "Within limit" }
+    rule-name:
+        priority: 10 # Optional, higher = evaluated first
+        when: { type: transfer, amount: { max: 1000 } }
+        then: { approved: true, reason: 'Within limit' }
 ```
 
 ### @infitx/onboard
@@ -179,6 +187,7 @@ rules:
 **Purpose**: Automate DFSP/FXP onboarding in Kubernetes environments
 
 **Key operations**:
+
 1. Fetches secrets from Keycloak
 2. Creates Kubernetes Secrets and PushSecrets
 3. Generates CSRs for proxy configurations
@@ -186,6 +195,7 @@ rules:
 5. Triggers onboarding workflows
 
 **Configuration** (via `rc` module):
+
 - `keycloak.baseUrl`: Keycloak server (default: from `keycloak-admin-vs` VirtualService)
 - `keycloak.username/password`: Auth credentials (default: from `switch-keycloak-initial-admin` secret)
 - `http.auth`: Authorization header for `/secrets` endpoint
@@ -196,6 +206,7 @@ rules:
 **Purpose**: Release orchestration with testing, monitoring, and notifications
 
 **Key integrations**:
+
 - **Kubernetes**: `@kubernetes/client-node` for K8s API interactions
 - **GitHub**: `@octokit/rest` for releases and repository operations
 - **Slack**: `@slack/webhook` for notifications
@@ -204,6 +215,7 @@ rules:
 - **MongoDB**: Test data persistence
 
 **Testing types**:
+
 - Portal tests: UI/integration testing
 - Policy reports: Compliance validation
 - Vulnerability reports: Security scanning (Grype)
@@ -212,26 +224,31 @@ rules:
 ## Project Conventions
 
 ### File Naming
+
 - Test files: `*.test.js` (Jest discovers automatically)
 - Config files: `config.mjs` or YAML for rule definitions
 - Entry points: `index.js` or `index.mjs` (ES modules)
 
 ### Code Style
+
 - **ES Modules**: Use `.mjs` extension and `import`/`export` syntax in apps
 - **CommonJS**: Use `.js` and `require()` in libraries for broader compatibility
 - **Type safety**: No TypeScript, but leverage JSDoc comments for editor hints
 
 ### Configuration Management
+
 - Use `rc` module for hierarchical config: `.${appname}rc`, environment variables, CLI args
 - Config files: YAML for readability, JSON for data structures
 - Secrets: Never commit secrets; use environment variables or Kubernetes secrets
 
 ### Error Handling
+
 - Use `@hapi/boom` for HTTP errors in apps
 - Libraries throw standard Error objects
 - Log errors with context (timestamp, request path, error details)
 
 ### Testing Best Practices
+
 - **Arrange-Act-Assert** pattern in tests
 - Use descriptive test names: `it('should return true when amount is under limit', ...)`
 - Mock external dependencies (Kubernetes API, GitHub, Slack)
@@ -244,22 +261,25 @@ rules:
 1. Create directory: `app/<name>` or `library/<name>`
 2. Initialize: `npm init` and set up package.json
 3. Add to `rush.json`:
+
 ```json
 {
-  "packageName": "@infitx/new-package",
-  "projectFolder": "library/new-package"
+    "packageName": "@infitx/new-package",
+    "projectFolder": "library/new-package"
 }
 ```
+
 4. Run: `rush update` to register the package
 
 ### Creating a Workspace Dependency
 
 In dependent package's `package.json`:
+
 ```json
 {
-  "dependencies": {
-    "@infitx/match": "workspace:*"
-  }
+    "dependencies": {
+        "@infitx/match": "workspace:*"
+    }
 }
 ```
 
@@ -282,6 +302,7 @@ node --inspect-brk node_modules/.bin/jest --runInBand
 ### Release Process
 
 This repo uses **release-please** (see `.release-please-manifest.json` and `release-please-config.json`):
+
 - PRs trigger version bump detection
 - Merge to main creates release PR
 - Merging release PR creates GitHub release and tags
@@ -305,23 +326,27 @@ This repo uses **release-please** (see `.release-please-manifest.json` and `rele
 ## Key File Locations
 
 ### Configuration
+
 - `rush.json`: Rush configuration, package inventory, Node version requirements
 - `.nvmrc`: Node version for nvm
 - `common/config/rush/`: Rush-specific configs (not currently used)
 - `app/release/src/config.mjs`: Release service configuration with defaults
 
 ### CI/CD
+
 - `.github/workflows/build.yaml`: PR validation workflow
 - `.github/workflows/release.yaml`: Release automation via release-please
 - `release-please-config.json`: Release-please configuration
 - `.release-please-manifest.json`: Current version tracking
 
 ### Testing
+
 - `library/*/test/`: Test files for libraries
 - `app/release/src/`: Tests colocated with source for release app
 - `.allure/`: Allure report configuration
 
 ### Documentation
+
 - `library/match/README.md`: Match library API documentation
 - `library/decision/README.md`: Decision engine guide with examples
 - `app/onboard/README.md`: Onboarding service configuration reference

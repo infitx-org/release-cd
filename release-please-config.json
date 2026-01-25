@@ -4,6 +4,7 @@
         "app/release": {},
         "app/onboard": {},
         "library/match": {},
-        "library/decision": {}
+        "library/decision": {},
+        "library/rest-fs": {}
     }
 }

@@ -1,0 +1,14 @@
+{
+    "name": "@infitx/rest-fs",
+    "version": "1.0.0",
+    "description": "Rest filesystem plugin",
+    "main": "index.js",
+    "scripts": {
+        "build": "true",
+        "watch": "node --watch ."
+    },
+    "dependencies": {},
+    "devDependencies": {},
+    "author": "Kalin Krustev",
+    "license": "Apache-2.0"
+}

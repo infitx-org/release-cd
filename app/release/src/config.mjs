@@ -4,6 +4,9 @@ export default rc('dev', {
     server: {
         port: 8080,
         host: '0.0.0.0',
+        fs: {
+            auth: 'report'
+        },
         post: {
             auth: 'service'
         },

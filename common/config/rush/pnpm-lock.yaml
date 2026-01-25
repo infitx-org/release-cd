@@ -45,6 +45,9 @@ importers:
       '@infitx/decision':
         specifier: workspace:*
         version: link:../../library/decision
+      '@infitx/rest-fs':
+        specifier: workspace:*
+        version: link:../../library/rest-fs
       '@keycloak/keycloak-admin-client':
         specifier: ^26.5.1
         version: 26.5.1
@@ -165,6 +168,8 @@ importers:
       yaml:
         specifier: 2.8.1
         version: 2.8.1
+
+  ../../library/rest-fs: {}
 
 packages:
 
