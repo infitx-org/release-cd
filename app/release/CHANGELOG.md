@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.35.0](https://github.com/infitx-org/release-cd/compare/release-v1.34.0...release-v1.35.0) (2026-01-25)
+
+
+### Features
+
+* add REST filesystem plugin for Hapi with CRUD operations ([ef795b6](https://github.com/infitx-org/release-cd/commit/ef795b6db52614893a8c5bbdf20e427e80beb48e))
+
 ## [1.34.0](https://github.com/infitx-org/release-cd/compare/release-v1.33.0...release-v1.34.0) (2026-01-23)
 
 
