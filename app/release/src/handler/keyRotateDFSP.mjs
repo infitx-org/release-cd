@@ -7,59 +7,58 @@ import notifyRelease from '../release.mjs';
 
 const log = debug('release-cd:keyRotate');
 
-
 export default async function keyRotateDFSP(request, h) {
-
     try {
         const results = [];
         const dfsps = request.payload?.dfsps || [];
+        const proxies = request.payload?.proxies || [];
         const startTime = Date.now();
+        const push = responses => results.push(...responses.map((res, index) => ({ dfsp: dfsps[index], ...res })))
+        const tlsServer = () => Promise.all(
+            dfsps.map(dfsp =>
+                deleteSecretAndAwaitRecreation(`${dfsp}-vault-tls-cert`, dfsp)
+            ).concat(proxies.map(proxy => [
+                deleteSecretAndAwaitRecreation(`${proxy}-vault-tls-cert-scheme-a`, proxy),
+                deleteSecretAndAwaitRecreation(`${proxy}-vault-tls-cert-scheme-b`, proxy)
+            ]).flat())
+        ).then(push)
+        const jws = () => Promise.all(
+            dfsps.map(dfsp =>
+                rotateJWS(`${dfsp}-management-api.${dfsp}`)
+            ).concat(proxies.map(proxy => [
+                rotateJWS(`${proxy}-management-api-a.${proxy}`),
+                rotateJWS(`${proxy}-management-api-b.${proxy}`)
+            ]).flat())
+        ).then(push)
+        const outboundTLS = () => Promise.all(
+            dfsps.map(dfsp =>
+                rotateOutboundTLS(`${dfsp}-management-api.${dfsp}`)
+            ).concat(proxies.map(proxy => [
+                rotateOutboundTLS(`${proxy}-management-api-a.${proxy}`),
+                rotateOutboundTLS(`${proxy}-management-api-b.${proxy}`)
+            ]).flat())
+        ).then(push)
 
         switch (request.params.key) {
-            case 'tls-server': {
-                const result = await Promise.all(dfsps.map(dfsp => {
-                    return deleteSecretAndAwaitRecreation(`${dfsp}-vault-tls-cert`, dfsp);
-                }))
-                results.push(...result.map((res, index) => ({ dfsp: dfsps[index], ...res })));
-                notify(request.params.key, Date.now() - startTime, dfsps);
+            case 'tls-server':
+                await tlsServer();
                 break;
-            }
-            case 'jws': {
-                const result = await Promise.all(dfsps.map(dfsp => {
-                    return rotateJWS(dfsp);
-                }))
-                results.push(...result.map((res, index) => ({ dfsp: dfsps[index], ...res })));
-                notify(request.params.key, Date.now() - startTime, dfsps);
+            case 'jws':
+                await jws()
                 break;
-            }
-            case 'outboundTLS': {
-                const result = await Promise.all(dfsps.map(dfsp => {
-                    return rotateOutboundTLS(dfsp);
-                }))
-                results.push(...result.map((res, index) => ({ dfsp: dfsps[index], ...res })));
-                notify(request.params.key, Date.now() - startTime, dfsps);
+            case 'outboundTLS':
+                await outboundTLS();
                 break;
-            }
-            case 'all': {
-                const result1 = await Promise.all(dfsps.map(dfsp => {
-                    return rotateJWS(dfsp);
-                }))
-                results.push(...result1.map((res, index) => ({ dfsp: dfsps[index], ...res })));
-                const result2 = await Promise.all(dfsps.map(dfsp => {
-                    return rotateOutboundTLS(dfsp);
-                }))
-                results.push(...result2.map((res, index) => ({ dfsp: dfsps[index], ...res })));
-                const result3 = await Promise.all(dfsps.map(dfsp => {
-                    return deleteSecretAndAwaitRecreation(`${dfsp}-vault-tls-cert`, dfsp, 'tls-server');
-                }))
-                results.push(...result3.map((res, index) => ({ dfsp: dfsps[index], ...res })));
-                notify(request.params.key, Date.now() - startTime, dfsps);
+            case 'all':
+                await jws();
+                await outboundTLS();
+                await tlsServer();
                 break;
-            }
             default:
                 return h.response({ message: 'Unknown key' }).code(400);
         }
 
+        notify(request.params.key, Date.now() - startTime, [...dfsps, ...proxies]);
         return h.response(results).code(200);
     } catch (error) {
         return h.response({ message: error.message }).code(500);
@@ -79,7 +78,7 @@ async function notify(keyName, duration, dfsps) {
     });
 }
 
-async function rotateCredential(dfspName, credentialType) {
+async function rotateCredential(dfspNameAndNamespace, credentialType) {
     const config = {
         jws: {
             endpoint: '/recreate/JWS',
@@ -99,24 +98,20 @@ async function rotateCredential(dfspName, credentialType) {
 
     try {
         // Get initial state
-        const initialResponse = await axios.get(`http://${dfspName}-management-api.${dfspName}.svc.cluster.local:9050/state`);
+        const initialResponse = await axios.get(`http://${dfspNameAndNamespace}.svc.cluster.local:9050/state`);
         const initialValue = initialResponse.data?.[stateProperty]?.[identifierKey] || 0;
 
         // Trigger recreation
-        const recreateResponse = await axios.post(`http://${dfspName}-management-api.${dfspName}.svc.cluster.local${endpoint}`, {
+        const recreateResponse = await axios.post(`http://${dfspNameAndNamespace}.svc.cluster.local${endpoint}`, {
             reason: 'release-cd-triggered recreate'
         });
 
         // Poll for changes with delay
-        let attempts = 0;
         const maxAttempts = 20;
-        const delay = 3000; // 3 seconds
-
-        while (attempts < maxAttempts) {
-            await new Promise(resolve => setTimeout(resolve, delay));
-
+        for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+            await new Promise(resolve => setTimeout(resolve, 3000)); // 3 seconds delay
             try {
-                const currentResponse = await axios.get(`http://${dfspName}-management-api.${dfspName}.svc.cluster.local:9050/state`);
+                const currentResponse = await axios.get(`http://${dfspNameAndNamespace}.svc.cluster.local:9050/state`);
                 const currentValue = currentResponse.data?.[stateProperty]?.[identifierKey];
 
                 if (currentValue && currentValue !== initialValue) {
@@ -124,23 +119,21 @@ async function rotateCredential(dfspName, credentialType) {
                         success: true,
                         initialValue,
                         newValue: currentValue,
-                        attempts: attempts + 1,
+                        attempt,
                         recreateResponse: recreateResponse.data
                     };
                 }
             } catch (error) {
-                log(`Attempt ${attempts + 1} failed to get state for ${dfspName}:`, error.message);
+                log(`Attempt ${attempt} failed to get state for ${dfspNameAndNamespace}:`, error.message);
             }
-
-            attempts++;
         }
 
         // If we reach here, credential didn't change within the timeout
-        throw new Error(`${errorMessage} for ${dfspName} after ${maxAttempts} attempts`);
+        throw new Error(`${errorMessage} for ${dfspNameAndNamespace} after ${maxAttempts} attempts`);
 
     } catch (error) {
         throw boomify(error, {
-            message: `Error rotating ${credentialType} for PM ${dfspName}`,
+            message: `Error rotating ${credentialType} for PM ${dfspNameAndNamespace}`,
             data: error.response?.data
         });
     }
