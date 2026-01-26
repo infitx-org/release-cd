@@ -32,12 +32,11 @@ export default async function trigger(request, fact) {
                 {
                     $currentDate: { lastModified: true },
                     $set: { [`actions.${rule}`]: Date.now() }
-                },
-                { upsert: true }
+                }
             );
 
             // If we didn't modify the document, another request is already running this action
-            if (claimResult.modifiedCount === 0 && claimResult.upsertedCount === 0) {
+            if (claimResult.modifiedCount <= 0) {
                 console.log(`Action ${rule} already running for ${env}, skipping`);
                 return;
             }

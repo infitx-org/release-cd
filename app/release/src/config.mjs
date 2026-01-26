@@ -99,6 +99,13 @@ export default rc('dev', {
     release: {
         url: '',
         prerelease: 'dev',
-        start: '1.0.0'
+        start: '1.0.0',
+        report: {
+            s3: {
+                s3ForcePathStyle: true,
+                region: 'us-east-1',
+            },
+            bucket: {}
+        }
     }
 });

@@ -1,6 +1,7 @@
 #! /usr/bin/env node
 import { readFileSync } from 'fs';
 
+import config from '../config.mjs';
 import notifyRelease from '../release.mjs';
 import copyReportToS3 from '../s3.mjs';
 import notifySlack from '../slack.mjs';
@@ -9,7 +10,7 @@ export default async function notify({
     report,
     summary
 }) {
-    const reportUrl = await copyReportToS3(summary.name, report);
+    const reportUrl = await copyReportToS3(summary.name, report, config.report);
     return await Promise.all([
         notifySlack({
             ...summary,

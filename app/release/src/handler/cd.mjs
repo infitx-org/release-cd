@@ -178,7 +178,7 @@ ${Object.entries(tests).map(([env, tests]) => Object.entries(tests).map(([name, 
         if (!version) return h.response(versionResponse).code(202);
         for (const [envName, envTests] of Object.entries(tests)) {
             for (const [testName, test] of Object.entries(envTests)) {
-                if (test?.report) test.s3Url = await copyReportToS3(`${version}/${envName}/${testName}`, test.report);
+                if (test?.report) test.s3Url = await copyReportToS3(`${version}/${envName}/${testName}`, test.report, config.report);
             }
         }
         const releaseNotes = releaseNotesFormat(submoduleProps, tests, `v${version}`, iac, ansible);

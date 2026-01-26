@@ -2,16 +2,14 @@ import AWS from 'aws-sdk';
 import { createReadStream, statSync } from 'fs';
 import { Readable } from 'stream';
 
-import config from './config.mjs';
-
-export default async (testName, reportURL) => {
+export default async (testName, reportURL, config) => {
     if (!reportURL) return;
-    if ((!config.report?.s3?.endpoint && !config.report?.s3?.region) || !config.report?.bucket?.Bucket || !config.report?.reportEndpoint) {
+    if ((!config?.s3?.endpoint && !config?.s3?.region) || !config?.bucket?.Bucket || !config?.reportEndpoint) {
         console.warn('S3 configuration is incomplete, skipping report upload');
         return;
     }
 
-    const { accessKeyId, secretAccessKey, ...s3Config } = config.report.s3 || {};
+    const { accessKeyId, secretAccessKey, ...s3Config } = config.s3 || {};
 
     const s3 = new AWS.S3({
         ...s3Config,
@@ -47,9 +45,9 @@ export default async (testName, reportURL) => {
         report = createReadStream(reportURL);
         ContentType = 'text/html';
     }
-    const Key = `reports/${config.report.id || testName}/${new Date().toISOString()}`.toLowerCase().replace(/ /g, '_');
+    const Key = `reports/${config.id || testName}/${new Date().toISOString()}`.toLowerCase().replace(/ /g, '_');
     const params = {
-        ...config.report.bucket,
+        ...config.bucket,
         Key,
         Body: report,
         ContentType,
@@ -57,5 +55,5 @@ export default async (testName, reportURL) => {
     };
 
     await s3.putObject(params).promise();
-    return config.report.reportEndpoint.replace('{key}', Key);
+    return config.reportEndpoint.replace('{key}', Key);
 };
