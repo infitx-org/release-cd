@@ -12,7 +12,7 @@ export default async function trigger(request, fact) {
     const decisions = [].concat(decide(fact, true)).filter(Boolean);
     if (decisions.length) console.log('Trigger decisions:', decisions);
     return Promise.allSettled(decisions.map(async ({ rule, decision, action, params: { env, namespace, job, key, dfsp, timeout, body } = {}, params }) => {
-        if (!['keyRotate', 'keyRotateDFSP', 'triggerJob', 'onboard'].includes(action)) throw new Error(`Unknown action: ${action}`);
+        if (!['keyRotate', 'keyRotateDFSP', 'triggerJob', 'onboard', 'offboard', 'reonboard'].includes(action)) throw new Error(`Unknown action: ${action}`);
 
         const revisionColl = request.server.app.db.collection(`revision/${env}`);
         const revisionId = fact.revisions[env];
