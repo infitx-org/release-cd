@@ -38,9 +38,6 @@ module.exports = {
         const routePrefix = options.routePrefix || '/api/fs';
         const resolvePath = createPathResolver(baseDir);
 
-        // Ensure base directory exists
-        await fs.mkdir(baseDir, { recursive: true });
-
         // GET /stat/{path*} - Get file/directory metadata
         server.route({
             method: 'GET',
@@ -53,8 +50,24 @@ module.exports = {
 
                     const stats = await fs.stat(fullPath);
 
+                    const symLink = stats.isSymbolicLink() ? true : undefined;
+                    let actualType = stats.isDirectory() ? 'directory' : 'file';
+
+                    // If it's a symlink, resolve it to get the actual type
+                    if (symLink) {
+                        try {
+                            const realPath = await fs.realpath(fullPath);
+                            const realStats = await fs.stat(realPath);
+                            actualType = realStats.isDirectory() ? 'directory' : 'file';
+                        } catch (err) {
+                            // If we can't resolve the symlink (broken link), mark it as symlink
+                            actualType = 'symlink';
+                        }
+                    }
+
                     return {
-                        type: stats.isDirectory() ? 'directory' : 'file',
+                        type: actualType,
+                        symLink,
                         ctime: stats.ctimeMs,
                         mtime: stats.mtimeMs,
                         size: stats.size,
@@ -77,10 +90,33 @@ module.exports = {
 
                     const entries = await fs.readdir(fullPath, { withFileTypes: true });
 
-                    return entries.map(entry => ({
-                        name: entry.name,
-                        type: entry.isDirectory() ? 'directory' : 'file',
-                    }));
+                    const results = await Promise.all(
+                        entries.map(async (entry) => {
+                            const symLink = entry.isSymbolicLink() ? true : undefined;
+                            let actualType = entry.isDirectory() ? 'directory' : 'file';
+
+                            // If it's a symlink, resolve it to get the actual type
+                            if (symLink) {
+                                try {
+                                    const entryPath = path.join(fullPath, entry.name);
+                                    const realPath = await fs.realpath(entryPath);
+                                    const realStats = await fs.stat(realPath);
+                                    actualType = realStats.isDirectory() ? 'directory' : 'file';
+                                } catch (err) {
+                                    // If we can't resolve the symlink (broken link), mark it as symlink
+                                    actualType = 'symlink';
+                                }
+                            }
+
+                            return {
+                                name: entry.name,
+                                type: actualType,
+                                symLink,
+                            };
+                        })
+                    );
+
+                    return results;
                 } catch (error) {
                     return h.response({ error: 'Directory not found' }).code(404);
                 }
