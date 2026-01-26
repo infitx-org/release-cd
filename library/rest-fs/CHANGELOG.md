@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.0](https://github.com/infitx-org/release-cd/compare/rest-fs-v1.0.0...rest-fs-v1.1.0) (2026-01-26)
+
+
+### Features
+
+* enhance file and directory metadata handling with symlink resolution ([e35ab09](https://github.com/infitx-org/release-cd/commit/e35ab09448562696980b2a85b6d9b02d85b819c7))
+
 ## 1.0.0 (2026-01-25)
 
 
