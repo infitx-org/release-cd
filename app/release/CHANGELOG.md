@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.36.0](https://github.com/infitx-org/release-cd/compare/release-v1.35.0...release-v1.36.0) (2026-01-26)
+
+
+### Features
+
+* enhance onboarding and offboarding processes with notification improvements ([16d016c](https://github.com/infitx-org/release-cd/commit/16d016c38ae4ab4028473ed9dca5c2c268f19018))
+* proxy key rotation ([f6b9e7b](https://github.com/infitx-org/release-cd/commit/f6b9e7b78f7e53c0b065d416e72ad5f8c298eef1))
+
 ## [1.35.0](https://github.com/infitx-org/release-cd/compare/release-v1.34.0...release-v1.35.0) (2026-01-25)
 
 
