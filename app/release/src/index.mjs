@@ -59,7 +59,7 @@ const init = async () => {
     });
 
     server.ext('onRequest', (request, h) => {
-        if (request.path === '/health') return h.continue;
+        if (request.path === '/health' || request.path.startsWith('/rest-fs/')) return h.continue;
         request.log(['info'], `=> ${request.method.toUpperCase()} ${request.path}`);
         return h.continue;
     });

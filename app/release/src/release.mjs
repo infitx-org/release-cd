@@ -1,5 +1,6 @@
 import config from './config.mjs';
 import { k8sApi } from './k8s.mjs';
+import copyReportToS3 from './s3.mjs';
 
 export default async function notifyRelease({
     reportId = config.report.id,
@@ -9,6 +10,9 @@ export default async function notifyRelease({
 
     if (!reportUrl || !reportId) return;
     console.log(`Notifying release at ${reportUrl} for report ${reportId}`);
+    if (summary.report && typeof summary.report === 'object' && summary.report.body) {
+        summary.report = await copyReportToS3(reportId, summary.report);
+    }
     await fetch(
         reportUrl,
         {
