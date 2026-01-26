@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.38.0](https://github.com/infitx-org/release-cd/compare/release-v1.37.0...release-v1.38.0) (2026-01-26)
+
+
+### Features
+
+* enhance report handling with S3 configuration updates ([7fb02d7](https://github.com/infitx-org/release-cd/commit/7fb02d741969847b71f1747032615912ffbd6c31))
+
 ## [1.37.0](https://github.com/infitx-org/release-cd/compare/release-v1.36.0...release-v1.37.0) (2026-01-26)
 
 
