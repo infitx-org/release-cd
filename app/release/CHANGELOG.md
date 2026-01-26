@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.39.0](https://github.com/infitx-org/release-cd/compare/release-v1.38.0...release-v1.39.0) (2026-01-26)
+
+
+### Features
+
+* enhance file and directory metadata handling with symlink resolution ([e35ab09](https://github.com/infitx-org/release-cd/commit/e35ab09448562696980b2a85b6d9b02d85b819c7))
+
+
+### Bug Fixes
+
+* extend action validation in trigger function to include 'offboard' and 'reonboard' ([09b6e71](https://github.com/infitx-org/release-cd/commit/09b6e712165b4bed19cf3a4c6bc341d7e7f5c082))
+
 ## [1.38.0](https://github.com/infitx-org/release-cd/compare/release-v1.37.0...release-v1.38.0) (2026-01-26)
 
 
