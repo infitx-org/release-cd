@@ -1,3 +1,4 @@
+@rbac
 Feature: Portal RBAC API Access
 
     Background:
