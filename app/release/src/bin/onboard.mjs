@@ -5,7 +5,7 @@ import https from 'https';
 
 import config from '../config.mjs';
 import pingDFSP from '../fn/ping.mjs';
-import { k8sApi, k8sCustom } from '../k8s.mjs';
+import { k8sApi, k8sBatchApi, k8sCustom } from '../k8s.mjs';
 import notifyRelease from '../release.mjs';
 
 axios.defaults.timeout = 60000; // Set default timeout to 60 seconds
@@ -119,6 +119,15 @@ export default async function onboard(dfsp, pingTimeout) {
             );
         }
     }
+
+    log(`Delete onboard job ${dfsp}-onboard-dfsp if exists`);
+    await k8sBatchApi.deleteNamespacedJob({
+        name: `${dfsp}-onboard-dfsp`,
+        namespace: 'mojaloop'
+    }).catch(err => {
+        if (err.code !== 404) throw err;
+    });
+
     log(`Onboarding ${dfsp} `);
     await axios.post(
         new URL(`/api/dfsps/${dfsp}/onboard`, mcmBaseUrl),
@@ -135,12 +144,15 @@ export default async function onboard(dfsp, pingTimeout) {
     log(`${await pingDFSP(dfsp, pingTimeout)}`);
 
     notifyRelease({
-        reportId: 'onboard',
+        reportId: 'onboard-' + dfsp,
         totalAssertions: 1,
         totalPassedAssertions: 1,
         isPassed: true,
         duration: Date.now() - startTime,
-        onboard: result.join('\n')
+        report: {
+            body: result.join('\n'),
+            contentType: 'text/plain'
+        }
     }).catch(err => {
         console.error('Error notifying release:', err);
     });

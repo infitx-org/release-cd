@@ -65,11 +65,20 @@ export default async function trigger(request, fact) {
                         console.log(`job ${namespace}/${job} triggered for ${env} (${url}):`, result.data);
                         return { rule, decision, result: result.data };
                     }
-                    case 'onboard': {
-                        if (!dfsp) throw new Error('No dfsp specified for onboard');
-                        const url = new URL(`/onboard/${dfsp}?ping=${timeout || 45}`, baseUrl).toString();
+                    case 'onboard':
+                    case 'offboard': {
+                        if (!dfsp) throw new Error(`No dfsp specified for ${action}`);
+                        const url = new URL(`/${action}/${dfsp}?timeout=${timeout || 45}`, baseUrl).toString();
                         const result = await axios.post(url, body, { headers, timeout: timeout ? (timeout + 15) * 1000 : 60000 });
-                        console.log(`DFSP ${dfsp} onboarded for ${env} (${url}):`, result.data);
+                        console.log(`DFSP ${dfsp} ${action}ed for ${env} (${url}):`, result.data);
+                        return { rule, decision, result: result.data };
+                    }
+                    case 'reonboard': {
+                        if (!dfsp) throw new Error(`No dfsp specified for ${action}`);
+                        if (!key) throw new Error(`No key specified for ${action}`);
+                        const url = new URL(`/reonboard/${key}?pm=${dfsp}`, baseUrl).toString();
+                        const result = await axios.post(url, body, { headers, timeout: 60000 });
+                        console.log(`DFSP ${dfsp} re-onboarded for ${env} (${url}):`, result.data);
                         return { rule, decision, result: result.data };
                     }
                 }

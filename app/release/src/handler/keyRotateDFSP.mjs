@@ -58,21 +58,25 @@ export default async function keyRotateDFSP(request, h) {
                 return h.response({ message: 'Unknown key' }).code(400);
         }
 
-        notify(request.params.key, Date.now() - startTime, [...dfsps, ...proxies]);
+        notify(request.params.key, Date.now() - startTime, results);
         return h.response(results).code(200);
     } catch (error) {
         return h.response({ message: error.message }).code(500);
     }
 }
 
-async function notify(keyName, duration, dfsps) {
+async function notify(keyName, duration, result) {
     notifyRelease({
         reportId: `key-rotate-${keyName}`,
         totalAssertions: 1,
         totalPassedAssertions: 1,
         isPassed: true,
         duration,
-        keyRotateDFSP: { dfsps }
+        keyRotateDFSP: result,
+        report: {
+            body: JSON.stringify(result, null, 2),
+            contentType: 'application/json'
+        }
     }).catch(err => {
         console.error('Error notifying release of key rotation:', err);
     });

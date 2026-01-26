@@ -126,7 +126,7 @@ const init = async () => {
     server.route({
         options: config.server.post,
         method: 'POST',
-        path: '/reonboard',
+        path: '/reonboard/{key?}',
         handler: reonboard
     });
 

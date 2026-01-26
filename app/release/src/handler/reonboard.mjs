@@ -1,17 +1,5 @@
-import { boomify } from '@hapi/boom';
-import axios from 'axios';
+import reonboardDfsp from '../fn/reonboard.mjs';
 
 export default async function reonboard(request, h) {
-    const pm = request.query.pm || '';
-    return Promise.all(pm.split(',').map(name =>
-        axios.post(`http://${name}.svc.cluster.local/reonboard`, {
-            reason: 'release-cd-triggered reonboard'
-        }).then(response => ({
-            pm: name,
-            ...response.data
-        })).catch(error => boomify(error, {
-            message: `Error re-onboarding PM ${name}`,
-            data: error.response?.data
-        }))
-    ))
+    return h.response(await reonboardDfsp((request.query.pm || '').split(','), request.params.key)).code(200)
 }

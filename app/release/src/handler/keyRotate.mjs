@@ -59,7 +59,11 @@ export default async function keyRotate(request, h) {
                         totalPassedAssertions: 1,
                         isPassed: true,
                         duration: Date.now() - startTime,
-                        keyRotate: { uid, resourceVersion, creationTimestamp, name, namespace }
+                        keyRotate: { uid, resourceVersion, creationTimestamp, name, namespace },
+                        report: {
+                            body: JSON.stringify({ name, namespace, uid, resourceVersion, creationTimestamp }, null, 2),
+                            contentType: 'application/json'
+                        }
                     }).catch(err => {
                         console.error('Error notifying release of key rotation:', err);
                     });

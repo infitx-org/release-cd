@@ -1,5 +1,6 @@
 import knex from 'knex';
 import config from '../config.mjs';
+import notifyRelease from '../release.mjs';
 import deleteParticipantByName from './deleteParticipant.mjs';
 
 export default async function offboard(dfsp) {
@@ -33,6 +34,20 @@ export default async function offboard(dfsp) {
     }
 
     log(`Offboard of DFSP ${dfsp} completed in ${(Date.now() - startTime) / 1000}s`);
+
+    notifyRelease({
+        reportId: `offboard-${dfsp}`,
+        totalAssertions: 1,
+        totalPassedAssertions: 1,
+        isPassed: true,
+        duration: Date.now() - startTime,
+        report: {
+            body: result.join('\n'),
+            contentType: 'text/plain'
+        }
+    }).catch(err => {
+        console.error('Error notifying release:', err);
+    });
 
     return result.join('\n');
 }

@@ -26,7 +26,13 @@ export default async (testName, reportURL) => {
     let report;
     let ContentType
     let ContentLength
-    if (/^https?:\/\//.test(reportURL)) {
+    if (typeof reportURL === 'object') {
+        if (typeof reportURL.body !== 'string')
+            throw new Error('Report body must be a string when reportURL is an object');
+        report = Buffer.from(reportURL.body);
+        ContentType = reportURL.contentType || 'text/html';
+        ContentLength = report.length;
+    } else if (/^https?:\/\//.test(reportURL)) {
         try {
             report = await fetch(reportURL);
             ContentType = report.headers.get('content-type')
