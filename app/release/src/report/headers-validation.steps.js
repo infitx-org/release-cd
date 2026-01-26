@@ -55,6 +55,7 @@ defineFeature(feature, test => {
 
   test('Successful validation of FSPIOP source and proxy headers', ({ given, when, then }) => {
     let responses
+    let expectedResults
     let expectedStatusCodes
 
     background({ given, when, then });
@@ -71,11 +72,15 @@ defineFeature(feature, test => {
           })
         })
       )
+      expectedResults = structuredClone(table)
     })
 
     then('all requests succeed with proper statusCode', () => {
-      responses.forEach(response => {
-        expect(response.status).toBe(expectedStatusCodes);
+      responses.forEach((res, i) => {
+        expect(res.status).toBe(expectedStatusCodes);
+        const { token, source, proxy } = expectedResults[i] || {}
+        const reqDetails = `${token} | ${source} | ${proxy}`
+        expect(`${reqDetails} | ${res.status}`).toBe(`${reqDetails} | ${expectedStatusCodes}`);
       })
     })
   })

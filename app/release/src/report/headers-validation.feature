@@ -18,7 +18,7 @@ Feature: Validate FSPIOP-Source and FSPIOP-Proxy headers against X-Client-Id
     Scenario: Successful validation of FSPIOP source and proxy headers
         When DFSP sends discovery requests with proper access_token and headers:
             | dfsp  | token   | source | proxy | statusCode |
-            | alice | alice   | alice  | -     | 202        |
+            | alice | alice   | alice  |       | 202        |
             | alice | alice   | bob    | alice | 202        |
             | alice | alice   | xxx    | alice | 202        |
         Then all requests succeed with proper statusCode
