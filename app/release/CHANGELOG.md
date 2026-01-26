@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.37.0](https://github.com/infitx-org/release-cd/compare/release-v1.36.0...release-v1.37.0) (2026-01-26)
+
+
+### Features
+
+* **csi-2030:** added new headers-validation feature and tests ([#95](https://github.com/infitx-org/release-cd/issues/95)) ([32ec863](https://github.com/infitx-org/release-cd/commit/32ec8630b86df8361e979de4b341ef2a539f779b))
+
+
+### Bug Fixes
+
+* copy inline reports to s3 ([81db5bf](https://github.com/infitx-org/release-cd/commit/81db5bf27d51a089a1e5eb8402d900f9b813230e))
+
 ## [1.36.0](https://github.com/infitx-org/release-cd/compare/release-v1.35.0...release-v1.36.0) (2026-01-26)
 
 
