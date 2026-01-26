@@ -179,7 +179,7 @@ defineFeature(feature, test => {
             }
             expect(observed.join('\n')).toBe(expected.join('\n'))
         });
-    };
+    }
 
     test('MCM DFSP endpoints', checkEndpointAccess);
     test('MCM DFSPs', checkEndpointAccess);
