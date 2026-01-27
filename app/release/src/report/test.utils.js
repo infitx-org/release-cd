@@ -4,13 +4,11 @@ const axios = require('axios');
 const allure = require('allure-js-commons')
 const dto = require('./dto');
 
-
 /**
  * @typedef {Object} DfspAccessToken
  * @prop {string} token - OIDC access token
  * @prop {string} id - DFSP identifier
  */
-
 
 /**
  *  @param {{ loginUrl: string }} portal - Portal configuration containing OIDC login URL.
@@ -42,6 +40,8 @@ async function oidcFlow(portal, dfsp) {
   }
 }
 
+let httpsAgent
+
 const sendHttpRequest = async ({
   url,
   method = 'GET',
@@ -52,7 +52,8 @@ const sendHttpRequest = async ({
   const config = { url, method, headers, timeout };
 
   if (tls) {
-    config.httpsAgent = createHttpsAgent(tls)
+    if (!httpsAgent) httpsAgent = createHttpsAgent(tls)
+    config.httpsAgent = httpsAgent
   }
 
   return axios.request(config).catch(err => {
@@ -84,19 +85,26 @@ const sendDiscoveryRequest = async ({
 } = {}) => sendHttpRequest({
   ...rest,
   url: `${extApiPortal.url || url}/parties/${partyType}/${partyId}`,
-  tls: extApiPortal.tls,
   headers: dto.discoveryHeadersDto({
     token, source, destination, proxy, headers
   }),
 })
 
+// const createHttpsAgent = (tls) => new Agent({
+//   ...(tls?.ca && { ca: readFileSync(tls.ca) }),
+//   ...(tls?.cert && { cert: readFileSync(tls.cert) }),
+//   ...(tls?.key && { key: readFileSync(tls.key) }),
+// });
 
-const createHttpsAgent = (tls) => new Agent({
-  rejectUnauthorized: tls?.rejectUnauthorized ?? true,
-  ...(tls?.ca && { ca: readFileSync(tls.ca) }),
-  ...(tls?.cert && { cert: readFileSync(tls.cert) }),
-  ...(tls?.key && { key: readFileSync(tls.key) }),
-});
+const createHttpsAgent = (tls) => {
+  return new Agent({
+    ca: normalizePem(tls.ca),
+    cert: normalizePem(tls.cert),
+    key: normalizePem(tls.key),
+  });
+}
+
+const normalizePem = (str) => str.replace(/\\n/g, '\n')
 
 const padEnd = (str = '', length = 10) => String(str).padEnd(length)
 

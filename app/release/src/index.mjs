@@ -7,6 +7,7 @@ import path from 'path';
 
 import config from './config.mjs';
 import app from './handler/app.mjs';
+import getDfspState from './handler/getDfspState.mjs';
 import keyRotate from './handler/keyRotate.mjs';
 import keyRotateDFSP from './handler/keyRotateDFSP.mjs';
 import notify from './handler/notify.mjs';
@@ -105,6 +106,17 @@ const init = async () => {
         method: 'POST',
         path: '/triggerCronJob/{namespace}/{job}',
         handler: triggerCronJob
+    });
+
+    server.route({
+        // options: config.server.post,
+        method: 'GET',
+        path: '/dfsp/{id}/state',
+        handler: async (request, h) => {
+            const { id } = request.params
+            const result = await getDfspState(id)
+            return h.response(result);
+        }
     });
 
     server.route({

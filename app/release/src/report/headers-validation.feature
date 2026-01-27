@@ -8,7 +8,7 @@ Feature: Validate FSPIOP-Source and FSPIOP-Proxy headers against X-Client-Id
             | bob       | oidc |
 
         And hub external API and OIDC endpoints are configured
-#       And mTLS creds to connect to extapi endpoint:
+        And mTLS creds to connect to extapi endpoint received
 
         When DFSPs send auth requests to OIDC endpoint with provided credentials
 
