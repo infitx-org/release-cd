@@ -37,7 +37,7 @@ export default async function trigger(request, fact) {
 
             // If we didn't modify the document, another request is already running this action
             if (claimResult.modifiedCount <= 0) {
-                console.log(`Action ${rule} already running for ${env}, skipping`);
+                console.log(new Date(), `... Action ${rule} already running for ${env}, skipping`);
                 return;
             }
 
@@ -53,7 +53,7 @@ export default async function trigger(request, fact) {
                         if (!key) throw new Error('No key specified for rotation');
                         const url = new URL(`/${action}/` + key, baseUrl).toString();
                         const result = await axios.post(url, body, { headers, timeout: 300000 });
-                        console.log(`Key ${key} rotated for ${env} (${url}):`, result.data);
+                        console.log(new Date(), `... Key ${key} rotated for ${env} (${url}):`, result.data);
                         return { rule, decision, result: result.data };
                     }
                     case 'triggerJob': {
@@ -61,7 +61,7 @@ export default async function trigger(request, fact) {
                         if (!namespace) throw new Error('No namespace specified for job trigger');
                         const url = new URL('/triggerCronJob/' + namespace + '/' + job, baseUrl).toString();
                         const result = await axios.post(url, body, { headers });
-                        console.log(`job ${namespace}/${job} triggered for ${env} (${url}):`, result.data);
+                        console.log(new Date(), `... Job ${namespace}/${job} triggered for ${env} (${url}):`, result.data);
                         return { rule, decision, result: result.data };
                     }
                     case 'onboard':
@@ -69,7 +69,7 @@ export default async function trigger(request, fact) {
                         if (!dfsp) throw new Error(`No dfsp specified for ${action}`);
                         const url = new URL(`/${action}/${dfsp}?timeout=${timeout || 45}`, baseUrl).toString();
                         const result = await axios.post(url, body, { headers, timeout: timeout ? (timeout + 15) * 1000 : 60000 });
-                        console.log(`DFSP ${dfsp} ${action}ed for ${env} (${url}):`, result.data);
+                        console.log(new Date(), `... DFSP ${dfsp} ${action}ed for ${env} (${url}):`, result.data);
                         return { rule, decision, result: result.data };
                     }
                     case 'reonboard': {
@@ -77,7 +77,7 @@ export default async function trigger(request, fact) {
                         if (!key) throw new Error(`No key specified for ${action}`);
                         const url = new URL(`/reonboard/${key}?pm=${dfsp}`, baseUrl).toString();
                         const result = await axios.post(url, body, { headers, timeout: 60000 });
-                        console.log(`DFSP ${dfsp} re-onboarded for ${env} (${url}):`, result.data);
+                        console.log(new Date(), `... DFSP ${dfsp} re-onboarded for ${env} (${url}):`, result.data);
                         return { rule, decision, result: result.data };
                     }
                 }

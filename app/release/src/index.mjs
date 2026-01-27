@@ -52,7 +52,7 @@ const init = async () => {
 
     server.events.on({ name: 'request', channels: 'app' }, (request, event, tags) => {
         if (tags.error) {
-            console.error(new Date(), `=> ${request.method.toUpperCase()} ${request.path} ${event.error?.output?.statusCode}`, event.error ?? 'unknown');
+            console.error(new Date(), `▶ ${request.method.toUpperCase()} ${request.path} ${event.error?.output?.statusCode}`, event.error ?? 'unknown');
         } else {
             console.log(new Date(), event.data);
         }
@@ -60,7 +60,7 @@ const init = async () => {
 
     server.ext('onRequest', (request, h) => {
         if (request.path === '/health' || request.path.startsWith('/rest-fs/')) return h.continue;
-        request.log(['info'], `=> ${request.method.toUpperCase()} ${request.path}`);
+        request.log(['info'], `▶ ${request.method.toUpperCase()} ${request.path}`);
         return h.continue;
     });
 
@@ -70,7 +70,7 @@ const init = async () => {
         if (response.isBoom) {
             request.log(['error'], response);
         } else {
-            request.log(['info'], `<= ${request.method.toUpperCase()} ${request.path} ${response.statusCode} ${masked.includes(request.route.path) ? '[body]' : JSON.stringify(response.source)}`);
+            request.log(['info'], `◀ ${request.method.toUpperCase()} ${request.path} ${response.statusCode} ${masked.includes(request.route.path) ? '[body]' : JSON.stringify(response.source)}`);
         }
         return h.continue;
     });

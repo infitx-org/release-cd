@@ -9,7 +9,7 @@ export default async function notifyRelease({
     const { data: { reportUrl } = {} } = await k8sApi.readNamespacedConfigMap({ name: 'release-cd-jobs', namespace: 'release-cd' });
 
     if (!reportUrl || !reportId) return;
-    console.log(`Notifying release at ${reportUrl} for report ${reportId}`);
+    console.log(new Date(), `... Notifying release at ${reportUrl} for report ${reportId}`);
     if (summary.report && typeof summary.report === 'object' && summary.report.body) {
         summary.report = await copyReportToS3(reportId, summary.report, config.release.report);
     }
