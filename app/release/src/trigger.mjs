@@ -105,7 +105,7 @@ export default async function trigger(request, fact) {
             }
             delete err.request;
             delete err.response;
-            console.error(err);
+            console.error(new Date(), err);
             delete err.stack;
             throw err;
         }

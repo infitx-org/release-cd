@@ -1,88 +1,114 @@
-import debug from 'debug';
-
 import { boomify } from '@hapi/boom';
 import axios from 'axios';
 import { k8sApi, watcher } from '../k8s.mjs';
 import notifyRelease from '../release.mjs';
 
-const log = debug('release-cd:keyRotate');
-
 export default async function keyRotateDFSP(request, h) {
+    const messages = [];
+    const log = string => {
+        console.log(new Date(), '... ' + string);
+        messages.push(string);
+    }
+    const startTime = Date.now();
     try {
         const results = [];
         const dfsps = request.payload?.dfsps || [];
         const proxies = request.payload?.proxies || [];
-        const startTime = Date.now();
+
+        log(`Starting key rotation for key type: ${request.params.key}`);
+        log(`DFSPs to process: ${dfsps.length > 0 ? dfsps.join(', ') : 'none'}`);
+        log(`Proxies to process: ${proxies.length > 0 ? proxies.join(', ') : 'none'}`);
         const push = responses => results.push(...responses.map((res, index) => ({ dfsp: dfsps[index], ...res })))
         const tlsServer = () => Promise.all(
             dfsps.map(dfsp =>
-                deleteSecretAndAwaitRecreation(`${dfsp}-vault-tls-cert`, dfsp)
+                deleteSecretAndAwaitRecreation(`${dfsp}-vault-tls-cert`, dfsp, log)
             ).concat(proxies.map(proxy => [
-                deleteSecretAndAwaitRecreation(`${proxy}-vault-tls-cert-scheme-a`, proxy),
-                deleteSecretAndAwaitRecreation(`${proxy}-vault-tls-cert-scheme-b`, proxy)
+                deleteSecretAndAwaitRecreation(`${proxy}-vault-tls-cert-scheme-a`, proxy, log),
+                deleteSecretAndAwaitRecreation(`${proxy}-vault-tls-cert-scheme-b`, proxy, log)
             ]).flat())
         ).then(push)
         const jws = () => Promise.all(
             dfsps.map(dfsp =>
-                rotateJWS(`${dfsp}-management-api.${dfsp}`)
+                rotateJWS(`${dfsp}-management-api.${dfsp}`, log)
             ).concat(proxies.map(proxy => [
-                rotateJWS(`${proxy}-management-api-a.${proxy}`),
-                rotateJWS(`${proxy}-management-api-b.${proxy}`)
+                rotateJWS(`${proxy}-management-api-a.${proxy}`, log),
+                rotateJWS(`${proxy}-management-api-b.${proxy}`, log)
             ]).flat())
         ).then(push)
         const outboundTLS = () => Promise.all(
             dfsps.map(dfsp =>
-                rotateOutboundTLS(`${dfsp}-management-api.${dfsp}`)
+                rotateOutboundTLS(`${dfsp}-management-api.${dfsp}`, log)
             ).concat(proxies.map(proxy => [
-                rotateOutboundTLS(`${proxy}-management-api-a.${proxy}`),
-                rotateOutboundTLS(`${proxy}-management-api-b.${proxy}`)
+                rotateOutboundTLS(`${proxy}-management-api-a.${proxy}`, log),
+                rotateOutboundTLS(`${proxy}-management-api-b.${proxy}`, log)
             ]).flat())
         ).then(push)
 
         switch (request.params.key) {
             case 'tls-server':
+                log('Rotating TLS server certificates...');
                 await tlsServer();
+                log('TLS server certificate rotation completed');
                 break;
             case 'jws':
-                await jws()
+                log('Rotating JWS credentials...');
+                await jws();
+                log('JWS credential rotation completed');
                 break;
             case 'outboundTLS':
+                log('Rotating outbound TLS certificates...');
                 await outboundTLS();
+                log('Outbound TLS certificate rotation completed');
                 break;
             case 'all':
+                log('Rotating all credential types...');
+                log('Step 1/3: Rotating JWS credentials...');
                 await jws();
+                log('Step 2/3: Rotating outbound TLS certificates...');
                 await outboundTLS();
+                log('Step 3/3: Rotating TLS server certificates...');
                 await tlsServer();
+                log('All credential rotations completed');
                 break;
             default:
                 return h.response({ message: 'Unknown key' }).code(400);
         }
 
-        notify(request.params.key, Date.now() - startTime, results);
+        const duration = Date.now() - startTime;
+        log(`Key rotation completed successfully in ${duration}ms`);
+        log(`Results: ${results.length} operations processed`);
+        results.push(messages)
+        notify(request.params.key, duration, messages.join('\n'), true).catch(err => {
+            console.error(new Date(), 'Error notifying release of key rotation:', err);
+        });
         return h.response(results).code(200);
     } catch (error) {
+        console.error(new Date(), 'Key rotation error:', error);
+        log(`Key rotation failed: ${error.message}`);
+        await notify(request.params.key, Date.now() - startTime, messages.join('\n') + '\n==============\nError: ' + error.message + '\n\n' + error.stack, false).catch(err => {
+            console.error(new Date(), 'Error notifying release of key rotation failure:', err);
+        });
         return h.response({ message: error.message }).code(500);
     }
 }
 
-async function notify(keyName, duration, result) {
+async function notify(keyName, duration, body, isPassed) {
     notifyRelease({
         reportId: `key-rotate-${keyName}`,
         totalAssertions: 1,
-        totalPassedAssertions: 1,
-        isPassed: true,
+        totalPassedAssertions: isPassed ? 1 : 0,
+        isPassed,
         duration,
-        keyRotateDFSP: result,
         report: {
-            body: JSON.stringify(result, null, 2),
-            contentType: 'application/json'
+            body,
+            contentType: 'text/plain'
         }
     }).catch(err => {
-        console.error('Error notifying release of key rotation:', err);
+        console.error(new Date(), 'Error notifying release of key rotation:', err);
     });
 }
 
-async function rotateCredential(dfspNameAndNamespace, credentialType) {
+async function rotateCredential(dfspNameAndNamespace, credentialType, log) {
     const config = {
         jws: {
             endpoint: '/recreate/JWS',
@@ -101,14 +127,19 @@ async function rotateCredential(dfspNameAndNamespace, credentialType) {
     const { endpoint, stateProperty, identifierKey, errorMessage } = config[credentialType];
 
     try {
+        log(`Rotating ${credentialType} for ${dfspNameAndNamespace}...`);
         // Get initial state
+        log(`Fetching initial state for ${dfspNameAndNamespace}...`);
         const initialResponse = await axios.get(`http://${dfspNameAndNamespace}.svc.cluster.local:9050/state`);
         const initialValue = initialResponse.data?.[stateProperty]?.[identifierKey] || 0;
+        log(`Initial ${identifierKey} value for ${dfspNameAndNamespace}: ${initialValue}`);
 
         // Trigger recreation
+        log(`Triggering ${credentialType} recreation for ${dfspNameAndNamespace}...`);
         const recreateResponse = await axios.post(`http://${dfspNameAndNamespace}.svc.cluster.local${endpoint}`, {
             reason: 'release-cd-triggered recreate'
         });
+        log(`Recreation triggered for ${dfspNameAndNamespace}, polling for changes...`);
 
         // Poll for changes with delay
         const maxAttempts = 20;
@@ -119,6 +150,7 @@ async function rotateCredential(dfspNameAndNamespace, credentialType) {
                 const currentValue = currentResponse.data?.[stateProperty]?.[identifierKey];
 
                 if (currentValue && currentValue !== initialValue) {
+                    log(`${credentialType} successfully changed for ${dfspNameAndNamespace}: ${initialValue} -> ${currentValue} (attempt ${attempt})`);
                     return {
                         success: true,
                         initialValue,
@@ -127,12 +159,14 @@ async function rotateCredential(dfspNameAndNamespace, credentialType) {
                         recreateResponse: recreateResponse.data
                     };
                 }
+                log(`Attempt ${attempt}/${maxAttempts}: ${credentialType} not yet changed for ${dfspNameAndNamespace}`);
             } catch (error) {
                 log(`Attempt ${attempt} failed to get state for ${dfspNameAndNamespace}:`, error.message);
             }
         }
 
         // If we reach here, credential didn't change within the timeout
+        log(`${credentialType} rotation timeout for ${dfspNameAndNamespace} after ${maxAttempts} attempts`);
         throw new Error(`${errorMessage} for ${dfspNameAndNamespace} after ${maxAttempts} attempts`);
 
     } catch (error) {
@@ -143,15 +177,16 @@ async function rotateCredential(dfspNameAndNamespace, credentialType) {
     }
 }
 
-async function rotateJWS(dfspName) {
-    return rotateCredential(dfspName, 'jws');
+async function rotateJWS(dfspName, log) {
+    return rotateCredential(dfspName, 'jws', log);
 }
 
-async function rotateOutboundTLS(dfspName) {
-    return rotateCredential(dfspName, 'outboundTLS');
+async function rotateOutboundTLS(dfspName, log) {
+    return rotateCredential(dfspName, 'outboundTLS', log);
 }
 
-async function deleteSecretAndAwaitRecreation(secretName, namespace) {
+async function deleteSecretAndAwaitRecreation(secretName, namespace, log) {
+    log(`Starting secret rotation for ${secretName} in namespace ${namespace}`);
     let version;
     let secret;
     const fieldSelector = `metadata.name=${secretName}`;
@@ -171,11 +206,12 @@ async function deleteSecretAndAwaitRecreation(secretName, namespace) {
             `/api/v1/namespaces/${namespace}/secrets`,
             { fieldSelector, ...version && { resourceVersion: version } },
             (type, obj) => {
-                log(`Event: ${type}`, obj);
+                log(`Watch event for ${secretName}: ${type}`);
                 if (type === 'ADDED') {
                     if (timeout) clearTimeout(timeout);
                     timeout = null;
                     const { uid, resourceVersion, creationTimestamp, name, namespace } = obj.metadata;
+                    log(`Secret ${secretName} recreated successfully (UID: ${uid})`);
                     try {
                         resolve({ name, namespace, uid, resourceVersion, creationTimestamp });
                     } finally {
@@ -200,7 +236,15 @@ async function deleteSecretAndAwaitRecreation(secretName, namespace) {
         ).then(req => {
             watch = req;
             timeout = setTimeout(() => req.abort('Timeout waiting for secret recreation'), 300000);
-            if (secret) k8sApi.deleteNamespacedSecret({ name: secretName, namespace }).catch(console.error);
+            if (secret) {
+                log(`Deleting existing secret ${secretName} in namespace ${namespace}...`);
+                k8sApi.deleteNamespacedSecret({ name: secretName, namespace }).catch(err => {
+                    log(`Error deleting secret ${secretName}: ${err.message}`);
+                    console.error(err);
+                });
+            } else {
+                log(`No existing secret ${secretName} found, waiting for creation...`);
+            }
             return req;
         }).catch(reject);
     });
