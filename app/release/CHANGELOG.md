@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.39.2](https://github.com/infitx-org/release-cd/compare/release-v1.39.1...release-v1.39.2) (2026-01-27)
+
+
+### Bug Fixes
+
+* enhance participant deletion process and update offboard handler to use timeout query parameter ([37f88e9](https://github.com/infitx-org/release-cd/commit/37f88e98b2275bd3997b7bc5efd5844b1bf7ce56))
+
 ## [1.39.1](https://github.com/infitx-org/release-cd/compare/release-v1.39.0...release-v1.39.1) (2026-01-27)
 
 
