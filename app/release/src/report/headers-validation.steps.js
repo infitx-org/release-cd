@@ -81,7 +81,9 @@ defineFeature(feature, test => {
     })
 
     given('mTLS creds to connect to extapi endpoint received', async () => {
+      expect(tls?.ca, 'No TLS ca').toBeDefined()
       expect(tls?.cert, 'No TLS cert').toBeDefined()
+      expect(tls?.key, 'No TLS key').toBeDefined()
     })
 
     when('DFSPs send auth requests to OIDC endpoint with provided credentials', async () => {

@@ -104,7 +104,7 @@ const createHttpsAgent = (tls) => {
   });
 }
 
-const normalizePem = (str) => str.replace(/\\n/g, '\n')
+const normalizePem = (str = '') => str.replace(/\\n/g, '\n')
 
 const padEnd = (str = '', length = 10) => String(str).padEnd(length)
 
