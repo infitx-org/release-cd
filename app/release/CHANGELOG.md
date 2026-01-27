@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.40.0](https://github.com/infitx-org/release-cd/compare/release-v1.39.2...release-v1.40.0) (2026-01-27)
+
+
+### Features
+
+* **csi-2030:** implemented rest headers-validation scenarios ([#101](https://github.com/infitx-org/release-cd/issues/101)) ([53cc262](https://github.com/infitx-org/release-cd/commit/53cc2629deebc4451c28f8313c2d2f39e779a4cb))
+
+
+### Bug Fixes
+
+* enhance logging for offboarding and key rotation processes ([8af30f1](https://github.com/infitx-org/release-cd/commit/8af30f18a30542ba08bda25c77ea95c1a2d8084a))
+* prepend timestamps to error messages for better debugging context ([0af96c9](https://github.com/infitx-org/release-cd/commit/0af96c9501d50bfe4269aefef3b787436518fd26))
+* remove timestamp from HTTP request error logging for clarity ([f88169f](https://github.com/infitx-org/release-cd/commit/f88169fc9ef78d8b5466ac70828ea618ca7c990d))
+
 ## [1.39.2](https://github.com/infitx-org/release-cd/compare/release-v1.39.1...release-v1.39.2) (2026-01-27)
 
 
