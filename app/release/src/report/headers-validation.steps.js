@@ -69,18 +69,18 @@ defineFeature(feature, test => {
       expect(tls?.cert, 'No TLS cert').toBeDefined();
     })
 
-    /** @type {Array<DfspOidcToken>} */
-    let idTokens = [] // todo: think better name
+    /** @type {Array<DfspAccessToken>} */
+    let dfspTokens = []
 
     when('DFSPs send auth requests to OIDC endpoint with provided credentials', async () => {
-      idTokens = await Promise.all(
+      dfspTokens = await Promise.all(
         Object.values(DFSPs)
           .map(dfsp => oidcFlow(extApiPortal, dfsp))
       )
     })
 
     then('all DFSPs get access tokens', () => {
-      idTokens.map(({ token, id } = {}) => {
+      dfspTokens.forEach(({ token, id } = {}) => {
         expect(typeof token).toBe('string');
         expect(DFSPs[id]).toBeDefined();
         DFSPs[id].token = token;

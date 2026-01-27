@@ -9,7 +9,7 @@ const baseHeadersDto = ({
   token
 } = {}) => ({
   accept,
-  'content-type':  contentType,
+  'content-type': contentType,
   date,
   ...headers,
   ...(source && { 'fspiop-source': source }),

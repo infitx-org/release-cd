@@ -6,12 +6,12 @@ const dto = require('./dto');
 
 
 /**
- * @typedef {Object} DfspOidcToken
+ * @typedef {Object} DfspAccessToken
  * @prop {string} token - OIDC access token
  * @prop {string} id - DFSP identifier
  */
 
-/** @returns Promise<DfspOidcToken>  */
+/** @returns Promise<DfspAccessToken>  */
 async function oidcFlow(portal, dfsp) {
   try {
     const response = await axios.post(
