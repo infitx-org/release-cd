@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.39.1](https://github.com/infitx-org/release-cd/compare/release-v1.39.0...release-v1.39.1) (2026-01-27)
+
+
+### Bug Fixes
+
+* add k8s API integration for retrieving database passwords in offboard function ([6f8a99f](https://github.com/infitx-org/release-cd/commit/6f8a99f61e088e5ef1f1fea73c015fb5f01f1e2e))
+
 ## [1.39.0](https://github.com/infitx-org/release-cd/compare/release-v1.38.0...release-v1.39.0) (2026-01-26)
 
 
