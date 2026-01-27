@@ -1,4 +1,4 @@
-@rbac
+@rbac @oidc @form
 Feature: Portal RBAC API Access
 
     Background:
