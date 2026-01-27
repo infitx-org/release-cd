@@ -33,7 +33,7 @@ const sendHttpRequest = async ({
   headers,
   timeout
 }).catch(err => {
-  console.error(new Date(), 'failed to send http request: ', err);
+  console.error('failed to send http request: ', err);
   return err.response ?? { status: err.message }
 })
 
@@ -54,11 +54,11 @@ const sendDiscoveryRequest = async ({
 })
 
 const discoveryHeadersDto = ({
-  token,
-  source,
-  destination,
-  proxy,
-  headers = {}
+   token,
+   source,
+   destination,
+   proxy,
+   headers = {}
 } = {}) => ({
   accept: 'application/vnd.interoperability.iso20022.parties+json;version=2.0',
   'content-type': 'application/vnd.interoperability.iso20022.parties+json;version=2.0',
