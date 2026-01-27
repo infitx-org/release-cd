@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.40.1](https://github.com/infitx-org/release-cd/compare/release-v1.40.0...release-v1.40.1) (2026-01-27)
+
+
+### Bug Fixes
+
+* onboard error handling ([acd0cb6](https://github.com/infitx-org/release-cd/commit/acd0cb644bf29a69971ac62d9c180f949f460247))
+
 ## [1.40.0](https://github.com/infitx-org/release-cd/compare/release-v1.39.2...release-v1.40.0) (2026-01-27)
 
 
