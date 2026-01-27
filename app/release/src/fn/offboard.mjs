@@ -1,5 +1,6 @@
 import knex from 'knex';
 import config from '../config.mjs';
+import { k8sApi } from '../k8s.mjs';
 import notifyRelease from '../release.mjs';
 import deleteParticipantByName from './deleteParticipant.mjs';
 
@@ -9,6 +10,12 @@ export default async function offboard(dfsp) {
     const log = string => {
         console.log(new Date(), '... ' + string);
         result.push(string);
+    }
+    if (!config.mcm?.db?.connection?.password) {
+        config.mcm.db.connection.password = Buffer.from((await k8sApi.readNamespacedSecret({
+            name: 'mcm-db-secret',
+            namespace: 'mcm'
+        })).data['mysql-password'], 'base64').toString('utf8');
     }
     const mcm = knex(config.mcm.db);
     try {
@@ -25,6 +32,12 @@ export default async function offboard(dfsp) {
         await mcm.destroy();
     }
 
+    if (!config.mojaloop?.db?.connection?.password) {
+        config.mojaloop.db.connection.password = Buffer.from((await k8sApi.readNamespacedSecret({
+            name: 'central-ledger-db-secret',
+            namespace: 'mojaloop'
+        })).data['mysql-password'], 'base64').toString('utf8');
+    }
     const mojaloop = knex(config.mojaloop.db);
     try {
         log(`Starting offboard of DFSP ${dfsp} within the Mojaloop database`);
