@@ -67,11 +67,32 @@ export default async function deleteParticipantByName(knex, name, log) {
       log(`Found ${participantPositionIds.length} position records`);
     }
 
+    // Get all settlementParticipantCurrencyIds for these currencies
+    let settlementParticipantCurrencyIds = [];
+    if (participantCurrencyIds.length > 0) {
+      const settlementParticipantCurrencies = await trx('settlementParticipantCurrency')
+        .whereIn('participantCurrencyId', participantCurrencyIds)
+        .select('settlementParticipantCurrencyId');
+
+      settlementParticipantCurrencyIds = settlementParticipantCurrencies.map(spc => spc.settlementParticipantCurrencyId);
+      log(`Found ${settlementParticipantCurrencyIds.length} settlement participant currency records`);
+    }
+
+    // clear settlementParticipantCurrency.currentStateChangeId
+    if (settlementParticipantCurrencyIds.length > 0) {
+      const count = await trx('settlementParticipantCurrency')
+        .whereIn('settlementParticipantCurrencyId', settlementParticipantCurrencyIds)
+        .update({ currentStateChangeId: null });
+
+      log(`Cleared currentStateChangeId for ${count} settlementParticipantCurrency records`);
+    }
+
     // Step 4: Delete in reverse dependency order (deepest children first)
 
     // Level 4: Delete records related to participantPositionId
     const level4Tables = [
-      { name: 'participantPositionChange', column: 'participantPositionId', ids: participantPositionIds }
+      { name: 'settlementParticipantCurrencyStateChange', column: 'settlementParticipantCurrencyId', ids: settlementParticipantCurrencyIds },
+      { name: 'participantPositionChange', column: 'participantPositionId', ids: participantPositionIds },
     ];
 
     for (const table of level4Tables) {

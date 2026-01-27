@@ -65,7 +65,7 @@ const init = async () => {
     });
 
     server.ext('onPreResponse', (request, h) => {
-        if (request.path === '/health') return h.continue;
+        if (request.path === '/health' || request.path.startsWith('/rest-fs/')) return h.continue;
         const response = request.response;
         if (response.isBoom) {
             request.log(['error'], response);
