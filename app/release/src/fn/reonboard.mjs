@@ -30,7 +30,7 @@ export default async function reonboardDfsps(dfsps, key) {
                 contentType: 'application/json'
             }
         }).catch(err => {
-            console.error('Error notifying release:', err);
+            console.error(new Date(), 'Error notifying release:', err);
         });
     }
 

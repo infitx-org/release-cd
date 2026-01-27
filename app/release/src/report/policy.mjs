@@ -66,6 +66,6 @@ async function main() {
 }
 
 main().catch(err => {
-    console.error('Error extracting policy reports:', err);
+    console.error(new Date(), 'Error extracting policy reports:', err);
     process.exit(1);
 });

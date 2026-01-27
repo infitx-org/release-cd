@@ -154,7 +154,7 @@ export default async function onboard(dfsp, pingTimeout) {
             contentType: 'text/plain'
         }
     }).catch(err => {
-        console.error('Error notifying release:', err);
+        console.error(new Date(), 'Error notifying release:', err);
     });
 
     return result.join('\n');
@@ -162,11 +162,11 @@ export default async function onboard(dfsp, pingTimeout) {
 
 if (import.meta.url === process.argv[1] || import.meta.url === `file://${process.argv[1]}`) {
     if (process.argv.length < 3) {
-        console.error('Usage: onboard <dfsp>');
+        console.error(new Date(), 'Usage: onboard <dfsp>');
         process.exit(1);
     }
     onboard(process.argv[2]).catch(err => {
-        console.error('Error in onboard:', err);
+        console.error(new Date(), 'Error in onboard:', err);
         process.exit(1);
     });
 }

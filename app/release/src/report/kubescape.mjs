@@ -100,12 +100,12 @@ async function main() {
 
         console.log('Kubescape report generation completed successfully.');
     } catch (error) {
-        console.error('Error generating Kubescape report:', error);
+        console.error(new Date(), 'Error generating Kubescape report:', error);
         process.exit(1);
     }
 }
 
 main().catch(err => {
-    console.error('Error extracting Kubescape results:', err);
+    console.error(new Date(), 'Error extracting Kubescape results:', err);
     process.exit(1);
 });

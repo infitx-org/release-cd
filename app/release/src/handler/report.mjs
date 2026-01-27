@@ -50,7 +50,7 @@ export default async function report(request, h) {
         if (error.code === 'NotFound' || error.code === 'NoSuchKey') {
             throw Boom.notFound(`Object not found: ${key}`);
         }
-        console.error('Error retrieving S3 object:', error);
+        console.error(new Date(), 'Error retrieving S3 object:', error);
         throw Boom.internal('Failed to retrieve object from bucket', error);
     }
 }

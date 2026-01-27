@@ -65,7 +65,7 @@ export default async function keyRotate(request, h) {
                             contentType: 'application/json'
                         }
                     }).catch(err => {
-                        console.error('Error notifying release of key rotation:', err);
+                        console.error(new Date(), 'Error notifying release of key rotation:', err);
                     });
                 } else if (type === 'ERROR') {
                     if (timeout) clearTimeout(timeout);

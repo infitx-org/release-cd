@@ -28,6 +28,6 @@ if (servers.length > 0) {
         }
     }));
 } else {
-    console.error('No server URLs provided.');
+    console.error(new Date(), 'No server URLs provided.');
     process.exit(1);
 }

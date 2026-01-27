@@ -31,7 +31,7 @@ if (import.meta.url === process.argv[1] || import.meta.url === `file://${process
         report: 'allure-report/index.html',
         summary: JSON.parse(readFileSync('allure-report/summary.json'))
     }).catch(err => {
-        console.error('Error in notify:', err);
+        console.error(new Date(), 'Error in notify:', err);
         process.exit(1);
     });
 }

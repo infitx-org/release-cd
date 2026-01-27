@@ -149,7 +149,7 @@ ${Object.entries(tests).map(([env, tests]) => Object.entries(tests).map(([name, 
 
             revisions[env] = revision._id;
             actions[env] = revision.actions || {};
-            tests[env] = revision.tests;
+            tests[env] = revision.tests || {};
             iac ||= revision.iac_terraform_modules_tag
             if (iac !== revision.iac_terraform_modules_tag)
                 envResponse.iac = `IAC Terraform modules tag mismatch for environment ${env}, expected ${iac}, found ${revision.iac_terraform_modules_tag}`
