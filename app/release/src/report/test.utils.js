@@ -1,7 +1,6 @@
 const { Agent } = require('node:https');
 const { readFileSync } = require('node:fs');
 const axios = require('axios');
-// const allure = require('allure-jest');
 const allure = require('allure-js-commons')
 const dto = require('./dto');
 
@@ -109,8 +108,6 @@ const wrapSteps = ({ given, when, then, and, but } = {}) => ({
   given: wrapStep('Given', given),
   when: wrapStep('When', when),
   then: wrapStep('Then', then),
-  // ...(and && { and: wrapStep('And', and) }),
-  // ...(but && { but: wrapStep('But', but) }),
   and: and ? wrapStep('And', and) : undefined,
   but: but ? wrapStep('But', but) : undefined,
 });
@@ -134,20 +131,6 @@ const withAttachmentCSV = (title, rows) => {
   ].join('\n');
 
   return allure.attachment(title, csv, 'text/csv');
-
- //  if (!rows?.length) return allure.attachment(title, '<p>No data</p>', 'text/html');
- //
- //  const headers = Object.keys(rows[0]);
- //  const html = `<table border="1" cellpadding="6" cellspacing="0" style="border-collapse: collapse; font-family: monospace;">
- // <thead>
- //   <tr style="background: #f0f0f0;">${headers.map(h => `<th>${h}</th>`).join('')}</tr>
- // </thead>
- // <tbody>
- //   ${rows.map(row => `<tr>${headers.map(h => `<td>${row[h] ?? ''}</td>`).join('')}</tr>`).join('\n  ')}
- // </tbody>
- // </table>`;
- //
- //  return allure.attachment(title, html, 'text/html');
 };
 
 const withTags = (tags = []) => tags.forEach(tag => allure.tag(tag))
