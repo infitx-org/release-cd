@@ -1,8 +1,10 @@
-const rc = require('rc');
-const { defineFeature, loadFeature } = require('jest-cucumber');
+import { dirname } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import rc from 'rc';
+import { defineFeature, loadFeature } from 'jest-cucumber';
 
-const { releaseCdClient } = require('../apiClients/releaseCdClient');
-const {
+import { releaseCdClient } from '../apiClients/releaseCdClient.mjs';
+import {
   oidcFlow,
   padEnd,
   sendDiscoveryRequest,
@@ -10,7 +12,9 @@ const {
   withAttachmentJSON,
   withAttachmentCSV,
   withTags
-} = require('./test.utils');
+} from './test.utils.mjs';
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
 
 const config = rc('portal_test', {
   credentials: {

@@ -6,4 +6,5 @@ module.exports = {
     coverageDirectory: 'coverage',
     testTimeout: 60000,
     verbose: true,
+    transform: {},
 };
