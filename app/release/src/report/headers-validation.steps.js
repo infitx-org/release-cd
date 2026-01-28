@@ -41,7 +41,13 @@ defineFeature(feature, test => {
   const createDfsp = (row) => {
     const dfspId = mapDfspId(row.dfsp)
 
-    const creds = config.credentials?.[dfspId] || {}
+    const creds = config.credentials?.[dfspId.replace(/-/g, '_')] || {}
+    /**
+      npm/npx and "node --run ..." filter out environment variables with hyphens in key names.
+      So if credential for test-fxp2 is stored as:
+        portal_test_credentials__test-fxp2__password=...
+      this env var will be sanitized and removed as having non-POSIX compliant characters (hyphens)
+     */
     expect(creds.username).toBeDefined();
     expect(creds.password).toBeDefined();
 
