@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.41.3](https://github.com/infitx-org/release-cd/compare/release-v1.41.2...release-v1.41.3) (2026-01-28)
+
+
+### Bug Fixes
+
+* simplify CSR state check and update onboard job deletion logic ([5d9b402](https://github.com/infitx-org/release-cd/commit/5d9b402d4c248da8b2327874cb39c91dcd91aa81))
+* tests ([df60ae1](https://github.com/infitx-org/release-cd/commit/df60ae1cd396bb10b85da499ce39f45180e5e0c5))
+
 ## [1.41.2](https://github.com/infitx-org/release-cd/compare/release-v1.41.1...release-v1.41.2) (2026-01-28)
 
 
