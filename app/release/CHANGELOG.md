@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.41.0](https://github.com/infitx-org/release-cd/compare/release-v1.40.1...release-v1.41.0) (2026-01-28)
+
+
+### Features
+
+* **csi-2030:** added normalizeTls ([97357ea](https://github.com/infitx-org/release-cd/commit/97357eaece1f5c317e2fd72c7c0d75324d198715))
+* **csi-2030:** added normalizeTls ([6efb1d0](https://github.com/infitx-org/release-cd/commit/6efb1d08f9df54647eb958cf60618b161b2773ce))
+* **csi-2030:** added support on release-cd server to get dfsp state ([5cf56bb](https://github.com/infitx-org/release-cd/commit/5cf56bbecfe0214a27d248801e43c7648ac831d8))
+* **csi-2030:** added support on release-cd server to get dfsp state ([87a4ae4](https://github.com/infitx-org/release-cd/commit/87a4ae42d9eefb4f3af57b4cd24487ed0cd1f6b3))
+* **csi-2030:** added support on release-cd server to get dfsp state ([4340c59](https://github.com/infitx-org/release-cd/commit/4340c59291a0197e8b19cf55f36e13655f9efe00))
+* **csi-2030:** fixed execKubectl approach ([ec3922b](https://github.com/infitx-org/release-cd/commit/ec3922b4b47a78835a7af40b2fb6181323854f20))
+
 ## [1.40.1](https://github.com/infitx-org/release-cd/compare/release-v1.40.0...release-v1.40.1) (2026-01-27)
 
 
