@@ -5,7 +5,7 @@ import https from 'https';
 
 import config from '../config.mjs';
 import pingDFSP from '../fn/ping.mjs';
-import { k8sApi, k8sBatchApi, k8sCustom } from '../k8s.mjs';
+import { k8sApi, k8sCustom } from '../k8s.mjs';
 import notifyRelease from '../release.mjs';
 
 axios.defaults.timeout = 60000; // Set default timeout to 60 seconds
@@ -121,13 +121,14 @@ export default async function onboard(dfsp, pingTimeout) {
             }
         }
 
-        log(`Delete onboard job ${dfsp}-onboard-dfsp if exists`);
-        await k8sBatchApi.deleteNamespacedJob({
-            name: `${dfsp}-onboard-dfsp`,
-            namespace: 'mojaloop'
-        }).catch(err => {
-            if (err.code !== 404) throw err;
-        });
+        // TODO remove this after confirming we are proceeding with timestamp in the job name
+        // log(`Delete onboard job ${dfsp}-onboard-dfsp if exists`);
+        // await k8sBatchApi.deleteNamespacedJob({
+        //     name: `${dfsp}-onboard-dfsp`,
+        //     namespace: 'mojaloop'
+        // }).catch(err => {
+        //     if (err.code !== 404) throw err;
+        // });
 
         log(`Onboarding ${dfsp} `);
         await axios.post(
