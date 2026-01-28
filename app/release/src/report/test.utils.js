@@ -90,21 +90,36 @@ const sendDiscoveryRequest = async ({
   }),
 })
 
-// const createHttpsAgent = (tls) => new Agent({
-//   ...(tls?.ca && { ca: readFileSync(tls.ca) }),
-//   ...(tls?.cert && { cert: readFileSync(tls.cert) }),
-//   ...(tls?.key && { key: readFileSync(tls.key) }),
-// });
-
 const createHttpsAgent = (tls) => {
-  return new Agent({
-    ca: normalizePem(tls.ca),
-    cert: normalizePem(tls.cert),
-    key: normalizePem(tls.key),
-  });
-}
+  return new Agent(normalizeTls(tls));
+};
 
-const normalizePem = (str = '') => str.replace(/\\n/g, '\n')
+const normalizeTls = ({ ca, cert, key } = {}) => ({
+  ...(ca && { ca: normalizePemValue(ca) }),
+  ...(cert && { cert: normalizePemValue(cert) }),
+  ...(key && { key: normalizePemValue(key) }),
+});
+
+const normalizePemValue = (value) => {
+  if (!value || typeof value !== 'string') return;
+
+  return isFilePath(value)
+    ? readFileSync(value, 'utf8')
+    : value.replace(/\\n/g, '\n')
+};
+
+const isFilePath = (value) => {
+  if (!value || typeof value !== 'string') return false;
+  if (value.includes('-----BEGIN')) return false; // PEM content
+
+  const trimmed = value.trim();
+  return (
+    trimmed.startsWith('/') ||
+    trimmed.startsWith('./') ||
+    trimmed.startsWith('../') ||
+    /\.(pem|crt|key|cert)$/i.test(trimmed)
+  );
+};
 
 const padEnd = (str = '', length = 10) => String(str).padEnd(length)
 
