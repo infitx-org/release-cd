@@ -200,7 +200,7 @@ async function onboardLoop(access_token, secret) {
             try {
                 console.log(`Get ${dfsp} CSR`);
                 const { data: csr } = await axios.get(
-                    new URL(`/api/dfsps/${dfsp}/enrollments/inbound`, mcmBaseUrl),
+                    new URL(`/api/dfsps/${dfsp}/enrollments/inbound?state=CSR_LOADED`, mcmBaseUrl),
                     {
                         headers: {
                             authorization: `Bearer ${access_token}`
@@ -224,7 +224,7 @@ async function onboardLoop(access_token, secret) {
                         );
                     }
                 }
-                if (csr?.some(item => ['CSR_LOADED', 'CERT_SIGNED'].includes(item?.state))) {
+                if (csr?.some(item => 'CSR_LOADED' === item?.state)) {
                     console.log(`Onboarding ${dfsp} `);
                     await axios.post(
                         new URL(`/api/dfsps/${dfsp}/onboard`, mcmBaseUrl),

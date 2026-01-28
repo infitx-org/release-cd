@@ -61,7 +61,7 @@ export const cdRevisionGet = async (request, h) => {
         revisions[env] = revision._id;
         tests[env] = revision.tests;
 
-        result.push(`<h2>${env}</h2>`);
+        result.push(`<h2><a href="vscode://undertree.rest-fs/${env}/">${env}</a></h2>`);
         result.push('<ul>');
         result.push(`<li>ℹ️ Revision ID: <a href="/revision/${env}/${revision._id}?hide=assertions" target="_blank">${revision._id}</a></li>`);
         if (revision.version)

@@ -121,5 +121,5 @@ Feature: Portal RBAC API Access
     Scenario: MCM-ext DFSP endpoints
         Then check access for the following endpoints:
             | portal  | path                                                     | method | bob | alice |
-            | MCM-ext | /dfsps/test-alice/endpoints                              | GET    | 401 |   200 |
-            | MCM-ext | /dfsps/test-bob/endpoints                                | GET    | 200 |   401 |
+            | MCM-ext | /dfsps/test-alice/enrollments/outbound                   | GET    | 401 |   200 |
+            | MCM-ext | /dfsps/test-bob/enrollments/outbound                     | GET    | 200 |   401 |
