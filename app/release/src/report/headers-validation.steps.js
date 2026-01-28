@@ -131,7 +131,7 @@ defineFeature(feature, test => {
     withAttachmentJSON('Expected results (JSON):', expectedResults);
     withAttachmentCSV('Expected results (CSV):', expectedResults);
 
-    expect(errors).toEqual([])
+    expect(errors, 'actual and expected statusCodes mismatching').toEqual([])
   }
 
   test('Successful validation of FSPIOP source and proxy headers', withAllureSteps(({ given, when, then }) => {
