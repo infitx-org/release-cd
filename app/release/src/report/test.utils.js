@@ -94,10 +94,11 @@ const createHttpsAgent = (tls) => {
   return new Agent(normalizeTls(tls));
 };
 
-const normalizeTls = ({ ca, cert, key } = {}) => ({
+const normalizeTls = ({ ca, cert, key, rejectUnauthorized } = {}) => ({
   ...(ca && { ca: normalizePemValue(ca) }),
   ...(cert && { cert: normalizePemValue(cert) }),
   ...(key && { key: normalizePemValue(key) }),
+  ...(typeof rejectUnauthorized === 'boolean' && { rejectUnauthorized }),
 });
 
 const normalizePemValue = (value) => {
