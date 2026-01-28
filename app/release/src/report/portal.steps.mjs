@@ -1,9 +1,9 @@
-const axios = require('axios');
-const { CookieJar } = require('tough-cookie');
-const { wrapper } = require('axios-cookiejar-support');
-const { defineFeature, loadFeature } = require('jest-cucumber');
-const rc = require('rc');
-const { expect } = require('@jest/globals');
+import axios from 'axios';
+import { CookieJar } from 'tough-cookie';
+import { wrapper } from 'axios-cookiejar-support';
+import { defineFeature, loadFeature } from 'jest-cucumber';
+import rc from 'rc';
+import { expect } from '@jest/globals';
 
 const config = rc('portal_test', {
     credentials: {
@@ -11,7 +11,7 @@ const config = rc('portal_test', {
     }
 });
 
-const feature = loadFeature(__dirname + '/portal.feature');
+const feature = loadFeature(new URL('./portal.feature', import.meta.url).pathname);
 
 defineFeature(feature, test => {
     let users = {};

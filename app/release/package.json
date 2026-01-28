@@ -6,7 +6,7 @@
   "scripts": {
     "build": "true",
     "test": "rm -rf allure-results; jest --colors; allure generate; node src/bin/notify.mjs",
-    "portal-test": "jest --colors; allure generate; node src/bin/notify.mjs",
+    "portal-test": "NODE_OPTIONS='--experimental-vm-modules' jest --colors; allure generate; node src/bin/notify.mjs",
     "generate-report": "allure generate",
     "policy-report": "node src/report/policy.mjs; allure generate; node src/bin/notify.mjs",
     "vulnerability-report": "node src/report/vulnerability.mjs; allure generate; node src/bin/notify.mjs",

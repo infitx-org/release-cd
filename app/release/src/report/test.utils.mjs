@@ -1,8 +1,8 @@
-const { Agent } = require('node:https');
-const { readFileSync } = require('node:fs');
-const axios = require('axios');
-const allure = require('allure-js-commons')
-const dto = require('./dto');
+import { Agent } from 'node:https';
+import { readFileSync } from 'node:fs';
+import axios from 'axios';
+import * as allure from 'allure-js-commons';
+import * as dto from './dto.js';
 
 /**
  * @typedef {Object} DfspAccessToken
@@ -164,7 +164,7 @@ const withAttachmentCSV = (title, rows) => {
 
 const withTags = (tags = []) => tags.forEach(tag => allure.tag(tag))
 
-module.exports = {
+export {
   oidcFlow,
   sendHttpRequest,
   sendDiscoveryRequest,
@@ -173,4 +173,4 @@ module.exports = {
   withAttachmentJSON,
   withAttachmentCSV,
   withTags
-}
+};
