@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.1](https://github.com/infitx-org/release-cd/compare/onboard-v1.3.0...onboard-v1.3.1) (2026-01-28)
+
+
+### Bug Fixes
+
+* simplify CSR state check and update onboard job deletion logic ([5d9b402](https://github.com/infitx-org/release-cd/commit/5d9b402d4c248da8b2327874cb39c91dcd91aa81))
+
 ## [1.3.0](https://github.com/infitx-org/release-cd/compare/onboard-v1.2.0...onboard-v1.3.0) (2026-01-23)
 
 
