@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.41.5](https://github.com/infitx-org/release-cd/compare/release-v1.41.4...release-v1.41.5) (2026-01-28)
+
+
+### Bug Fixes
+
+* **csi-2030:** refactored steps to use .mjs ([#108](https://github.com/infitx-org/release-cd/issues/108)) ([a4f284f](https://github.com/infitx-org/release-cd/commit/a4f284f7e822405ed314830e15e49423bcf5d9ca))
+
 ## [1.41.4](https://github.com/infitx-org/release-cd/compare/release-v1.41.3...release-v1.41.4) (2026-01-28)
 
 
