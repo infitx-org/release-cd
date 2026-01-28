@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.41.2](https://github.com/infitx-org/release-cd/compare/release-v1.41.1...release-v1.41.2) (2026-01-28)
+
+
+### Bug Fixes
+
+* **csi-2030:** added allure-js-commons package ([a5189b1](https://github.com/infitx-org/release-cd/commit/a5189b1616b5f7c03721bc0ac923d4bb45d6cd20))
+
 ## [1.41.1](https://github.com/infitx-org/release-cd/compare/release-v1.41.0...release-v1.41.1) (2026-01-28)
 
 
