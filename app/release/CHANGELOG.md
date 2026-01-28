@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.41.1](https://github.com/infitx-org/release-cd/compare/release-v1.41.0...release-v1.41.1) (2026-01-28)
+
+
+### Bug Fixes
+
+* **csi-2030:** updated getDfspState to use service call instead of kubectl ([1facec4](https://github.com/infitx-org/release-cd/commit/1facec467ca3ac852e9d5c583bd49ca0e1d8ce3f))
+
 ## [1.41.0](https://github.com/infitx-org/release-cd/compare/release-v1.40.1...release-v1.41.0) (2026-01-28)
 
 
