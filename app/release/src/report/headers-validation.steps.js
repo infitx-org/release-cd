@@ -1,6 +1,7 @@
 const rc = require('rc');
 const { defineFeature, loadFeature } = require('jest-cucumber');
 
+const { releaseCdClient } = require('../apiClients/releaseCdClient');
 const {
   oidcFlow,
   padEnd,
@@ -23,6 +24,10 @@ const feature = loadFeature(__dirname + '/headers-validation.feature');
 defineFeature(feature, test => {
   const extApiPortal = Object.freeze(config.portals?.['Hub external API'] || {})
   let DFSPs = {};
+  let tls; // for alice
+
+  /** @type {Array<DfspAccessToken>} */
+  let dfspTokens = []
 
   // make it configurable?
   const ALIASES = Object.freeze({
@@ -50,6 +55,13 @@ defineFeature(feature, test => {
     }
   }
 
+  beforeAll(async () => {
+    const { status, data } = await releaseCdClient.getDfspState(ALIASES['alice']) // get it from config?
+    expect(status).toBe(200)
+    expect(data).toBeDefined()
+    tls = data?.state?.outboundTLS
+  })
+
   const backgroundGetAccessTokens = ({ given, when, then }) => {
     DFSPs = {};
 
@@ -66,14 +78,16 @@ defineFeature(feature, test => {
       withAttachmentJSON('Hub external API and OIDC (login) URLs:', { url, loginUrl })
       expect(url).toBeDefined();
       expect(loginUrl).toBeDefined();
-      expect(tls?.cert, 'No TLS cert').toBeDefined();
     })
 
-    /** @type {Array<DfspAccessToken>} */
-    let dfspTokens = []
+    given('mTLS creds to connect to extapi endpoint received', async () => {
+      expect(tls?.ca, 'No TLS ca').toBeDefined()
+      expect(tls?.cert, 'No TLS cert').toBeDefined()
+      expect(tls?.key, 'No TLS key').toBeDefined()
+    })
 
     when('DFSPs send auth requests to OIDC endpoint with provided credentials', async () => {
-      dfspTokens = await Promise.all(
+      dfspTokens = dfspTokens?.length ? dfspTokens : await Promise.all( // call it only once during all tests
         Object.values(DFSPs)
           .map(dfsp => oidcFlow(extApiPortal, dfsp))
       )
@@ -91,9 +105,10 @@ defineFeature(feature, test => {
   const sendManyDiscoveryRequests = (table) => Promise.all(
     table.map(row => sendDiscoveryRequest({
       extApiPortal,
+      tls,
       token: mapToken(row.token),
       source: mapDfspId(row.source),
-      proxy: mapDfspId(row.proxy)
+      proxy: mapDfspId(row.proxy),
     }))
   )
 
@@ -116,7 +131,7 @@ defineFeature(feature, test => {
     withAttachmentJSON('Expected results (JSON):', expectedResults);
     withAttachmentCSV('Expected results (CSV):', expectedResults);
 
-    expect(errors).toEqual([])
+    expect(errors, 'actual and expected statusCodes mismatching').toEqual([])
   }
 
   test('Successful validation of FSPIOP source and proxy headers', withAllureSteps(({ given, when, then }) => {
