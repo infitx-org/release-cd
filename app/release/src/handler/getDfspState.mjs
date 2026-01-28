@@ -1,4 +1,4 @@
-import { sendHttpRequest } from '../report/test.utils.js'
+import { sendHttpRequest } from '../report/test.utils.mjs'
 
 const MAN_API_TEST_SERVER_PORT = 9050;
 
