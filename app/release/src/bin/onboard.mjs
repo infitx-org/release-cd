@@ -4,7 +4,6 @@ import axios from 'axios';
 import https from 'https';
 
 import config from '../config.mjs';
-import pingDFSP from '../fn/ping.mjs';
 import { k8sApi, k8sCustom } from '../k8s.mjs';
 import notifyRelease from '../release.mjs';
 
@@ -141,9 +140,6 @@ export default async function onboard(dfsp, pingTimeout) {
                 }
             }
         );
-
-        log(`Pinging ${dfsp} to verify onboarding`);
-        log(`${await pingDFSP(dfsp, pingTimeout)}`);
 
         notifyRelease({
             reportId: 'onboard-' + dfsp,
