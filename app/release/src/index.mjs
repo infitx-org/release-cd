@@ -38,7 +38,9 @@ const init = async () => {
         };
     });
     server.auth.strategy('service', 'authorization-header');
+
     await server.register(basic);
+
     server.auth.strategy('report', 'basic', {
         validate: (request, username, password) => (username === 'admin' && password === config.server.auth) ? {
             isValid: true,
@@ -109,7 +111,7 @@ const init = async () => {
     });
 
     server.route({
-        // options: config.server.post,
+        options: config.server.post,
         method: 'GET',
         path: '/dfsp/{id}/state',
         handler: async (request, h) => {
