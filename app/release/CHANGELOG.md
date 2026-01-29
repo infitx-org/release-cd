@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.41.6](https://github.com/infitx-org/release-cd/compare/release-v1.41.5...release-v1.41.6) (2026-01-29)
+
+
+### Bug Fixes
+
+* assertions ([#112](https://github.com/infitx-org/release-cd/issues/112)) ([766ba53](https://github.com/infitx-org/release-cd/commit/766ba53f9a371a3f9e3046c844b6a78d450a9598))
+
 ## [1.41.5](https://github.com/infitx-org/release-cd/compare/release-v1.41.4...release-v1.41.5) (2026-01-28)
 
 
