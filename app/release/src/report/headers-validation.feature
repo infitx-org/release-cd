@@ -2,17 +2,13 @@
 Feature: Validate FSPIOP-Source and FSPIOP-Proxy headers against X-Client-Id
 
     Background:
-        Given credentials for OIDC (Keycloak) clients for DFSPs
-            | dfsp      | flow |
-            | alice     | oidc |
-            | bob       | oidc |
-
-        And hub external API and OIDC endpoints are configured
-        And mTLS creds to connect to extapi endpoint received
-
-        When DFSPs send auth requests to OIDC endpoint with provided credentials
-
-        Then all DFSPs get access tokens
+        Given hub external API portal endpoints are configured
+        And credentials for OIDC (Keycloak) clients for DFSPs provided
+            | id      |  flow  |
+            | alice   |  oidc  |
+            | bob     |  oidc  |
+        And each DFSP has valid access token
+        And mTLS creds for extapi endpoint are received
 
 
     Scenario: Successful validation of FSPIOP source and proxy headers
@@ -55,3 +51,15 @@ Feature: Validate FSPIOP-Source and FSPIOP-Proxy headers against X-Client-Id
             | alice | bob    | bob    | alice | 400        |
         Then requests fail with 400 Bad Request error
         # todo: think if it's better to have 403 Forbidden error
+
+    Scenario: Quotes requests fail validation due to incorrect source/proxy headers
+        When send quotes requests with valid access_token and incorrect headers:
+            | dfsp  | token  | source | proxy | statusCode |
+            | alice | alice  |        |       | 400        |
+            | alice | alice  |        | alice | 400        |
+            | alice | alice  | alice  | alice | 400        |
+            | alice | alice  | alice  | bob   | 400        |
+            | alice | alice  | bob    |       | 400        |
+        Then requests fail with Bad Request error
+
+    # todo: add scenario for ml-api-adapter

@@ -22,7 +22,7 @@ const discoveryHeadersDto = ({
   token,
   source,
   proxy = '',
-  accept = 'application/vnd.interoperability.iso20022.parties+json;version=2.0',
+  accept = makeInteropHeader('parties'),
   contentType = accept,
   ...rest
 } = {}) => baseHeadersDto({
@@ -34,7 +34,29 @@ const discoveryHeadersDto = ({
   contentType,
 })
 
+const quotesHeadersDto = ({
+  token,
+  source,
+  destination,
+  proxy = '',
+  accept = makeInteropHeader('quotes'),
+  contentType = accept,
+  ...rest
+} = {}) => baseHeadersDto({
+  ...rest,
+  token,
+  source,
+  destination,
+  proxy,
+  accept,
+  contentType,
+})
+
+const makeInteropHeader = (resource, version = '2.0') => `application/vnd.interoperability.iso20022.${resource}+json;version=${version}`
+// todo: ^^ make iso-part configurable
+
 module.exports = {
   baseHeadersDto,
-  discoveryHeadersDto
+  discoveryHeadersDto,
+  quotesHeadersDto
 }

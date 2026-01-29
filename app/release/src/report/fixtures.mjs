@@ -1,0 +1,3 @@
+export const TEST_PARTY_ID = 'party-123'
+
+export const TEST_QUOTE_ID = '01QQ4M87PRJ7YNHFCDABA3AAQQ'
