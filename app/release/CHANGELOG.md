@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.42.1](https://github.com/infitx-org/release-cd/compare/release-v1.42.0...release-v1.42.1) (2026-01-29)
+
+
+### Bug Fixes
+
+* remove the ping from onboard as it will be triggered after the job completes ([0e108d7](https://github.com/infitx-org/release-cd/commit/0e108d72033fa393fafe1a4713b79da5e072900e))
+
 ## [1.42.0](https://github.com/infitx-org/release-cd/compare/release-v1.41.6...release-v1.42.0) (2026-01-29)
 
 
