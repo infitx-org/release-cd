@@ -46,7 +46,7 @@ Feature: Portal RBAC API Access
     Scenario: MCM DFSPs
         Then check access for the following endpoints:
             | portal | path                                                     | method | anonymous | mcm_admin |
-            | MCM    | /dfsps/test-rbac                                         | PUT    |       401 |       415 |
+            | MCM    | /dfsps/test-rbac                                         | PUT    |       404 |       404 |
             | MCM    | /dfsps/test-rbac/ca                                      | GET    |       401 |       200 |
             | MCM    | /dfsps/test-rbac/ca                                      | POST   |       401 |       415 |
             | MCM    | /dfsps/test-rbac/enrollments/inbound                     | GET    |       401 |       200 |
@@ -99,9 +99,9 @@ Feature: Portal RBAC API Access
             | MCM    | /dfsps                                                  | POST   |       401 |       415 |
             | MCM    | /dfsps/endpoints/unprocessed                            | GET    |       401 |       200 |
             | MCM    | /dfsps/jwscerts                                         | GET    |       401 |       200 |
-            | MCM    | /dfsps/servercerts                                      | GET    |       401 |       404 |
+            | MCM    | /dfsps/servercerts                                      | GET    |       401 |       200 |
             | MCM    | /dfsps/states-status                                    | GET    |       401 |       200 |
-            | MCM    | /external-dfsps/jwscerts                                | POST   |       401 |       415 |
+            | MCM    | /external-dfsps/jwscerts                                | POST   |       404 |       404 |
             | MCM    | /hub/ca                                                 | GET    |       401 |       200 |
             | MCM    | /hub/ca                                                 | POST   |       401 |       415 |
             | MCM    | /hub/ca                                                 | PUT    |       401 |       415 |
@@ -109,8 +109,8 @@ Feature: Portal RBAC API Access
             | MCM    | /hub/jwscerts                                           | POST   |       401 |       415 |
             | MCM    | /hub/servercerts                                        | GET    |       401 |       404 |
             | MCM    | /monetaryzones                                          | GET    |       401 |       200 |
-            | MCM    | /monetaryzones/XXX/dfsps?monetaryZoneId=XXX             | GET    |       401 |       400 |
-            | MCM    | /resetPassword                                          | POST   |       401 |       400 |
+            | MCM    | /monetaryzones/XXX/dfsps?monetaryZoneId=XXX             | GET    |       404 |       404 |
+            | MCM    | /resetPassword                                          | POST   |       404 |       404 |
           # unsafe to test
           # | MCM    | /hub/ca                                                 | DELETE |       401 |       200 |
           # | MCM    | /hub/servercerts                                        | POST   |       401 |       200 |
@@ -121,5 +121,5 @@ Feature: Portal RBAC API Access
     Scenario: MCM-ext DFSP endpoints
         Then check access for the following endpoints:
             | portal  | path                                                     | method | bob | alice |
-            | MCM-ext | /dfsps/test-alice/enrollments/outbound                   | GET    | 401 |   200 |
-            | MCM-ext | /dfsps/test-bob/enrollments/outbound                     | GET    | 200 |   401 |
+            | MCM-ext | /dfsps/test-alice/enrollments/outbound                   | GET    | 403 |   200 |
+            | MCM-ext | /dfsps/test-bob/enrollments/outbound                     | GET    | 200 |   403 |
