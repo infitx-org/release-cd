@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.44.0](https://github.com/infitx-org/release-cd/compare/release-v1.43.0...release-v1.44.0) (2026-01-29)
+
+
+### Features
+
+* **iad-420:** added auth to DFSP state route ([662046a](https://github.com/infitx-org/release-cd/commit/662046a879c378244e27b517e5386d4a61a9e085))
+
 ## [1.43.0](https://github.com/infitx-org/release-cd/compare/release-v1.42.1...release-v1.43.0) (2026-01-29)
 
 
