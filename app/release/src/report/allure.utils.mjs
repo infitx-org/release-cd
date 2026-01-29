@@ -1,8 +1,6 @@
 import * as allure from 'allure-js-commons';
 import { logger } from '../logger.mjs'
 
-const log = logger.child({ module: 'allureUtils' });
-
 const wrapStep = (keyword, stepFn) => {
   return (stepText, callback) => {
     const stepName = `${keyword} ${stepText}`;
@@ -29,7 +27,7 @@ const withAllureSteps = (testCallback) => {
 
 const withAttachmentJSON = (title, json, withLog = false) => {
   allure.attachment(title, JSON.stringify(json, null, 2), 'application/json')
-  if (withLog) log.info(title, { json })
+  if (withLog) logger.info(title, { json })
 };
 
 export const withAttachmentCSV = (title, rows) => {
