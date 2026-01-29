@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.43.0](https://github.com/infitx-org/release-cd/compare/release-v1.42.1...release-v1.43.0) (2026-01-29)
+
+
+### Features
+
+* **iad-420:** added tests for /quotes endpoint;  added logger ([faab54a](https://github.com/infitx-org/release-cd/commit/faab54a18ba78900be03ff7f13311c1b5ffa1ed9))
+
 ## [1.42.1](https://github.com/infitx-org/release-cd/compare/release-v1.42.0...release-v1.42.1) (2026-01-29)
 
 
