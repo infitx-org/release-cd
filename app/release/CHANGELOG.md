@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.45.0](https://github.com/infitx-org/release-cd/compare/release-v1.44.0...release-v1.45.0) (2026-01-30)
+
+
+### Features
+
+* enhance pingDFSP function with improved error handling and retry logic; add 'ping' action to trigger function ([5783727](https://github.com/infitx-org/release-cd/commit/5783727639a7d30cc4910b3d2e0633fd118e6163))
+
 ## [1.44.0](https://github.com/infitx-org/release-cd/compare/release-v1.43.0...release-v1.44.0) (2026-01-29)
 
 
