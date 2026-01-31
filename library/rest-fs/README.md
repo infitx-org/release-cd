@@ -268,9 +268,11 @@ The debug proxy endpoints allow you to control debugging remotely:
 // Start proxy with specific token
 const response = await fetch('http://localhost:3000/api/fs/debug-proxy/start', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${crypto.randomBytes(32).toString('hex')}`
+    },
     body: JSON.stringify({
-        token: crypto.randomBytes(32).toString('hex'),
         targetPort: 9229,
         proxyPort: 9230
     })
