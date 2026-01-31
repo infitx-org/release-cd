@@ -82,16 +82,17 @@ describe('rest-fs plugin', () => {
         // This ensures cleanup even if the server's onPreStop hook didn't complete in time
         for (const pid of spawnedProcessPids) {
             try {
-                // Check if process exists before attempting to kill
+                // Check if process exists (signal 0 tests existence without sending a real signal)
                 process.kill(pid, 0);
                 // Process exists, terminate it
                 process.kill(pid, 'SIGTERM');
-                
+
                 // Give it a moment to terminate gracefully
                 await new Promise(resolve => setTimeout(resolve, GRACEFUL_TERMINATION_TIMEOUT_MS));
-                
+
                 // Force kill if still alive
                 try {
+                    // Check again if process still exists
                     process.kill(pid, 0);
                     process.kill(pid, 'SIGKILL');
                 } catch (err) {
@@ -147,6 +148,14 @@ describe('rest-fs plugin', () => {
 
     /**
      * Helper to start debug proxy and track its PID for cleanup
+     * 
+     * This function starts a debug proxy via the REST API and automatically tracks
+     * its process ID for cleanup in afterEach. This prevents orphaned processes
+     * when tests complete or fail.
+     * 
+     * @param {Object} payload - The request payload containing targetPort and proxyPort
+     * @param {Object} headers - The request headers including Authorization
+     * @returns {Promise<Object>} The response object from the server.inject call
      */
     async function startDebugProxyAndTrack(payload, headers) {
         const res = await server.inject({
@@ -155,23 +164,23 @@ describe('rest-fs plugin', () => {
             payload,
             headers
         });
-        
+
         // If successfully started, track the PID for cleanup
         if (res.statusCode === 200 && res.result.status === 'started') {
             // Wait a moment for process to be fully spawned
             await new Promise(resolve => setTimeout(resolve, PROCESS_SPAWN_TIMEOUT_MS));
-            
+
             // Get the PID from status endpoint
             const statusRes = await server.inject({
                 method: 'GET',
                 url: '/api/fs/debug-proxy/status'
             });
-            
+
             if (statusRes.result.pid) {
                 spawnedProcessPids.push(statusRes.result.pid);
             }
         }
-        
+
         return res;
     }
 
