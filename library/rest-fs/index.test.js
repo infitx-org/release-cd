@@ -6,9 +6,12 @@ const WebSocket = require('ws');
 const plugin = require('./index.js');
 
 // Test timing constants
-const PROCESS_SPAWN_TIMEOUT_MS = 500;
-const GRACEFUL_TERMINATION_TIMEOUT_MS = 500;
-const PORT_RELEASE_TIMEOUT_MS = 500;
+const PROCESS_SPAWN_TIMEOUT_MS = 500;           // Time to wait for process to spawn and be ready
+const PROCESS_STARTUP_WAIT_MS = 1000;           // Time to wait for process to fully start before checking status
+const PROXY_READY_WAIT_MS = 1500;               // Time to wait for proxy to be fully ready for connections
+const GRACEFUL_TERMINATION_TIMEOUT_MS = 500;    // Time to wait for graceful process termination
+const PORT_RELEASE_TIMEOUT_MS = 500;            // Time to wait for ports to be released
+const CLEANUP_WAIT_MS = 1500;                    // Time to wait for cleanup to complete
 
 describe('rest-fs plugin', () => {
     let server;
@@ -468,7 +471,7 @@ describe('rest-fs plugin', () => {
                 }, { Authorization: 'Bearer test-token' });
 
                 // Wait for process to start
-                await new Promise(resolve => setTimeout(resolve, 1000));
+                await new Promise(resolve => setTimeout(resolve, PROCESS_STARTUP_WAIT_MS));
 
                 // Second call
                 const res = await server.inject({
@@ -507,7 +510,7 @@ describe('rest-fs plugin', () => {
                 }, { Authorization: 'Bearer test-token' });
 
                 // Wait for startup
-                await new Promise(resolve => setTimeout(resolve, 1000));
+                await new Promise(resolve => setTimeout(resolve, PROCESS_STARTUP_WAIT_MS));
 
                 const res = await server.inject({
                     method: 'GET',
@@ -534,7 +537,7 @@ describe('rest-fs plugin', () => {
                 }, { Authorization: 'Bearer test-proxy-token' });
 
                 // Wait for proxy to be ready
-                await new Promise(resolve => setTimeout(resolve, 1500));
+                await new Promise(resolve => setTimeout(resolve, PROXY_READY_WAIT_MS));
             }, 10000);
 
             it('should proxy /json/list endpoint with authentication', async () => {
@@ -656,7 +659,7 @@ describe('rest-fs plugin', () => {
             expect(startRes.result.status).toBe('started');
 
             // Wait for startup
-            await new Promise(resolve => setTimeout(resolve, 1000));
+            await new Promise(resolve => setTimeout(resolve, PROCESS_STARTUP_WAIT_MS));
 
             // Get PID
             const statusRes = await server.inject({
@@ -671,7 +674,7 @@ describe('rest-fs plugin', () => {
             await server.stop();
 
             // Wait for cleanup
-            await new Promise(resolve => setTimeout(resolve, 1500));
+            await new Promise(resolve => setTimeout(resolve, CLEANUP_WAIT_MS));
 
             // Verify process is terminated
             try {
