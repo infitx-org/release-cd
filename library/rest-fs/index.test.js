@@ -10,6 +10,7 @@ describe('rest-fs plugin', () => {
     let testDir;
     let debugServer;
     let debugServerPort;
+    let spawnedProcessPids = []; // Track spawned debug proxy processes
 
     beforeAll(async () => {
         // Create test directory
@@ -63,7 +64,38 @@ describe('rest-fs plugin', () => {
     });
 
     afterEach(async () => {
+        // Stop the Hapi server (this triggers onPreStop hook which should clean up debug proxy)
         await server.stop();
+        
+        // Explicitly terminate any spawned debug proxy processes to prevent orphaned processes
+        // This ensures cleanup even if the server's onPreStop hook didn't complete in time
+        for (const pid of spawnedProcessPids) {
+            try {
+                // Check if process exists before attempting to kill
+                process.kill(pid, 0);
+                // Process exists, terminate it
+                process.kill(pid, 'SIGTERM');
+                
+                // Give it a moment to terminate gracefully
+                await new Promise(resolve => setTimeout(resolve, 500));
+                
+                // Force kill if still alive
+                try {
+                    process.kill(pid, 0);
+                    process.kill(pid, 'SIGKILL');
+                } catch (err) {
+                    // Process already terminated (expected)
+                }
+            } catch (err) {
+                // Process doesn't exist (already cleaned up)
+            }
+        }
+        
+        // Clear the tracking array for next test
+        spawnedProcessPids = [];
+        
+        // Additional wait to ensure ports are released
+        await new Promise(resolve => setTimeout(resolve, 500));
     });
 
     /**
@@ -103,6 +135,36 @@ describe('rest-fs plugin', () => {
                 resolve();
             });
         });
+    }
+
+    /**
+     * Helper to start debug proxy and track its PID for cleanup
+     */
+    async function startDebugProxyAndTrack(payload, headers) {
+        const res = await server.inject({
+            method: 'POST',
+            url: '/api/fs/debug-proxy/start',
+            payload,
+            headers
+        });
+        
+        // If successfully started, track the PID for cleanup
+        if (res.statusCode === 200 && res.result.status === 'started') {
+            // Wait a moment for process to be fully spawned
+            await new Promise(resolve => setTimeout(resolve, 500));
+            
+            // Get the PID from status endpoint
+            const statusRes = await server.inject({
+                method: 'GET',
+                url: '/api/fs/debug-proxy/status'
+            });
+            
+            if (statusRes.result.pid) {
+                spawnedProcessPids.push(statusRes.result.pid);
+            }
+        }
+        
+        return res;
     }
 
     describe('filesystem operations', () => {
@@ -371,15 +433,10 @@ describe('rest-fs plugin', () => {
     describe('debug proxy operations', () => {
         describe('POST /debug-proxy/start', () => {
             it('should start debug proxy process', async () => {
-                const res = await server.inject({
-                    method: 'POST',
-                    url: '/api/fs/debug-proxy/start',
-                    payload: {
-                        targetPort: debugServerPort,
-                        proxyPort: 9230
-                    },
-                    headers: { Authorization: 'Bearer test-bearer-token-12345' }
-                });
+                const res = await startDebugProxyAndTrack({
+                    targetPort: debugServerPort,
+                    proxyPort: 9230
+                }, { Authorization: 'Bearer test-bearer-token-12345' });
 
                 expect(res.statusCode).toBe(200);
                 expect(res.result).toHaveProperty('status', 'started');
@@ -400,15 +457,10 @@ describe('rest-fs plugin', () => {
 
             it('should report already running if called twice', async () => {
                 // First call
-                await server.inject({
-                    method: 'POST',
-                    url: '/api/fs/debug-proxy/start',
-                    payload: {
-                        targetPort: debugServerPort,
-                        proxyPort: 9231
-                    },
-                    headers: { Authorization: 'Bearer test-token' }
-                });
+                await startDebugProxyAndTrack({
+                    targetPort: debugServerPort,
+                    proxyPort: 9231
+                }, { Authorization: 'Bearer test-token' });
 
                 // Wait for process to start
                 await new Promise(resolve => setTimeout(resolve, 1000));
@@ -444,15 +496,10 @@ describe('rest-fs plugin', () => {
 
             it('should return status when proxy is running', async () => {
                 // Start proxy
-                await server.inject({
-                    method: 'POST',
-                    url: '/api/fs/debug-proxy/start',
-                    payload: {
-                        targetPort: debugServerPort,
-                        proxyPort: 9232
-                    },
-                    headers: { Authorization: 'Bearer test-token' }
-                });
+                await startDebugProxyAndTrack({
+                    targetPort: debugServerPort,
+                    proxyPort: 9232
+                }, { Authorization: 'Bearer test-token' });
 
                 // Wait for startup
                 await new Promise(resolve => setTimeout(resolve, 1000));
@@ -476,15 +523,10 @@ describe('rest-fs plugin', () => {
                 proxyPort = 9233;
 
                 // Start the proxy
-                await server.inject({
-                    method: 'POST',
-                    url: '/api/fs/debug-proxy/start',
-                    payload: {
-                        targetPort: debugServerPort,
-                        proxyPort
-                    },
-                    headers: { Authorization: 'Bearer test-proxy-token' }
-                });
+                await startDebugProxyAndTrack({
+                    targetPort: debugServerPort,
+                    proxyPort
+                }, { Authorization: 'Bearer test-proxy-token' });
 
                 // Wait for proxy to be ready
                 await new Promise(resolve => setTimeout(resolve, 1500));
@@ -601,15 +643,10 @@ describe('rest-fs plugin', () => {
     describe('process cleanup', () => {
         it('should terminate debug proxy when server stops', async () => {
             // Start proxy
-            const startRes = await server.inject({
-                method: 'POST',
-                url: '/api/fs/debug-proxy/start',
-                payload: {
-                    targetPort: debugServerPort,
-                    proxyPort: 9234
-                },
-                headers: { Authorization: 'Bearer cleanup-test-token' }
-            });
+            const startRes = await startDebugProxyAndTrack({
+                targetPort: debugServerPort,
+                proxyPort: 9234
+            }, { Authorization: 'Bearer cleanup-test-token' });
 
             expect(startRes.result.status).toBe('started');
 
