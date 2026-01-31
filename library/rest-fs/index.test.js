@@ -11,7 +11,7 @@ const PROCESS_STARTUP_WAIT_MS = 1000;           // Time to wait for process to f
 const PROXY_READY_WAIT_MS = 1500;               // Time to wait for proxy to be fully ready for connections
 const GRACEFUL_TERMINATION_TIMEOUT_MS = 500;    // Time to wait for graceful process termination
 const PORT_RELEASE_TIMEOUT_MS = 500;            // Time to wait for ports to be released
-const CLEANUP_WAIT_MS = 1500;                    // Time to wait for cleanup to complete
+const CLEANUP_WAIT_MS = 1500;                   // Time to wait for cleanup to complete
 
 describe('rest-fs plugin', () => {
     let server;
@@ -55,7 +55,7 @@ describe('rest-fs plugin', () => {
     beforeEach(async () => {
         // Initialize process tracking array for this test
         spawnedProcessPids = [];
-        
+
         // Create fresh Hapi server
         server = Hapi.server({
             port: 0, // Random port
