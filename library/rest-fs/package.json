@@ -5,10 +5,21 @@
     "main": "index.js",
     "scripts": {
         "build": "true",
-        "watch": "node --watch ."
+        "ci-unit": "jest --ci",
+        "watch": "node --watch .",
+        "test": "jest",
+        "test:watch": "jest --watch",
+        "test:coverage": "jest --coverage"
     },
-    "dependencies": {},
-    "devDependencies": {},
+    "dependencies": {
+        "http-proxy-middleware": "^3.0.3",
+        "ws": "^8.18.0"
+    },
+    "devDependencies": {
+        "@hapi/hapi": "^21.3.12",
+        "jest": "^30.2.0",
+        "jest-junit": "16.0.0"
+    },
     "author": "Kalin Krustev",
     "license": "Apache-2.0"
 }
