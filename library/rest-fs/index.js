@@ -85,6 +85,7 @@ module.exports = {
             }
 
             const debugProxyScript = path.join(__dirname, 'debug-proxy.js');
+            const STARTUP_SUCCESS_MESSAGE = 'Debug proxy listening on'; // Message from debug-proxy.js indicating successful startup
 
             return new Promise((resolve, reject) => {
                 const startupTimeout = 5000; // 5 seconds timeout
@@ -115,6 +116,10 @@ module.exports = {
 
                 const failStartup = (reason) => {
                     cleanup();
+                    // Kill the process if it's still running to prevent orphaned processes
+                    if (debugProxyProcess && !debugProxyProcess.killed) {
+                        debugProxyProcess.kill('SIGTERM');
+                    }
                     debugProxyProcess = null;
                     debugProxyPort = null;
                     reject(new Error(reason));
@@ -166,7 +171,7 @@ module.exports = {
                     console.log(`[Debug Proxy] ${output.trim()}`);
                     
                     // Check if the process has started listening
-                    if (output.includes('Debug proxy listening on')) {
+                    if (output.includes(STARTUP_SUCCESS_MESSAGE)) {
                         succeedStartup();
                     }
                 };
@@ -182,12 +187,11 @@ module.exports = {
 
                 // Handle process exit during startup
                 startupExitListener = (code, signal) => {
-                    console.log(`[Debug Proxy] Process exited with code ${code}, signal ${signal}`);
-                    debugProxyProcess = null;
-                    debugProxyPort = null;
-                    
+                    // Only handle this if we're still in the startup phase
                     if (startupTimer) {
-                        // If we're still in startup phase, this is a failure
+                        console.log(`[Debug Proxy] Process exited with code ${code}, signal ${signal}`);
+                        debugProxyProcess = null;
+                        debugProxyPort = null;
                         failStartup(`Process exited prematurely with code ${code}`);
                     }
                 };
