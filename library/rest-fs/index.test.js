@@ -5,12 +5,17 @@ const http = require('http');
 const WebSocket = require('ws');
 const plugin = require('./index.js');
 
+// Test timing constants
+const PROCESS_SPAWN_TIMEOUT_MS = 500;
+const GRACEFUL_TERMINATION_TIMEOUT_MS = 500;
+const PORT_RELEASE_TIMEOUT_MS = 500;
+
 describe('rest-fs plugin', () => {
     let server;
     let testDir;
     let debugServer;
     let debugServerPort;
-    let spawnedProcessPids = []; // Track spawned debug proxy processes
+    let spawnedProcessPids; // Track spawned debug proxy processes
 
     beforeAll(async () => {
         // Create test directory
@@ -45,6 +50,9 @@ describe('rest-fs plugin', () => {
     });
 
     beforeEach(async () => {
+        // Initialize process tracking array for this test
+        spawnedProcessPids = [];
+        
         // Create fresh Hapi server
         server = Hapi.server({
             port: 0, // Random port
@@ -77,7 +85,7 @@ describe('rest-fs plugin', () => {
                 process.kill(pid, 'SIGTERM');
                 
                 // Give it a moment to terminate gracefully
-                await new Promise(resolve => setTimeout(resolve, 500));
+                await new Promise(resolve => setTimeout(resolve, GRACEFUL_TERMINATION_TIMEOUT_MS));
                 
                 // Force kill if still alive
                 try {
@@ -91,11 +99,8 @@ describe('rest-fs plugin', () => {
             }
         }
         
-        // Clear the tracking array for next test
-        spawnedProcessPids = [];
-        
         // Additional wait to ensure ports are released
-        await new Promise(resolve => setTimeout(resolve, 500));
+        await new Promise(resolve => setTimeout(resolve, PORT_RELEASE_TIMEOUT_MS));
     });
 
     /**
@@ -151,7 +156,7 @@ describe('rest-fs plugin', () => {
         // If successfully started, track the PID for cleanup
         if (res.statusCode === 200 && res.result.status === 'started') {
             // Wait a moment for process to be fully spawned
-            await new Promise(resolve => setTimeout(resolve, 500));
+            await new Promise(resolve => setTimeout(resolve, PROCESS_SPAWN_TIMEOUT_MS));
             
             // Get the PID from status endpoint
             const statusRes = await server.inject({
