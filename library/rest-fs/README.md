@@ -138,11 +138,14 @@ The debug proxy provides a secure way to access Node.js debug protocol over the 
 
 Start the debug proxy child process.
 
+**Headers:**
+
+- `Authorization: Bearer <token>` (required)
+
 **Payload:**
 
 ```json
 {
-    "token": "your-bearer-token",
     "targetPort": 9229,
     "proxyPort": 9230
 }
