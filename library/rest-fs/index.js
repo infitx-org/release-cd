@@ -90,6 +90,7 @@ module.exports = {
                 const startupTimeout = 5000; // 5 seconds timeout
                 let startupTimer = null;
                 let startupOutputListener = null;
+                let startupStderrListener = null;
                 let startupErrorListener = null;
                 let startupExitListener = null;
 
@@ -100,6 +101,9 @@ module.exports = {
                     }
                     if (startupOutputListener && debugProxyProcess) {
                         debugProxyProcess.stdout.removeListener('data', startupOutputListener);
+                    }
+                    if (startupStderrListener && debugProxyProcess) {
+                        debugProxyProcess.stderr.removeListener('data', startupStderrListener);
                     }
                     if (startupErrorListener && debugProxyProcess) {
                         debugProxyProcess.removeListener('error', startupErrorListener);
@@ -169,9 +173,12 @@ module.exports = {
 
                 debugProxyProcess.stdout.on('data', startupOutputListener);
 
-                debugProxyProcess.stderr.on('data', (data) => {
+                // Listen for stderr during startup
+                startupStderrListener = (data) => {
                     console.error(`[Debug Proxy Error] ${data.toString().trim()}`);
-                });
+                };
+
+                debugProxyProcess.stderr.on('data', startupStderrListener);
 
                 // Handle process exit during startup
                 startupExitListener = (code, signal) => {
