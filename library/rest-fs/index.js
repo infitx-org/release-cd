@@ -44,10 +44,41 @@ module.exports = {
         let debugProxyPort = null;
 
         /**
+         * Check whether the current debug proxy process is still alive.
+         * Uses child process properties and a signal(0) probe to avoid
+         * returning "alreadyRunning" for a dead process.
+         */
+        function isDebugProxyAlive() {
+            if (!debugProxyProcess) {
+                return false;
+            }
+
+            // If Node has already recorded an exit code, the process is not running.
+            if (debugProxyProcess.exitCode !== null) {
+                return false;
+            }
+
+            // As a best-effort liveness check, send signal 0 to the child PID.
+            // - If the process does not exist, this will throw with code 'ESRCH' or 'EINVAL'.
+            // - If we don't have permission to signal it (e.g. EPERM), assume it's alive.
+            try {
+                if (typeof debugProxyProcess.pid === 'number') {
+                    process.kill(debugProxyProcess.pid, 0);
+                }
+                return true;
+            } catch (err) {
+                if (err && (err.code === 'ESRCH' || err.code === 'EINVAL')) {
+                    return false;
+                }
+                return true;
+            }
+        }
+
+        /**
          * Spawn debug proxy child process
          */
         function spawnDebugProxy(token, targetPort = 9229, proxyPort = 9230) {
-            if (debugProxyProcess && !debugProxyProcess.killed) {
+            if (isDebugProxyAlive()) {
                 return { alreadyRunning: true, port: debugProxyPort };
             }
 
