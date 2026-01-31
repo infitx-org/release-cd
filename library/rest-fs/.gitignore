@@ -1,0 +1,6 @@
+node_modules/
+coverage/
+.test-data/
+example-data/
+*.log
+.DS_Store

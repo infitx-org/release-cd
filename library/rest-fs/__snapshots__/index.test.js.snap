@@ -1,0 +1,67 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`rest-fs plugin debug proxy operations POST /debug-proxy/start should return error if token is missing 1`] = `
+{
+  "error": "Bearer token is required",
+}
+`;
+
+exports[`rest-fs plugin filesystem operations DELETE /delete should delete a file 1`] = `
+{
+  "success": true,
+}
+`;
+
+exports[`rest-fs plugin filesystem operations DELETE /delete should return 404 for non-existent path 1`] = `
+{
+  "error": "Not found",
+}
+`;
+
+exports[`rest-fs plugin filesystem operations GET /read should return 404 for non-existent file 1`] = `
+{
+  "error": "File not found",
+}
+`;
+
+exports[`rest-fs plugin filesystem operations GET /readdir should return 404 for non-existent directory 1`] = `
+{
+  "error": "Directory not found",
+}
+`;
+
+exports[`rest-fs plugin filesystem operations GET /stat should return 404 for non-existent path 1`] = `
+{
+  "error": "Not found",
+}
+`;
+
+exports[`rest-fs plugin filesystem operations POST /copy should copy a file 1`] = `
+{
+  "success": true,
+}
+`;
+
+exports[`rest-fs plugin filesystem operations POST /mkdir should create a directory 1`] = `
+{
+  "success": true,
+}
+`;
+
+exports[`rest-fs plugin filesystem operations POST /mkdir should create nested directories 1`] = `
+{
+  "success": true,
+}
+`;
+
+exports[`rest-fs plugin filesystem operations POST /rename should rename a file 1`] = `
+{
+  "success": true,
+}
+`;
+
+exports[`rest-fs plugin filesystem operations POST /write should write file contents 1`] = `
+{
+  "success": true,
+}
+`;

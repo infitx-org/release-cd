@@ -1,5 +1,6 @@
 const fs = require('fs').promises;
 const path = require('path');
+const { spawn } = require('child_process');
 
 /**
  * Hapi plugin for REST filesystem operations
@@ -37,6 +38,125 @@ module.exports = {
         const baseDir = options.baseDir || path.join(process.cwd(), 'data');
         const routePrefix = options.routePrefix || '/api/fs';
         const resolvePath = createPathResolver(baseDir);
+
+        // Debug proxy child process management
+        let debugProxyProcess = null;
+        let debugProxyPort = null;
+
+        /**
+         * Spawn debug proxy child process
+         */
+        function spawnDebugProxy(token, targetPort = 9229, proxyPort = 9230) {
+            if (debugProxyProcess && !debugProxyProcess.killed) {
+                return { alreadyRunning: true, port: debugProxyPort };
+            }
+
+            const debugProxyScript = path.join(__dirname, 'debug-proxy.js');
+
+            debugProxyProcess = spawn('node', [debugProxyScript], {
+                env: {
+                    ...process.env,
+                    DEBUG_PROXY_TOKEN: token,
+                    DEBUG_TARGET: `ws://localhost:${targetPort}`,
+                    DEBUG_PROXY_PORT: proxyPort.toString(),
+                },
+                stdio: ['ignore', 'pipe', 'pipe'],
+                detached: false, // Ensure child terminates with parent
+            });
+
+            debugProxyPort = proxyPort;
+
+            debugProxyProcess.stdout.on('data', (data) => {
+                console.log(`[Debug Proxy] ${data.toString().trim()}`);
+            });
+
+            debugProxyProcess.stderr.on('data', (data) => {
+                console.error(`[Debug Proxy Error] ${data.toString().trim()}`);
+            });
+
+            debugProxyProcess.on('exit', (code, signal) => {
+                console.log(`[Debug Proxy] Process exited with code ${code}, signal ${signal}`);
+                debugProxyProcess = null;
+                debugProxyPort = null;
+            });
+
+            debugProxyProcess.on('error', (err) => {
+                console.error(`[Debug Proxy] Failed to start:`, err);
+                debugProxyProcess = null;
+                debugProxyPort = null;
+            });
+
+            return { started: true, port: proxyPort };
+        }
+
+        /**
+         * Cleanup on server stop
+         */
+        server.ext('onPreStop', async () => {
+            if (debugProxyProcess && !debugProxyProcess.killed) {
+                console.log('[Debug Proxy] Terminating child process...');
+                debugProxyProcess.kill('SIGTERM');
+
+                // Give it a moment to clean up, then force kill if needed
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                if (debugProxyProcess && !debugProxyProcess.killed) {
+                    debugProxyProcess.kill('SIGKILL');
+                }
+            }
+        });
+
+        // POST /debug-proxy/start - Start debug proxy
+        server.route({
+            method: 'POST',
+            options: options.options || {},
+            path: `${routePrefix}/debug-proxy/start`,
+            handler: async (request, h) => {
+                try {
+                    const { targetPort = 9229, proxyPort = 9230 } = request.payload || {};
+                    const token = request.headers['authorization']?.split(' ')[1];
+
+                    if (!token) {
+                        return h.response({ error: 'Bearer token is required' }).code(400);
+                    }
+
+                    const result = spawnDebugProxy(token, targetPort, proxyPort);
+
+                    if (result.alreadyRunning) {
+                        return {
+                            status: 'already_running',
+                            port: result.port,
+                            message: 'Debug proxy is already running'
+                        };
+                    }
+
+                    // Wait a moment for the process to start
+                    await new Promise(resolve => setTimeout(resolve, 500));
+
+                    return {
+                        status: 'started',
+                        port: result.port,
+                        message: 'Debug proxy started successfully'
+                    };
+                } catch (error) {
+                    return h.response({ error: error.message }).code(500);
+                }
+            }
+        });
+
+        // GET /debug-proxy/status - Get debug proxy status
+        server.route({
+            method: 'GET',
+            options: options.options || {},
+            path: `${routePrefix}/debug-proxy/status`,
+            handler: async (request, h) => {
+                const running = !!(debugProxyProcess && !debugProxyProcess.killed);
+                return {
+                    running,
+                    port: debugProxyPort,
+                    pid: running ? debugProxyProcess.pid : null
+                };
+            }
+        });
 
         // GET /stat/{path*} - Get file/directory metadata
         server.route({
