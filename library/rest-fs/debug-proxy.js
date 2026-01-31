@@ -209,8 +209,12 @@ server.on('error', (err) => {
 });
 
 server.listen(PORT, () => {
+    // Sanitize DEBUG_TARGET for logging to prevent credential exposure
+    // Replaces 'user:pass@' in URLs with '***:***@' to avoid leaking credentials
+    const sanitizedTarget = DEBUG_TARGET.replace(/(:\/\/)([^:]+:[^@]+@)/, '$1***:***@');
+    
     console.log(`[${new Date().toISOString()}] Debug proxy listening on http://localhost:${PORT}`);
-    console.log(`[${new Date().toISOString()}] Proxying to: ${DEBUG_TARGET}`);
+    console.log(`[${new Date().toISOString()}] Proxying to: ${sanitizedTarget}`);
     console.log(`[${new Date().toISOString()}] Authentication: Bearer token required`);
 });
 
