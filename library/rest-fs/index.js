@@ -217,14 +217,26 @@ module.exports = {
          * Cleanup on server stop
          */
         server.ext('onPreStop', async () => {
-            if (debugProxyProcess && !debugProxyProcess.killed) {
+            if (debugProxyProcess && debugProxyProcess.pid) {
+                const child = debugProxyProcess;
                 console.log('[Debug Proxy] Terminating child process...');
-                debugProxyProcess.kill('SIGTERM');
+                child.kill('SIGTERM');
 
                 // Give it a moment to clean up, then force kill if needed
                 await new Promise(resolve => setTimeout(resolve, 1000));
-                if (debugProxyProcess && !debugProxyProcess.killed) {
-                    debugProxyProcess.kill('SIGKILL');
+
+                try {
+                    // Check if process is still running; throws if not
+                    process.kill(child.pid, 0);
+                    child.kill('SIGKILL');
+                } catch (err) {
+                    // Process already exited; no further action required
+                } finally {
+                    // Clear references if they still point to this child
+                    if (debugProxyProcess === child) {
+                        debugProxyProcess = null;
+                        debugProxyPort = null;
+                    }
                 }
             }
         });
