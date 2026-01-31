@@ -127,6 +127,13 @@ const server = http.createServer((req, res) => {
  */
 const wss = new WebSocket.Server({ server });
 
+// Handle WebSocket server errors (including server binding errors)
+wss.on('error', (err) => {
+    // These errors are typically propagated from the underlying HTTP server
+    // The HTTP server error handler will handle them, so we just log here
+    console.error(`[${new Date().toISOString()}] WebSocket server error:`, err.message);
+});
+
 wss.on('connection', (clientWs, req) => {
     // Verify authentication from WebSocket upgrade request
     const authHeader = req.headers.authorization;
@@ -186,6 +193,19 @@ wss.on('connection', (clientWs, req) => {
         console.error(`[${new Date().toISOString()}] Client error:`, err.message);
         targetWs.close();
     });
+});
+
+server.on('error', (err) => {
+    if (err.code === 'EADDRINUSE') {
+        console.error(`[${new Date().toISOString()}] ERROR: Port ${PORT} is already in use`);
+        console.error(`[${new Date().toISOString()}] Please choose a different port using DEBUG_PROXY_PORT environment variable`);
+    } else if (err.code === 'EACCES') {
+        console.error(`[${new Date().toISOString()}] ERROR: Permission denied to bind to port ${PORT}`);
+        console.error(`[${new Date().toISOString()}] Ports below 1024 typically require elevated privileges`);
+    } else {
+        console.error(`[${new Date().toISOString()}] ERROR: Failed to start server:`, err.message);
+    }
+    process.exit(1);
 });
 
 server.listen(PORT, () => {
