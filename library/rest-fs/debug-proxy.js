@@ -8,7 +8,6 @@
  */
 
 const http = require('http');
-const { createProxyMiddleware } = require('http-proxy-middleware');
 const WebSocket = require('ws');
 
 const PORT = process.env.DEBUG_PROXY_PORT || 9230;
