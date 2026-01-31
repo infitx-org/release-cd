@@ -113,8 +113,15 @@ module.exports = {
             handler: async (request, h) => {
                 try {
                     const { targetPort = 9229, proxyPort = 9230 } = request.payload || {};
-                    const token = request.headers['authorization']?.split(' ')[1];
+                    const authHeader = request.headers['authorization'];
+                    let token;
 
+                    if (typeof authHeader === 'string') {
+                        const match = authHeader.match(/^Bearer\s+(.+)$/i);
+                        if (match && match[1]) {
+                            token = match[1].trim();
+                        }
+                    }
                     if (!token) {
                         return h.response({ error: 'Bearer token is required' }).code(400);
                     }
