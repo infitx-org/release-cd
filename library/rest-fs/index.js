@@ -76,48 +76,130 @@ module.exports = {
 
         /**
          * Spawn debug proxy child process
+         * Returns a promise that resolves when the process confirms it's listening
+         * or rejects if it fails to start within the timeout period.
          */
-        function spawnDebugProxy(token, targetPort = 9229, proxyPort = 9230) {
+        async function spawnDebugProxy(token, targetPort = 9229, proxyPort = 9230) {
             if (isDebugProxyAlive()) {
                 return { alreadyRunning: true, port: debugProxyPort };
             }
 
             const debugProxyScript = path.join(__dirname, 'debug-proxy.js');
 
-            debugProxyProcess = spawn('node', [debugProxyScript], {
-                env: {
-                    ...process.env,
-                    DEBUG_PROXY_TOKEN: token,
-                    DEBUG_TARGET: `ws://localhost:${targetPort}`,
-                    DEBUG_PROXY_PORT: proxyPort.toString(),
-                },
-                stdio: ['ignore', 'pipe', 'pipe'],
-                detached: false, // Ensure child terminates with parent
+            return new Promise((resolve, reject) => {
+                const startupTimeout = 5000; // 5 seconds timeout
+                let startupTimer = null;
+                let startupOutputListener = null;
+                let startupErrorListener = null;
+                let startupExitListener = null;
+
+                const cleanup = () => {
+                    if (startupTimer) {
+                        clearTimeout(startupTimer);
+                        startupTimer = null;
+                    }
+                    if (startupOutputListener && debugProxyProcess) {
+                        debugProxyProcess.stdout.removeListener('data', startupOutputListener);
+                    }
+                    if (startupErrorListener && debugProxyProcess) {
+                        debugProxyProcess.removeListener('error', startupErrorListener);
+                    }
+                    if (startupExitListener && debugProxyProcess) {
+                        debugProxyProcess.removeListener('exit', startupExitListener);
+                    }
+                };
+
+                const failStartup = (reason) => {
+                    cleanup();
+                    debugProxyProcess = null;
+                    debugProxyPort = null;
+                    reject(new Error(reason));
+                };
+
+                const succeedStartup = () => {
+                    cleanup();
+                    
+                    // Set up permanent event handlers for ongoing operation
+                    debugProxyProcess.stdout.on('data', (data) => {
+                        console.log(`[Debug Proxy] ${data.toString().trim()}`);
+                    });
+
+                    debugProxyProcess.stderr.on('data', (data) => {
+                        console.error(`[Debug Proxy Error] ${data.toString().trim()}`);
+                    });
+
+                    debugProxyProcess.on('exit', (code, signal) => {
+                        console.log(`[Debug Proxy] Process terminated with code ${code}, signal ${signal}`);
+                        debugProxyProcess = null;
+                        debugProxyPort = null;
+                    });
+
+                    debugProxyProcess.on('error', (err) => {
+                        console.error(`[Debug Proxy] Unexpected error:`, err);
+                        debugProxyProcess = null;
+                        debugProxyPort = null;
+                    });
+
+                    resolve({ started: true, port: proxyPort });
+                };
+
+                debugProxyProcess = spawn('node', [debugProxyScript], {
+                    env: {
+                        ...process.env,
+                        DEBUG_PROXY_TOKEN: token,
+                        DEBUG_TARGET: `ws://localhost:${targetPort}`,
+                        DEBUG_PROXY_PORT: proxyPort.toString(),
+                    },
+                    stdio: ['ignore', 'pipe', 'pipe'],
+                    detached: false, // Ensure child terminates with parent
+                });
+
+                debugProxyPort = proxyPort;
+
+                // Listen for the "listening" message to confirm successful startup
+                startupOutputListener = (data) => {
+                    const output = data.toString();
+                    console.log(`[Debug Proxy] ${output.trim()}`);
+                    
+                    // Check if the process has started listening
+                    if (output.includes('Debug proxy listening on')) {
+                        succeedStartup();
+                    }
+                };
+
+                debugProxyProcess.stdout.on('data', startupOutputListener);
+
+                debugProxyProcess.stderr.on('data', (data) => {
+                    console.error(`[Debug Proxy Error] ${data.toString().trim()}`);
+                });
+
+                // Handle process exit during startup
+                startupExitListener = (code, signal) => {
+                    console.log(`[Debug Proxy] Process exited with code ${code}, signal ${signal}`);
+                    debugProxyProcess = null;
+                    debugProxyPort = null;
+                    
+                    if (startupTimer) {
+                        // If we're still in startup phase, this is a failure
+                        failStartup(`Process exited prematurely with code ${code}`);
+                    }
+                };
+
+                debugProxyProcess.on('exit', startupExitListener);
+
+                // Handle spawn errors
+                startupErrorListener = (err) => {
+                    console.error(`[Debug Proxy] Failed to start:`, err);
+                    failStartup(`Failed to spawn process: ${err.message}`);
+                };
+
+                debugProxyProcess.on('error', startupErrorListener);
+
+                // Set timeout for startup
+                startupTimer = setTimeout(() => {
+                    failStartup('Process failed to start within timeout period');
+                }, startupTimeout);
             });
-
-            debugProxyPort = proxyPort;
-
-            debugProxyProcess.stdout.on('data', (data) => {
-                console.log(`[Debug Proxy] ${data.toString().trim()}`);
-            });
-
-            debugProxyProcess.stderr.on('data', (data) => {
-                console.error(`[Debug Proxy Error] ${data.toString().trim()}`);
-            });
-
-            debugProxyProcess.on('exit', (code, signal) => {
-                console.log(`[Debug Proxy] Process exited with code ${code}, signal ${signal}`);
-                debugProxyProcess = null;
-                debugProxyPort = null;
-            });
-
-            debugProxyProcess.on('error', (err) => {
-                console.error(`[Debug Proxy] Failed to start:`, err);
-                debugProxyProcess = null;
-                debugProxyPort = null;
-            });
-
-            return { started: true, port: proxyPort };
         }
 
         /**
@@ -157,7 +239,7 @@ module.exports = {
                         return h.response({ error: 'Bearer token is required' }).code(400);
                     }
 
-                    const result = spawnDebugProxy(token, targetPort, proxyPort);
+                    const result = await spawnDebugProxy(token, targetPort, proxyPort);
 
                     if (result.alreadyRunning) {
                         return {
@@ -167,16 +249,17 @@ module.exports = {
                         };
                     }
 
-                    // Wait a moment for the process to start
-                    await new Promise(resolve => setTimeout(resolve, 500));
-
                     return {
                         status: 'started',
                         port: result.port,
                         message: 'Debug proxy started successfully'
                     };
                 } catch (error) {
-                    return h.response({ error: error.message }).code(500);
+                    console.error('[Debug Proxy] Start failed:', error.message);
+                    return h.response({ 
+                        error: 'Failed to start debug proxy',
+                        details: error.message 
+                    }).code(500);
                 }
             }
         });
