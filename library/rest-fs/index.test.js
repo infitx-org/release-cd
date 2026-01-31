@@ -95,7 +95,7 @@ describe('rest-fs plugin', () => {
                     process.kill(pid, 0);
                     process.kill(pid, 'SIGKILL');
                 } catch (err) {
-                    // Process already terminated (expected)
+                    // Process already terminated gracefully by SIGTERM (expected)
                 }
             } catch (err) {
                 // Process doesn't exist (already cleaned up)
