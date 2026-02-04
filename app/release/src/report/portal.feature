@@ -122,8 +122,8 @@ Feature: Portal RBAC API Access
         Then check access for the following endpoints:
             | portal  | path                                                     | method | bob | alice |
             | MCM-ext | /dfsps/test-alice/enrollments/outbound                   | GET    | 403 |   200 |
-            | MCM-ext | /dfsps/test-bob/enrollments/outbound                     | GET    | 200 |   403 |
             | MCM-ext | /dfsps/test-alice/endpoints/ingress                      | POST   | 403 |   415 |
-            | MCM-ext | /dfsps/test-bob/endpoints/ingress                        | POST   | 415 |   200 |
             | MCM-ext | /dfsps/test-alice/endpoints/egress                       | POST   | 403 |   415 |
+            | MCM-ext | /dfsps/test-bob/enrollments/outbound                     | GET    | 200 |   403 |
+            | MCM-ext | /dfsps/test-bob/endpoints/ingress                        | POST   | 415 |   403 |
             | MCM-ext | /dfsps/test-bob/endpoints/egress                         | POST   | 415 |   403 |
