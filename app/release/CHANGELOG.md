@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.45.1](https://github.com/infitx-org/release-cd/compare/release-v1.45.0...release-v1.45.1) (2026-02-04)
+
+
+### Bug Fixes
+
+* update access checks for MCM-ext DFSP endpoints and correct response codes ([519692e](https://github.com/infitx-org/release-cd/commit/519692efd1597d83684c9f1ebd5af695bc6b5b43))
+* update Node.js version to 24.13.0 in Dockerfile ([b6c6148](https://github.com/infitx-org/release-cd/commit/b6c614803af614823aac4d119241935d80a0b280))
+
 ## [1.45.0](https://github.com/infitx-org/release-cd/compare/release-v1.44.0...release-v1.45.0) (2026-01-30)
 
 

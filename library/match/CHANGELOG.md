@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.1](https://github.com/infitx-org/release-cd/compare/match-v1.2.0...match-v1.2.1) (2026-02-04)
+
+
+### Bug Fixes
+
+* enhance match function to support reference time and update test cases ([deb24d0](https://github.com/infitx-org/release-cd/commit/deb24d078f82fdc358b43bf2aa174d537b169c1d))
+
 ## [1.2.0](https://github.com/infitx-org/release-cd/compare/match-v1.1.1...match-v1.2.0) (2026-01-15)
 
 
