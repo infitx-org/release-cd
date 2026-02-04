@@ -5,7 +5,7 @@ const match = require('./');
 const yamlPath = path.join(__dirname, 'match.test.yaml');
 const isPlainObject = require('lodash/isPlainObject');
 
-const loadTestCases = () => {
+const loadTestCases = (...params) => {
     // Load patterns and values from YAML file
     const cases = yaml.parse(fs.readFileSync(yamlPath, 'utf8'), { customTags: ['timestamp'] });
     return cases
@@ -22,7 +22,7 @@ const loadTestCases = () => {
                     const fnMatch = obj.match(/^\s*\(?[\w\s,]*\)?\s*=>/);
                     if (fnMatch) {
                         // eslint-disable-next-line no-new-func
-                        return call ? eval(obj)() : eval(obj);
+                        return call ? eval(obj)(...params) : eval(obj);
                     }
                     return obj;
                 } else if (Array.isArray(obj)) {
@@ -45,7 +45,7 @@ const loadTestCases = () => {
 
 function stringify(value) {
     if (value instanceof RegExp) return value.toString();
-    if (value instanceof Date) return value.toString();
+    if (value instanceof Date) return value.toISOString();
     if (typeof value === 'number') return String(value);
     if (typeof value === 'function') return value.toString();
     if (value instanceof Array) return `[${value.map(stringify).join(', ')}]`;
@@ -59,16 +59,19 @@ function stringify(value) {
 }
 
 describe('match', () => {
-    const testCases = loadTestCases();
+    const now = Date.now();
+    const testCases = loadTestCases(
+        now
+    );
     testCases.forEach(({ rule, like, unlike }, idx) => {
         like !== undefined &&
             test(`YAML case #${idx + 1}:   like(${stringify(like)},${stringify(rule)})`, () => {
-                expect(match(like, rule)).toBe(true);
+                expect(match(like, rule, now)).toBe(true);
             });
 
         unlike !== undefined &&
             test(`YAML case #${idx + 1}: unlike(${stringify(unlike)},${stringify(rule)})`, () => {
-                expect(match(unlike, rule)).toBe(false);
+                expect(match(unlike, rule, now)).toBe(false);
             });
     });
 });

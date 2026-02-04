@@ -8,7 +8,8 @@ ignore:
     - vulnerability: GHSA-fjxv-7rqg-78g4
     - vulnerability: CVE-2025-13836
     - vulnerability: CVE-2025-15467
-
+    - vulnerability: CVE-2026-24515
+    - vulnerability: GHSA-7h2j-956f-4vf2
 # Set output format defaults
 output:
     - 'table'

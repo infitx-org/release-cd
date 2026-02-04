@@ -53,17 +53,17 @@
 - {rule: {not: [false]},                          like: 1,                   unlike: 0}
 
 # test Grafana-style time intervals
-- {rule: {min: now-1h},                           like: () => new Date(),                                       unlike: () => new Date(Date.now() - 2 * 60 * 60 * 1000)}
-- {rule: {max: now},                              like: () => new Date(Date.now() - 1000),                      unlike: () => new Date(Date.now() + 1000)}
-- {rule: {min: now-1d, max: now+1d},              like: () => new Date(),                                       unlike: () => new Date(Date.now() - 2 * 24 * 60 * 60 * 1000)}
-- {rule: {min: now-5m},                           like: () => new Date(Date.now() - 2 * 60 * 1000),             unlike: () => new Date(Date.now() - 10 * 60 * 1000)}
-- {rule: {max: now+1h},                           like: () => new Date(Date.now() + 30 * 60 * 1000),            unlike: () => new Date(Date.now() + 2 * 60 * 60 * 1000)}
-- {rule: {min: now-1w, max: now},                 like: () => new Date(Date.now() - 3 * 24 * 60 * 60 * 1000),   unlike: () => new Date(Date.now() - 10 * 24 * 60 * 60 * 1000)}
-- {rule: {min: now-30s},                          like: () => new Date(Date.now() - 10 * 1000),                 unlike: () => new Date(Date.now() - 60 * 1000)}
-- {rule: {min: now-1M, max: now+1M},              like: () => new Date(),                                       unlike: () => new Date(Date.now() - 60 * 24 * 60 * 60 * 1000)}
-- {rule: {min: now-1y},                           like: () => new Date(Date.now() - 180 * 24 * 60 * 60 * 1000), unlike: () => new Date(Date.now() - 400 * 24 * 60 * 60 * 1000)}
-- {rule: {a: {min: now-1h}},                      like: {a: () => new Date()},                                  unlike: {a: () => new Date(Date.now() - 2 * 60 * 60 * 1000)}}
-- {rule: {a: {max: now+1d}},                      like: {a: () => new Date()},                                  unlike: {a: () => new Date(Date.now() + 2 * 24 * 60 * 60 * 1000)}}
+- {rule: {min: now-1h},                           like: (now) => new Date(now),                             unlike: (now) => new Date(now - 2 * 60 * 60 * 1000)}
+- {rule: {max: now},                              like: (now) => new Date(now - 1000),                      unlike: (now) => new Date(now + 1000)}
+- {rule: {min: now-1d, max: now+1d},              like: (now) => new Date(now),                             unlike: (now) => new Date(now - 2 * 24 * 60 * 60 * 1000)}
+- {rule: {min: now-5m},                           like: (now) => new Date(now - 2 * 60 * 1000),             unlike: (now) => new Date(now - 10 * 60 * 1000)}
+- {rule: {max: now+1h},                           like: (now) => new Date(now + 30 * 60 * 1000),            unlike: (now) => new Date(now + 2 * 60 * 60 * 1000)}
+- {rule: {min: now-1w, max: now},                 like: (now) => new Date(now - 3 * 24 * 60 * 60 * 1000),   unlike: (now) => new Date(now - 10 * 24 * 60 * 60 * 1000)}
+- {rule: {min: now-30s},                          like: (now) => new Date(now - 10 * 1000),                 unlike: (now) => new Date(now - 60 * 1000)}
+- {rule: {min: now-1M, max: now+1M},              like: (now) => new Date(now),                             unlike: (now) => new Date(now - 60 * 24 * 60 * 60 * 1000)}
+- {rule: {min: now-1y},                           like: (now) => new Date(now - 180 * 24 * 60 * 60 * 1000), unlike: (now) => new Date(now - 400 * 24 * 60 * 60 * 1000)}
+- {rule: {a: {min: now-1h}},                      like: {a: (now) => new Date(now)},                        unlike: {a: (now) => new Date(now - 2 * 60 * 60 * 1000)}}
+- {rule: {a: {max: now+1d}},                      like: {a: (now) => new Date(now)},                        unlike: {a: (now) => new Date(now + 2 * 24 * 60 * 60 * 1000)}}
 
 # arrays represent "any of" semantics
 - {rule: /hello/,                                 like: hello world,         unlike: goodbye}
@@ -196,80 +196,79 @@
 
 # now/s rounds to start of second
 - rule: {min: 'now/s', max: 'now'}
-  like: () => { const t = Date.now(); return new Date(t); }
-  unlike: () => { const t = Date.now(); return new Date(t - 1000); }
+  like: (now) => { new Date(now); }
+  unlike: (now) => { new Date(now - 1000); }
 
 - rule: {min: 'now/s', max: 'now/s'}
-  like: () => { const t = Date.now(); const d = new Date(t); d.setMilliseconds(0); return d; }
-
+  like: (now) => { const d = new Date(now); d.setMilliseconds(0); return d; }
 # now/m rounds to start of minute
 - rule: {min: 'now/m', max: 'now'}
-  like: () => { const t = Date.now(); return new Date(t); }
-  unlike: () => { const t = Date.now(); return new Date(t - 60 * 1000); }
+  like: (now) => { new Date(now); }
+  unlike: (now) => { new Date(now - 60 * 1000); }
 
 - rule: {min: 'now/m', max: 'now/m'}
-  like: () => { const t = Date.now(); const d = new Date(t); d.setSeconds(0, 0); return d; }
+  like: (now) => { const d = new Date(now); d.setSeconds(0, 0); return d; }
 
 # now/h rounds to start of hour
 - rule: {min: 'now/h', max: 'now'}
-  like: () => { const t = Date.now(); return new Date(t); }
-  unlike: () => { const t = Date.now(); return new Date(t - 60 * 60 * 1000); }
+  like: (now) => { new Date(now); }
+  unlike: (now) => { new Date(now - 60 * 60 * 1000); }
 
 - rule: {min: 'now/h', max: 'now/h'}
-  like: () => { const t = Date.now(); const d = new Date(t); d.setMinutes(0, 0, 0); return d; }
+  like: (now) => { const d = new Date(now); d.setMinutes(0, 0, 0); return d; }
 
 # now/d rounds to start of day (midnight)
 - rule: {min: 'now/d', max: 'now'}
-  like: () => { const t = Date.now(); return new Date(t); }
-  unlike: () => { const t = Date.now(); return new Date(t - 24 * 60 * 60 * 1000); }
+  like: (now) => { new Date(now); }
+  unlike: (now) => { new Date(now - 24 * 60 * 60 * 1000); }
 
 - rule: {min: 'now/d', max: 'now/d'}
-  like: () => { const t = Date.now(); const d = new Date(t); d.setHours(0, 0, 0, 0); return d; }
+  like: (now) => { const d = new Date(now); d.setHours(0, 0, 0, 0); return d; }
 
 # now/w rounds to start of week (Monday)
 - rule:
     min: 'now/w'
     max: 'now/w'
-  like: '() => { const d = new Date(); d.setHours(0, 0, 0, 0); const day = d.getDay(); const diff = day === 0 ? 6 : (day - 1); d.setDate(d.getDate() - diff); return d; }'
-  unlike: '() => { const d = new Date(); d.setHours(0, 0, 0, 0); const day = d.getDay(); const diff = day === 0 ? 6 : (day - 1); d.setDate(d.getDate() - diff - 1); return d; }'
+  like: '(now) => { const d = new Date(now); d.setHours(0, 0, 0, 0); const day = d.getDay(); const diff = day === 0 ? 6 : (day - 1); d.setDate(d.getDate() - diff); return d; }'
+  unlike: '(now) => { const d = new Date(now); d.setHours(0, 0, 0, 0); const day = d.getDay(); const diff = day === 0 ? 6 : (day - 1); d.setDate(d.getDate() - diff - 1); return d; }'
 
 # now/M rounds to start of month
 - rule: {min: 'now/M', max: 'now/M'}
-  like: () => { const d = new Date(); d.setDate(1); d.setHours(0, 0, 0, 0); return d; }
-  unlike: () => { const d = new Date(); d.setDate(1); d.setHours(0, 0, 0, 0); d.setDate(d.getDate() - 1); return d; }
+  like: (now) => { const d = new Date(now); d.setDate(1); d.setHours(0, 0, 0, 0); return d; }
+  unlike: (now) => { const d = new Date(now); d.setDate(1); d.setHours(0, 0, 0, 0); d.setDate(d.getDate() - 1); return d; }
 
 # now/y rounds to start of year
 - rule: {min: 'now/y', max: 'now/y'}
-  like: () => { const d = new Date(); d.setMonth(0, 1); d.setHours(0, 0, 0, 0); return d; }
-  unlike: () => { const d = new Date(); d.setMonth(0, 1); d.setHours(0, 0, 0, 0); d.setDate(d.getDate() - 1); return d; }
+  like: (now) => { const d = new Date(now); d.setMonth(0, 1); d.setHours(0, 0, 0, 0); return d; }
+  unlike: (now) => { const d = new Date(now); d.setMonth(0, 1); d.setHours(0, 0, 0, 0); d.setDate(d.getDate() - 1); return d; }
 
 # now-5d/d rounds 5 days ago to midnight
 - rule: {min: 'now-5d/d', max: 'now-5d/d'}
-  like: () => { const d = new Date(Date.now() - 5 * 24 * 60 * 60 * 1000); d.setHours(0, 0, 0, 0); return d; }
-  unlike: () => { const d = new Date(Date.now() - 5 * 24 * 60 * 60 * 1000); d.setHours(0, 0, 0, 1); return d; }
+  like: (now) => { const d = new Date(now - 5 * 24 * 60 * 60 * 1000); d.setHours(0, 0, 0, 0); return d; }
+  unlike: (now) => { const d = new Date(now - 5 * 24 * 60 * 60 * 1000); d.setHours(0, 0, 0, 1); return d; }
 
 # now-2h/h rounds 2 hours ago to start of hour
 - rule: {min: 'now-2h/h', max: 'now-2h/h'}
-  like: () => { const d = new Date(Date.now() - 2 * 60 * 60 * 1000); d.setMinutes(0, 0, 0); return d; }
-  unlike: () => { const d = new Date(Date.now() - 2 * 60 * 60 * 1000); d.setMinutes(0, 0, 1); return d; }
+  like: (now) => { const d = new Date(now - 2 * 60 * 60 * 1000); d.setMinutes(0, 0, 0); return d; }
+  unlike: (now) => { const d = new Date(now - 2 * 60 * 60 * 1000); d.setMinutes(0, 0, 1); return d; }
 
 # now-1M/M rounds 1 month ago to start of month
 - rule: {min: 'now-1M/M', max: 'now-1M/M'}
-  like: () => { const d = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000); d.setDate(1); d.setHours(0, 0, 0, 0); return d; }
-  unlike: () => { const d = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000); d.setDate(1); d.setHours(0, 0, 0, 1); return d; }
+  like: (now) => { const d = new Date(now - 30 * 24 * 60 * 60 * 1000); d.setDate(1); d.setHours(0, 0, 0, 0); return d; }
+  unlike: (now) => { const d = new Date(now - 30 * 24 * 60 * 60 * 1000); d.setDate(1); d.setHours(0, 0, 0, 1); return d; }
 
 # now+1d/d rounds tomorrow to midnight
 - rule: {min: 'now+1d/d', max: 'now+1d/d'}
-  like: () => { const d = new Date(Date.now() + 24 * 60 * 60 * 1000); d.setHours(0, 0, 0, 0); return d; }
-  unlike: () => { const d = new Date(Date.now() + 24 * 60 * 60 * 1000); d.setHours(0, 0, 0, 1); return d; }
+  like: (now) => { const d = new Date(now + 24 * 60 * 60 * 1000); d.setHours(0, 0, 0, 0); return d; }
+  unlike: (now) => { const d = new Date(now + 24 * 60 * 60 * 1000); d.setHours(0, 0, 0, 1); return d; }
 
 # Combined: now-7d/d to now/d covers last 7 full days
 - rule: {min: 'now-7d/d', max: 'now/d'}
-  like: () => { const d = new Date(Date.now() - 4 * 24 * 60 * 60 * 1000); return d; }
-  unlike: () => { const d = new Date(Date.now() - 8 * 24 * 60 * 60 * 1000); return d; }
+  like: (now) => { const d = new Date(now - 4 * 24 * 60 * 60 * 1000); return d; }
+  unlike: (now) => { const d = new Date(now - 8 * 24 * 60 * 60 * 1000); return d; }
 
 - rule: {min: 'now-7d/d', max: 'now/d'}
-  like: () => { const d = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000); d.setHours(0, 0, 0, 0); return d; }
+  like: (now) => { const d = new Date(now - 7 * 24 * 60 * 60 * 1000); d.setHours(0, 0, 0, 0); return d; }
 
 - rule: {min: 'now-7d/d', max: 'now/d'}
-  like: () => { const d = new Date(); d.setHours(0, 0, 0, 0); return d; }
+  like: (now) => { const d = new Date(now); d.setHours(0, 0, 0, 0); return d; }

@@ -38,7 +38,7 @@ function roundToUnit(date, unit) {
 }
 
 // Parse Grafana-style time intervals (now, now-5m, now+1h, now/d, now-5d/d, etc.)
-function parseTimeInterval(str, referenceTime = Date.now()) {
+function parseTimeInterval(str, referenceTime) {
     if (typeof str !== 'string') return null;
 
     // Handle "now" without modifiers
@@ -72,6 +72,7 @@ function parseTimeInterval(str, referenceTime = Date.now()) {
     };
 
     const offset = multiplier * value * unitMultipliers[unit];
+    console.log({ referenceTime, offset });
     const resultTime = new Date(referenceTime + offset);
 
     // Apply rounding if specified
@@ -82,15 +83,15 @@ function parseTimeInterval(str, referenceTime = Date.now()) {
     return resultTime;
 }
 
-function match(value, condition) {
+const match = (referenceTime) => (value, condition) => {
     if (value == null && condition == null) {
         return true
     } else if (value === condition) {
         return true;
     } else if (Array.isArray(condition) || Array.isArray(value)) {
         return Array.isArray(value)
-            ? value.some(v => module.exports(v, condition))
-            : condition.some(v => module.exports(value, v));
+            ? value.some(v => module.exports(v, condition, referenceTime))
+            : condition.some(v => module.exports(value, v, referenceTime));
     } else if (value == null || condition == null) {
         return false;
     } else if (condition instanceof RegExp) {
@@ -112,18 +113,19 @@ function match(value, condition) {
             return condition(value);
         case 'object': {
             let { min, max, not } = condition;
-            if (not != null) return !module.exports(value, not);
+            if (not != null) return !module.exports(value, not, referenceTime);
 
             // Parse Grafana-style time intervals for min and max
             if (typeof min === 'string') {
-                const parsed = parseTimeInterval(min);
+                const parsed = parseTimeInterval(min, referenceTime);
                 if (parsed) min = parsed;
             }
             if (typeof max === 'string') {
-                const parsed = parseTimeInterval(max);
+                const parsed = parseTimeInterval(max, referenceTime);
                 if (parsed) max = parsed;
             }
 
+            console.log({ min, max, value });
             if (value instanceof Date) {
                 value = value.getTime();
                 if (!Number.isFinite(value)) return false;
@@ -142,24 +144,24 @@ function match(value, condition) {
             if (max != null && (value > max || value === Infinity || max === -Infinity))
                 return false;
             if (min != null || max != null) return true;
-            if (typeof value === 'object' && value && condition) return module.exports(value, condition);
+            if (typeof value === 'object' && value && condition) return module.exports(value, condition, referenceTime);
         }
     }
 }
 
-module.exports = function (factValue, ruleValue) {
+module.exports = function (factValue, ruleValue, referenceTime = Date.now()) {
     if (factValue === ruleValue) return true;
-    if (ruleValue && typeof ruleValue === 'object' && 'not' in ruleValue && Object.keys(ruleValue).length === 1) return !module.exports(factValue, ruleValue.not);
+    if (ruleValue && typeof ruleValue === 'object' && 'not' in ruleValue && Object.keys(ruleValue).length === 1) return !module.exports(factValue, ruleValue.not, referenceTime);
     if (
         Array.isArray(factValue) ||
         Array.isArray(ruleValue) ||
         !isPlainObject(factValue) ||
         !isPlainObject(ruleValue)
     )
-        return match(factValue, ruleValue);
+        return match(referenceTime)(factValue, ruleValue);
     if (factValue && ruleValue && typeof factValue === 'object' && typeof ruleValue === 'object') {
         const nullFilter = Object.entries(ruleValue).filter(([, value]) => value == null || Array.isArray(value));
         if (nullFilter.length > 0) factValue = { ...Object.fromEntries(nullFilter), ...factValue };
     };
-    return isMatchWith(factValue, ruleValue, match);
+    return isMatchWith(factValue, ruleValue, match(referenceTime));
 };
