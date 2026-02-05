@@ -68,12 +68,12 @@ defineFeature(feature, test => {
 
     const { status, data } = await releaseCdClient.getDfspState(mapDfspId('alice')) // get it from config?
     expect(status).toBe(200)
-    expect(data).toBeDefined()
+    expect(data?.state, 'data.state exists').toBeDefined()
 
     tls = data?.state?.outboundTLS
   })
 
-  const backgroundGetAccessTokens = ({ given, when, then }) => {
+  const backgroundGetAccessTokens = ({ given }) => {
     DFSPs = {};
 
     given('hub external API portal endpoints are configured', () => {

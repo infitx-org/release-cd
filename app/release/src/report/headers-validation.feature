@@ -17,6 +17,8 @@ Feature: Validate FSPIOP-Source and FSPIOP-Proxy headers against X-Client-Id
             | alice | alice   | alice  |       | 202        |
             | alice | alice   | bob    | alice | 202        |
             | alice | alice   | xxx    | alice | 202        |
+            | alice | bob     | alice  | bob   | 202        |
+            | alice | bob     | bob    |       | 202        |
         Then all requests succeed with proper statusCode
 
     Scenario: Failed validation due to incorrect FSPIOP source and proxy headers
@@ -46,8 +48,6 @@ Feature: Validate FSPIOP-Source and FSPIOP-Proxy headers against X-Client-Id
             | dfsp  | token  | source | proxy | statusCode |
             | alice | bob    |        |       | 400        |
             | alice | bob    | alice  |       | 400        |
-            | alice | bob    | alice  | bob   | 400        |
-            | alice | bob    | bob    |       | 400        |
             | alice | bob    | bob    | alice | 400        |
         Then requests fail with 400 Bad Request error
         # todo: think if it's better to have 403 Forbidden error
