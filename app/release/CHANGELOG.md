@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.45.2](https://github.com/infitx-org/release-cd/compare/release-v1.45.1...release-v1.45.2) (2026-02-05)
+
+
+### Bug Fixes
+
+* **iad-420:** fixed headers validation tests ([e2c7e38](https://github.com/infitx-org/release-cd/commit/e2c7e38400ec88f0dcf35f2e15abdbdd0622117c))
+
 ## [1.45.1](https://github.com/infitx-org/release-cd/compare/release-v1.45.0...release-v1.45.1) (2026-02-04)
 
 
