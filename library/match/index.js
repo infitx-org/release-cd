@@ -167,7 +167,8 @@ const match = (referenceTime, rootFact) => (value, condition) => {
             if (max != null && (value > max || value === Infinity || max === -Infinity))
                 return false;
             if (min != null || max != null) return true;
-            // If condition only contains min/max/not (which have been handled above), return true
+            // If condition only contains min/max/not (which have been handled above),
+            // and all resolved to undefined/null, return true (no constraints to enforce)
             const conditionKeys = Object.keys(condition);
             if (conditionKeys.every(k => ['min', 'max', 'not'].includes(k))) return true;
             if (typeof value === 'object' && value && condition) return module.exports(value, condition, referenceTime, rootFact);
@@ -175,8 +176,8 @@ const match = (referenceTime, rootFact) => (value, condition) => {
     }
 }
 
-module.exports = function (factValue, ruleValue, referenceTime = Date.now(), rootFact = null) {
-    if (rootFact === null) rootFact = factValue;  // Store the root fact for $ref resolution only on first call
+module.exports = function (factValue, ruleValue, referenceTime = Date.now(), rootFact = undefined) {
+    if (rootFact === undefined) rootFact = factValue;  // Store the root fact for $ref resolution only on first call
     if (factValue === ruleValue) return true;
     if (ruleValue && typeof ruleValue === 'object' && 'not' in ruleValue && Object.keys(ruleValue).length === 1) return !module.exports(factValue, ruleValue.not, referenceTime, rootFact);
     if (
