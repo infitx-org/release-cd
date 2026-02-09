@@ -18,7 +18,7 @@
         "jest-junit": "16.0.0"
     },
     "repository": {
-        "url": "git+https://github.com/infitx-org/release-cd/blong.git"
+        "url": "git+https://github.com/infitx-org/release-cd.git"
     },
     "author": "Kalin Krustev",
     "license": "Apache-2.0"
