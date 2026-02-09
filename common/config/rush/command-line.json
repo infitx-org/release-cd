@@ -20,6 +20,14 @@
     },
     {
       "commandKind": "bulk",
+      "name": "ci-ui",
+      "summary": "Run UI tests",
+      "allowWarningsInSuccessfulBuild": true,
+      "ignoreMissingScript": true,
+      "enableParallelism": true
+    },
+    {
+      "commandKind": "bulk",
       "name": "ci-coverage",
       "summary": "Run code coverage",
       "allowWarningsInSuccessfulBuild": true,
