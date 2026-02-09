@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.2](https://github.com/infitx-org/release-cd/compare/match-v1.3.1...match-v1.3.2) (2026-02-09)
+
+
+### Bug Fixes
+
+* update package versions and permissions in workflows ([c582d9f](https://github.com/infitx-org/release-cd/commit/c582d9faff24e6a0549e529608f0ef6a8b362bcf))
+
 ## [1.3.1](https://github.com/infitx-org/release-cd/compare/match-v1.3.0...match-v1.3.1) (2026-02-09)
 
 
