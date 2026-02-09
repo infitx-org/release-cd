@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.1](https://github.com/infitx-org/release-cd/compare/rest-fs-v1.2.0...rest-fs-v1.2.1) (2026-02-09)
+
+
+### Bug Fixes
+
+* update package versions and permissions in workflows ([c582d9f](https://github.com/infitx-org/release-cd/commit/c582d9faff24e6a0549e529608f0ef6a8b362bcf))
+
 ## [1.2.0](https://github.com/infitx-org/release-cd/compare/rest-fs-v1.1.0...rest-fs-v1.2.0) (2026-02-04)
 
 
