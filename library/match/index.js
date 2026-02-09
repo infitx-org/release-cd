@@ -1,6 +1,18 @@
 const isMatchWith = require('lodash/isMatchWith');
 const isPlainObject = require('lodash/isPlainObject');
 
+// Resolve JSON Pointer path from fact (e.g., "#/offer/dateCreated")
+function resolveRef(refPath, factValue) {
+    if (typeof refPath !== 'string' || !refPath.startsWith('#/')) return undefined;
+    const path = refPath.slice(2).split('/');
+    let value = factValue;
+    for (const key of path) {
+        if (value == null) return undefined;
+        value = value[key];
+    }
+    return value;
+}
+
 // Round a date to the start of a time unit
 function roundToUnit(date, unit) {
     const d = new Date(date);
@@ -72,7 +84,6 @@ function parseTimeInterval(str, referenceTime) {
     };
 
     const offset = multiplier * value * unitMultipliers[unit];
-    console.log({ referenceTime, offset });
     const resultTime = new Date(referenceTime + offset);
 
     // Apply rounding if specified
@@ -83,15 +94,20 @@ function parseTimeInterval(str, referenceTime) {
     return resultTime;
 }
 
-const match = (referenceTime) => (value, condition) => {
+const match = (referenceTime, rootFact) => (value, condition) => {
+    // Resolve $ref if condition is a reference object
+    if (isPlainObject(condition) && '$ref' in condition && Object.keys(condition).length === 1) {
+        condition = resolveRef(condition.$ref, rootFact);
+    }
+
     if (value == null && condition == null) {
         return true
     } else if (value === condition) {
         return true;
     } else if (Array.isArray(condition) || Array.isArray(value)) {
         return Array.isArray(value)
-            ? value.some(v => module.exports(v, condition, referenceTime))
-            : condition.some(v => module.exports(value, v, referenceTime));
+            ? value.some(v => module.exports(v, condition, referenceTime, rootFact))
+            : condition.some(v => module.exports(value, v, referenceTime, rootFact));
     } else if (value == null || condition == null) {
         return false;
     } else if (condition instanceof RegExp) {
@@ -113,7 +129,15 @@ const match = (referenceTime) => (value, condition) => {
             return condition(value);
         case 'object': {
             let { min, max, not } = condition;
-            if (not != null) return !module.exports(value, not, referenceTime);
+            if (not != null) return !module.exports(value, not, referenceTime, rootFact);
+
+            // Resolve $ref in min and max
+            if (isPlainObject(min) && min.$ref) {
+                min = resolveRef(min.$ref, rootFact);
+            }
+            if (isPlainObject(max) && max.$ref) {
+                max = resolveRef(max.$ref, rootFact);
+            }
 
             // Parse Grafana-style time intervals for min and max
             if (typeof min === 'string') {
@@ -125,7 +149,6 @@ const match = (referenceTime) => (value, condition) => {
                 if (parsed) max = parsed;
             }
 
-            console.log({ min, max, value });
             if (value instanceof Date) {
                 value = value.getTime();
                 if (!Number.isFinite(value)) return false;
@@ -144,24 +167,28 @@ const match = (referenceTime) => (value, condition) => {
             if (max != null && (value > max || value === Infinity || max === -Infinity))
                 return false;
             if (min != null || max != null) return true;
-            if (typeof value === 'object' && value && condition) return module.exports(value, condition, referenceTime);
+            // If condition only contains min/max/not (which have been handled above), return true
+            const conditionKeys = Object.keys(condition);
+            if (conditionKeys.every(k => ['min', 'max', 'not'].includes(k))) return true;
+            if (typeof value === 'object' && value && condition) return module.exports(value, condition, referenceTime, rootFact);
         }
     }
 }
 
-module.exports = function (factValue, ruleValue, referenceTime = Date.now()) {
+module.exports = function (factValue, ruleValue, referenceTime = Date.now(), rootFact = null) {
+    if (rootFact === null) rootFact = factValue;  // Store the root fact for $ref resolution only on first call
     if (factValue === ruleValue) return true;
-    if (ruleValue && typeof ruleValue === 'object' && 'not' in ruleValue && Object.keys(ruleValue).length === 1) return !module.exports(factValue, ruleValue.not, referenceTime);
+    if (ruleValue && typeof ruleValue === 'object' && 'not' in ruleValue && Object.keys(ruleValue).length === 1) return !module.exports(factValue, ruleValue.not, referenceTime, rootFact);
     if (
         Array.isArray(factValue) ||
         Array.isArray(ruleValue) ||
         !isPlainObject(factValue) ||
         !isPlainObject(ruleValue)
     )
-        return match(referenceTime)(factValue, ruleValue);
+        return match(referenceTime, rootFact)(factValue, ruleValue);
     if (factValue && ruleValue && typeof factValue === 'object' && typeof ruleValue === 'object') {
         const nullFilter = Object.entries(ruleValue).filter(([, value]) => value == null || Array.isArray(value));
         if (nullFilter.length > 0) factValue = { ...Object.fromEntries(nullFilter), ...factValue };
     };
-    return isMatchWith(factValue, ruleValue, match(referenceTime));
+    return isMatchWith(factValue, ruleValue, match(referenceTime, rootFact));
 };

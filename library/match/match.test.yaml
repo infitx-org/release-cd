@@ -272,3 +272,52 @@
 
 - rule: {min: 'now-7d/d', max: 'now/d'}
   like: (now) => { const d = new Date(now); d.setHours(0, 0, 0, 0); return d; }
+
+# test $ref feature - reference values from facts
+# Basic $ref resolution
+- rule: {order: {dateCreated: {min: {$ref: '#/offer/dateCreated'}}}}
+  like: {offer: {dateCreated: 2024-01-01}, order: {dateCreated: 2024-02-01}}
+  unlike: {offer: {dateCreated: 2024-03-01}, order: {dateCreated: 2024-02-01}}
+
+# $ref with missing property should resolve to undefined
+- rule: {order: {dateCreated: {min: {$ref: '#/offer/dateCreated'}}}}
+  like: {order: {dateCreated: 2024-02-01}}
+
+# $ref in max condition
+- rule: {order: {amount: {max: {$ref: '#/offer/maxAmount'}}}}
+  like: {offer: {maxAmount: 1000}, order: {amount: 500}}
+  unlike: {offer: {maxAmount: 1000}, order: {amount: 1500}}
+
+# $ref with nested path
+- rule: {order: {price: {min: {$ref: '#/config/pricing/minPrice'}}}}
+  like: {config: {pricing: {minPrice: 100}}, order: {price: 150}}
+  unlike: {config: {pricing: {minPrice: 100}}, order: {price: 50}}
+
+# $ref with both min and max
+- rule: {order: {amount: {min: {$ref: '#/limits/min'}, max: {$ref: '#/limits/max'}}}}
+  like: {limits: {min: 100, max: 1000}, order: {amount: 500}}
+  unlike: {limits: {min: 100, max: 1000}, order: {amount: 50}}
+
+# $ref in simple value comparison
+- rule: {order: {status: {$ref: '#/expectedStatus'}}}
+  like: {expectedStatus: active, order: {status: active}}
+  unlike: {expectedStatus: active, order: {status: pending}}
+
+# $ref with array values
+- rule: {order: {tags: {$ref: '#/allowedTag'}}}
+  like: {allowedTag: vip, order: {tags: [vip, premium]}}
+  unlike: {allowedTag: vip, order: {tags: [regular, standard]}}
+
+# $ref with type coercion
+- rule: {order: {amount: {$ref: '#/targetAmount'}}}
+  like: {targetAmount: '500', order: {amount: 500}}
+  unlike: {targetAmount: '500', order: {amount: 600}}
+
+# $ref referencing missing nested property
+- rule: {value: {min: {$ref: '#/config/threshold/value'}}}
+  like: {value: 10}
+
+# Multiple $ref in same rule
+- rule: {transfer: {from: {$ref: '#/source'}, to: {$ref: '#/destination'}}}
+  like: {source: Alice, destination: Bob, transfer: {from: Alice, to: Bob}}
+  unlike: {source: Alice, destination: Bob, transfer: {from: Charlie, to: Bob}}
