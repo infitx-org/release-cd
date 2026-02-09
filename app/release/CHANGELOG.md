@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.46.0](https://github.com/infitx-org/release-cd/compare/release-v1.45.2...release-v1.46.0) (2026-02-09)
+
+
+### Features
+
+* improve status page to fit on screen ([677b1e1](https://github.com/infitx-org/release-cd/commit/677b1e11f2a1b9839c55fc444c7666b83bf11706))
+
 ## [1.45.2](https://github.com/infitx-org/release-cd/compare/release-v1.45.1...release-v1.45.2) (2026-02-05)
 
 
