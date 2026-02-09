@@ -22,6 +22,74 @@ match({ a: 1 }, { a: 2 }); // false
 match({ a: 1, b: 2 }, { a: 1 }); // true
 ```
 
+## Referencing Fact Values with `$ref`
+
+The `$ref` feature allows rules to reference values from other parts of the fact using JSON Pointer syntax. This is useful for dynamic comparisons where the expected value comes from the fact itself.
+
+```javascript
+// Reference another property in the fact
+match(
+  { expectedStatus: 'active', order: { status: 'active' } },
+  { order: { status: { $ref: '#/expectedStatus' } } }
+); // true - order.status matches expectedStatus
+
+// Use $ref in min/max range conditions
+match(
+  { offer: { dateCreated: '2024-01-01' }, order: { dateCreated: '2024-02-01' } },
+  { order: { dateCreated: { min: { $ref: '#/offer/dateCreated' } } } }
+); // true - order date is after offer date
+
+// Multiple $ref in same rule
+match(
+  { source: 'Alice', destination: 'Bob', transfer: { from: 'Alice', to: 'Bob' } },
+  { transfer: { from: { $ref: '#/source' }, to: { $ref: '#/destination' } } }
+); // true - transfer from/to matches source/destination
+
+// $ref with nested paths
+match(
+  { config: { pricing: { minPrice: 100 } }, order: { price: 150 } },
+  { order: { price: { min: { $ref: '#/config/pricing/minPrice' } } } }
+); // true - order price is above configured minimum
+
+// Missing properties resolve to undefined
+match(
+  { order: { dateCreated: '2024-02-01' } },
+  { order: { dateCreated: { min: { $ref: '#/offer/dateCreated' } } } }
+); // true - missing reference is treated as no constraint
+
+// $ref with type coercion
+match(
+  { targetAmount: '500', order: { amount: 500 } },
+  { order: { amount: { $ref: '#/targetAmount' } } }
+); // true - string '500' is coerced to number 500
+
+// $ref with arrays (any-of semantics apply)
+match(
+  { allowedTag: 'vip', order: { tags: ['vip', 'premium'] } },
+  { order: { tags: { $ref: '#/allowedTag' } } }
+); // true - at least one tag matches the reference
+```
+
+### JSON Pointer Syntax
+
+The `$ref` value uses JSON Pointer syntax (RFC 6901):
+- Always starts with `#/` to indicate the root of the fact object
+- Properties are separated by `/` 
+- Examples:
+  - `#/offer/dateCreated` → `fact.offer.dateCreated`
+  - `#/config/pricing/minPrice` → `fact.config.pricing.minPrice`
+  - `#/expectedStatus` → `fact.expectedStatus`
+
+### When to Use `$ref`
+
+Use `$ref` when you need to:
+- Compare related values within the same fact
+- Implement dynamic constraints based on other properties
+- Reference configuration values from the fact
+- Create rules that adapt to the data being matched
+
+```
+
 ## Matching Against Nested Structures
 
 The match function recursively compares nested objects:
