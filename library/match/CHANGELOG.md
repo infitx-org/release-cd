@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.1](https://github.com/infitx-org/release-cd/compare/match-v1.3.0...match-v1.3.1) (2026-02-09)
+
+
+### Bug Fixes
+
+* deploy ([9aa2bd6](https://github.com/infitx-org/release-cd/commit/9aa2bd69093d4374f86dd8554a527b627032c326))
+
 ## [1.3.0](https://github.com/infitx-org/release-cd/compare/match-v1.2.1...match-v1.3.0) (2026-02-09)
 
 
