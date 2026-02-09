@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.0](https://github.com/infitx-org/release-cd/compare/decision-v1.2.0...decision-v1.3.0) (2026-02-09)
+
+
+### Features
+
+* add .npmignore files and ci-publish script for decision and match libraries ([c518708](https://github.com/infitx-org/release-cd/commit/c5187080c63a215a670fcbe37a11989d6ec4c37f))
+
 ## [1.2.0](https://github.com/infitx-org/release-cd/compare/decision-v1.1.0...decision-v1.2.0) (2026-01-06)
 
 
