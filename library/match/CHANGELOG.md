@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.1](https://github.com/infitx-org/release-cd/compare/match-v1.4.0...match-v1.4.1) (2026-02-10)
+
+
+### Bug Fixes
+
+* update Jest configuration and dependencies for Allure integration ([059d3d9](https://github.com/infitx-org/release-cd/commit/059d3d9c5c6bdd00cd173f6de55629212d3aaa9a))
+
 ## [1.4.0](https://github.com/infitx-org/release-cd/compare/match-v1.3.2...match-v1.4.0) (2026-02-10)
 
 

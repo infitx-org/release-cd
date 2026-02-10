@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.2](https://github.com/infitx-org/release-cd/compare/rest-fs-v1.2.1...rest-fs-v1.2.2) (2026-02-10)
+
+
+### Bug Fixes
+
+* update Jest configuration and dependencies for Allure integration ([059d3d9](https://github.com/infitx-org/release-cd/commit/059d3d9c5c6bdd00cd173f6de55629212d3aaa9a))
+
 ## [1.2.1](https://github.com/infitx-org/release-cd/compare/rest-fs-v1.2.0...rest-fs-v1.2.1) (2026-02-09)
 
 

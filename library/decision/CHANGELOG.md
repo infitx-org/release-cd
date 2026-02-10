@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.3](https://github.com/infitx-org/release-cd/compare/decision-v1.3.2...decision-v1.3.3) (2026-02-10)
+
+
+### Bug Fixes
+
+* update Jest configuration and dependencies for Allure integration ([059d3d9](https://github.com/infitx-org/release-cd/commit/059d3d9c5c6bdd00cd173f6de55629212d3aaa9a))
+
 ## [1.3.2](https://github.com/infitx-org/release-cd/compare/decision-v1.3.1...decision-v1.3.2) (2026-02-09)
 
 
