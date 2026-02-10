@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.3.5](https://github.com/infitx-org/release-cd/compare/decision-v1.3.4...decision-v1.3.5) (2026-02-10)
+
+
+### Bug Fixes
+
+* update ci-publish script to use the correct command for publishing ([4520387](https://github.com/infitx-org/release-cd/commit/45203872d97dd40937a9bfb484adf6f95b913497))
+* update ci-publish script to use the correct command for publishing ([cf3a49a](https://github.com/infitx-org/release-cd/commit/cf3a49a1c3682b7ed45de83f1f38ed5237f3cf88))
+
 ## [1.3.4](https://github.com/infitx-org/release-cd/compare/decision-v1.3.3...decision-v1.3.4) (2026-02-10)
 
 
