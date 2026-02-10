@@ -6,7 +6,7 @@
     "scripts": {
         "build": "true",
         "ci-unit": "JEST_JUNIT_OUTPUT_DIR=coverage jest --ci --reporters=default --reporters=jest-junit --outputFile=./coverage/junit.xml",
-        "ci-publish": "npm publish --access public --provenance",
+        "ci-publish": "rush-pnpm publish --access public --provenance",
         "watch": "jest --watchAll"
     },
     "dependencies": {
@@ -14,7 +14,10 @@
         "yaml": "^2.8.1"
     },
     "devDependencies": {
+        "allure": "^3.1.0",
+        "allure-jest": "^3.4.5",
         "jest": "^30.2.0",
+        "jest-environment-node": "^30.2.0",
         "jest-junit": "^16.0.0"
     },
     "repository": {
