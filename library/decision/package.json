@@ -6,7 +6,7 @@
     "scripts": {
         "build": "true",
         "ci-unit": "JEST_JUNIT_OUTPUT_DIR=coverage jest --ci --reporters=default --reporters=jest-junit --outputFile=./coverage/junit.xml",
-        "ci-publish": "rush-pnpm publish --access public --provenance",
+        "ci-publish": "node common/scripts/install-run-rush.js publish --access public --provenance",
         "watch": "jest --watchAll"
     },
     "dependencies": {
