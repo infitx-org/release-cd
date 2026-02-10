@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.2](https://github.com/infitx-org/release-cd/compare/match-v1.4.1...match-v1.4.2) (2026-02-10)
+
+
+### Bug Fixes
+
+* update ci-publish script to use the correct command for publishing ([49ea1cb](https://github.com/infitx-org/release-cd/commit/49ea1cbc57d671c62c1bab43f3006b251c6bb725))
+
 ## [1.4.1](https://github.com/infitx-org/release-cd/compare/match-v1.4.0...match-v1.4.1) (2026-02-10)
 
 
