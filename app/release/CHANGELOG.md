@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.46.1](https://github.com/infitx-org/release-cd/compare/release-v1.46.0...release-v1.46.1) (2026-02-10)
+
+
+### Bug Fixes
+
+* update notify and trigger functions to handle lastModified and running states ([8407731](https://github.com/infitx-org/release-cd/commit/8407731fdf799e07fb094e0547fb4688c82b96b8))
+
 ## [1.46.0](https://github.com/infitx-org/release-cd/compare/release-v1.45.2...release-v1.46.0) (2026-02-09)
 
 

@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.0](https://github.com/infitx-org/release-cd/compare/match-v1.3.2...match-v1.4.0) (2026-02-10)
+
+
+### Features
+
+* add $ref support for dynamic fact references in match rules ([#135](https://github.com/infitx-org/release-cd/issues/135)) ([032b207](https://github.com/infitx-org/release-cd/commit/032b20734cbe559b25126c25e5d7130e1a3cf7b3))
+
 ## [1.3.2](https://github.com/infitx-org/release-cd/compare/match-v1.3.1...match-v1.3.2) (2026-02-09)
 
 
