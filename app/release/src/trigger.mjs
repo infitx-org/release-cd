@@ -24,14 +24,17 @@ export default async function trigger(request, fact) {
                 {
                     _id: revisionId,
                     $or: [
-                        { [`actions.${rule}`]: { $exists: false } },
-                        { [`actions.${rule}`]: false },
-                        { [`actions.${rule}`]: { $lt: staleThreshold } }
+                        { [`running.${rule}`]: { $exists: false } },
+                        { [`running.${rule}`]: false },
+                        { [`running.${rule}`]: { $lt: staleThreshold } }
                     ]
                 },
                 {
-                    $currentDate: { lastModified: true },
-                    $set: { [`actions.${rule}`]: Date.now() }
+                    $currentDate: {
+                        lastModified: true,
+                        [`running.${rule}`]: true,
+                        [`actions.${rule}`]: true
+                    }
                 }
             );
 
@@ -88,7 +91,7 @@ export default async function trigger(request, fact) {
                     { _id: revisionId },
                     {
                         $currentDate: { lastModified: true },
-                        $set: { [`actions.${rule}`]: false }
+                        $set: { [`running.${rule}`]: false }
                     }
                 );
             };

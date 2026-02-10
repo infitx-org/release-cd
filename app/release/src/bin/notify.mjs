@@ -17,6 +17,7 @@ export default async function notify({
             reportUrl
         }),
         notifyRelease({
+            lastModified: new Date().toISOString(),
             totalAssertions: summary.stats?.total,
             totalPassedAssertions: summary.stats?.passed,
             duration: summary.duration,
