@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.46.2](https://github.com/infitx-org/release-cd/compare/release-v1.46.1...release-v1.46.2) (2026-02-10)
+
+
+### Bug Fixes
+
+* update lastModified handling in notify and notifyRelease functions ([edac743](https://github.com/infitx-org/release-cd/commit/edac74387b1fa745c6cb641875a4aafc314c7329))
+
 ## [1.46.1](https://github.com/infitx-org/release-cd/compare/release-v1.46.0...release-v1.46.1) (2026-02-10)
 
 
