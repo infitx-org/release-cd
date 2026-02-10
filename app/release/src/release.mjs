@@ -13,6 +13,7 @@ export default async function notifyRelease({
     if (summary.report && typeof summary.report === 'object' && summary.report.body) {
         summary.report = await copyReportToS3(reportId, summary.report, config.release.report);
     }
+    summary.lastModified = new Date().toISOString()
     await fetch(
         reportUrl,
         {

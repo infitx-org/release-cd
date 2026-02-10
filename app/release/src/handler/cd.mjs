@@ -145,7 +145,7 @@ ${Object.entries(tests).map(([env, tests]) => Object.entries(tests).map(([name, 
                 envResponse.submodules = `No submodules info found for environment ${env}`
 
             if (revision.version)
-                envResponse.version = `Release ${version} already created for environment ${env}`
+                envResponse.version = `Release ${revision.version} already created for environment ${env}`
 
             revisions[env] = revision._id;
             actions[env] = revision.actions || {};
