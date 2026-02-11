@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.6](https://github.com/infitx-org/release-cd/compare/decision-v1.3.5...decision-v1.3.6) (2026-02-11)
+
+
+### Bug Fixes
+
+* update dependencies for lodash and yaml to latest versions ([693ef9a](https://github.com/infitx-org/release-cd/commit/693ef9a27cc15775f2f4437aed489bd256abdeb9))
+
 ## [1.3.5](https://github.com/infitx-org/release-cd/compare/decision-v1.3.4...decision-v1.3.5) (2026-02-10)
 
 

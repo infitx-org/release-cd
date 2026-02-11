@@ -1,7 +1,7 @@
 {
     "app/release": "1.46.2",
-    "library/match": "1.4.3",
-    "library/decision": "1.3.5",
+    "library/match": "1.4.4",
+    "library/decision": "1.3.6",
     "app/onboard": "1.3.1",
     "library/rest-fs": "1.2.2"
 }
