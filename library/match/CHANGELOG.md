@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.4](https://github.com/infitx-org/release-cd/compare/match-v1.4.3...match-v1.4.4) (2026-02-11)
+
+
+### Bug Fixes
+
+* update dependencies for lodash and yaml to latest versions ([693ef9a](https://github.com/infitx-org/release-cd/commit/693ef9a27cc15775f2f4437aed489bd256abdeb9))
+
 ## [1.4.3](https://github.com/infitx-org/release-cd/compare/match-v1.4.2...match-v1.4.3) (2026-02-10)
 
 
