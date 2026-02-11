@@ -155,8 +155,8 @@ importers:
         specifier: workspace:*
         version: link:../match
       yaml:
-        specifier: ^2.8.1
-        version: 2.8.1
+        specifier: ^2.8.2
+        version: 2.8.2
     devDependencies:
       allure:
         specifier: ^3.1.0
@@ -177,8 +177,8 @@ importers:
   ../../library/match:
     dependencies:
       lodash:
-        specifier: ^4.17.21
-        version: 4.17.21
+        specifier: ^4.17.23
+        version: 4.17.23
     devDependencies:
       allure:
         specifier: ^3.1.0
@@ -2847,8 +2847,8 @@ packages:
   lodash.once@4.1.1:
     resolution: {integrity: sha512-Sb487aTOCr9drQVL8pIxOzVhafOjZN9UU54hiN8PU3uAiSV7lx1yYNpbNmex2PK6dSJoNTSJUUswT651yww3Mg==}
 
-  lodash@4.17.21:
-    resolution: {integrity: sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==}
+  lodash@4.17.23:
+    resolution: {integrity: sha512-LgVTMpQtIopCi79SJeDiP0TfWi5CNEc/L/aRdTh3yIvmZXTnheWpKjSZhnvMl8iXbC1tFg9gdHHDMLoV7CnG+w==}
 
   logform@2.7.0:
     resolution: {integrity: sha512-TFYA4jnP7PVbmlBIfhlSe+WKxs9dklXMTEGcBCIvLhE/Tn3H6Gk1norupVW7m5Cnd4bLcr08AytbyV/xj7f/kQ==}
@@ -3857,11 +3857,6 @@ packages:
   yallist@3.1.1:
     resolution: {integrity: sha512-a4UGQaWPH59mOXUYnAG2ewncQS4i4F43Tv3JoAM+s2VDAmS9NsK8GpDMLrCHPksFT7h3K6TOoUNn2pb7RoXx4g==}
 
-  yaml@2.8.1:
-    resolution: {integrity: sha512-lcYcMxX2PO9XMGvAJkJ3OsNMw+/7FKes7/hgerGUYWIoWu5j/+YQqcZr5JnPZWzOsEBgMbSbiSTn/dv/69Mkpw==}
-    engines: {node: '>= 14.6'}
-    hasBin: true
-
   yaml@2.8.2:
     resolution: {integrity: sha512-mplynKqc1C2hTVYxd0PU2xQAc22TI1vShAYGksCCfxbn/dFwnHTNi1bvYsBTkhdUNtGIf5xNOg938rrSSYvS9A==}
     engines: {node: '>= 14.6'}
@@ -4450,7 +4445,7 @@ snapshots:
       d3-shape: 3.2.0
       d3-tip: 0.9.1
       d3-transition: 3.0.1(d3-selection@3.0.0)
-      lodash: 4.17.21
+      lodash: 4.17.23
       preact: 10.28.2
       prismjs: 1.30.0
       react: '@preact/compat@18.3.1(preact@10.28.2)'
@@ -4489,7 +4484,7 @@ snapshots:
       d3-shape: 3.2.0
       d3-tip: 0.9.1
       d3-transition: 3.0.1(d3-selection@3.0.0)
-      lodash: 4.17.21
+      lodash: 4.17.23
       preact: 10.28.2
       prismjs: 1.30.0
       react: '@preact/compat@18.3.1(preact@10.28.2)'
@@ -5335,7 +5330,7 @@ snapshots:
       '@nivo/core': 0.99.0(@preact/compat@18.3.1(preact@10.28.2))(@preact/compat@18.3.1(preact@10.28.2))
       '@nivo/theming': 0.99.0(@preact/compat@18.3.1(preact@10.28.2))
       '@react-spring/web': 10.0.3(@preact/compat@18.3.1(preact@10.28.2))(@preact/compat@18.3.1(preact@10.28.2))
-      lodash: 4.17.21
+      lodash: 4.17.23
       react: '@preact/compat@18.3.1(preact@10.28.2)'
     transitivePeerDependencies:
       - react-dom
@@ -5386,7 +5381,7 @@ snapshots:
       '@types/d3-shape': 3.1.7
       d3-scale: 4.0.2
       d3-shape: 3.2.0
-      lodash: 4.17.21
+      lodash: 4.17.23
       react: '@preact/compat@18.3.1(preact@10.28.2)'
     transitivePeerDependencies:
       - react-dom
@@ -5403,7 +5398,7 @@ snapshots:
       d3-color: 3.1.0
       d3-scale: 4.0.2
       d3-scale-chromatic: 3.1.0
-      lodash: 4.17.21
+      lodash: 4.17.23
       react: '@preact/compat@18.3.1(preact@10.28.2)'
     transitivePeerDependencies:
       - react-dom
@@ -5421,7 +5416,7 @@ snapshots:
       d3-scale-chromatic: 3.1.0
       d3-shape: 3.2.0
       d3-time-format: 3.0.0
-      lodash: 4.17.21
+      lodash: 4.17.23
       react: '@preact/compat@18.3.1(preact@10.28.2)'
       react-virtualized-auto-sizer: 1.0.26(@preact/compat@18.3.1(preact@10.28.2))(@preact/compat@18.3.1(preact@10.28.2))
       use-debounce: 10.0.6(@preact/compat@18.3.1(preact@10.28.2))
@@ -5518,7 +5513,7 @@ snapshots:
       d3-scale: 4.0.2
       d3-time: 1.1.0
       d3-time-format: 3.0.0
-      lodash: 4.17.21
+      lodash: 4.17.23
 
   '@nivo/text@0.99.0(@preact/compat@18.3.1(preact@10.28.2))(@preact/compat@18.3.1(preact@10.28.2))':
     dependencies:
@@ -5531,7 +5526,7 @@ snapshots:
 
   '@nivo/theming@0.99.0(@preact/compat@18.3.1(preact@10.28.2))':
     dependencies:
-      lodash: 4.17.21
+      lodash: 4.17.23
       react: '@preact/compat@18.3.1(preact@10.28.2)'
 
   '@nivo/tooltip@0.99.0(@preact/compat@18.3.1(preact@10.28.2))(@preact/compat@18.3.1(preact@10.28.2))':
@@ -5554,7 +5549,7 @@ snapshots:
       '@react-spring/web': 10.0.3(@preact/compat@18.3.1(preact@10.28.2))(@preact/compat@18.3.1(preact@10.28.2))
       '@types/d3-hierarchy': 3.1.7
       d3-hierarchy: 3.1.2
-      lodash: 4.17.21
+      lodash: 4.17.23
       react: '@preact/compat@18.3.1(preact@10.28.2)'
     transitivePeerDependencies:
       - react-dom
@@ -7493,7 +7488,7 @@ snapshots:
       get-package-type: 0.1.0
       getopts: 2.3.0
       interpret: 2.2.0
-      lodash: 4.17.21
+      lodash: 4.17.23
       pg-connection-string: 2.6.2
       rechoir: 0.8.0
       resolve-from: 5.0.0
@@ -7551,7 +7546,7 @@ snapshots:
 
   lodash.once@4.1.1: {}
 
-  lodash@4.17.21: {}
+  lodash@4.17.23: {}
 
   logform@2.7.0:
     dependencies:
@@ -8694,8 +8689,6 @@ snapshots:
   y18n@5.0.8: {}
 
   yallist@3.1.1: {}
-
-  yaml@2.8.1: {}
 
   yaml@2.8.2: {}
 

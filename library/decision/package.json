@@ -11,7 +11,7 @@
     },
     "dependencies": {
         "@infitx/match": "workspace:*",
-        "yaml": "^2.8.1"
+        "yaml": "^2.8.2"
     },
     "devDependencies": {
         "allure": "^3.1.0",
