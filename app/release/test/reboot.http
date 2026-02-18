@@ -1,0 +1,3 @@
+### reboot eg-dev-master-2
+POST http://localhost:8080/reboot/eg-dev-master-2
+Authorization: test

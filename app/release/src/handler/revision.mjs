@@ -1,6 +1,11 @@
 import config from '../config.mjs';
 import { formatTime } from '../fn/formatTime.mjs';
 
+const trigger = (env, testName) => {
+    const ruleName = config.rule.environments[env]?.trigger?.[testName];
+    return ruleName ? `<button type="button" data-trigger="${ruleName}">Trigger</button>` : '';
+}
+
 export const cdRevisionGet = async (request, h) => {
     const submoduleProps = {};
     const revisions = {};
@@ -18,6 +23,24 @@ export const cdRevisionGet = async (request, h) => {
         transition: background 0.2s, color 0.2s;
         margin: 0;
         padding: 20px;
+    }
+    button {
+        padding: 0px 4px;
+        font-size: 0.9em;
+        cursor: pointer;
+        border: 1px solid #0066cc;
+        background: #0066cc;
+        color: white;
+        border-radius: 4px;
+        transition: background 0.2s, color 0.2s;
+    }
+    button:hover {
+        background: #005bb5;
+    }
+    button:disabled {
+        background: #ccc;
+        border-color: #ccc;
+        cursor: not-allowed;
     }
     h1 {
         margin: 0 0 20px 0;
@@ -124,6 +147,50 @@ export const cdRevisionGet = async (request, h) => {
         }
     }
     </style>`);
+    result.push(`
+<script>
+        const showHint = (button, message, isError = false) => {
+            const hint = document.createElement('div');
+            hint.textContent = message;
+            hint.style.position = 'absolute';
+            hint.style.background = isError ? '#b00020' : '#333';
+            hint.style.color = '#fff';
+            hint.style.padding = '4px 8px';
+            hint.style.borderRadius = '4px';
+            const rect = button.getBoundingClientRect();
+            hint.style.top = window.scrollY + rect.top - 30 + 'px';
+            hint.style.left = window.scrollX + rect.left + 'px';
+            document.body.appendChild(hint);
+            setTimeout(() => hint.remove(), 15000);
+        };
+
+        document.addEventListener('click', async (event) => {
+            const button = event.target.closest('button[data-trigger]');
+            if (!button) return;
+
+            event.preventDefault();
+
+            if (!confirm('Are you sure you want to trigger this action?')) return;
+
+            const ruleName = button.dataset.trigger;
+            const originalText = button.textContent;
+            button.disabled = true;
+            button.textContent = 'Triggering '+ ruleName + ' ...';
+
+            try {
+                const response = await fetch('/trigger/' + encodeURIComponent(ruleName), { method: 'POST' });
+                const data = await response.json().catch(() => ({}));
+                const message = data?.[0]?.value?.result?.message || (response.ok ? 'Triggered' : 'Trigger failed');
+                showHint(button, message, !response.ok);
+            } catch (err) {
+                showHint(button, 'Error triggering: ' + (err?.message || err), true);
+            } finally {
+                button.disabled = false;
+                button.textContent = originalText;
+            }
+        });
+    </script>
+    `);
     result.push('</head><body>');
     result.push('<h1>Release CD Status</h1>');
     result.push('<div class="env-container">');
@@ -177,7 +244,7 @@ export const cdRevisionGet = async (request, h) => {
         result.push('<ul>');
         for (const testName of [...requiredTests, ...optionalTests])
             if (!(testName in (revision.tests || {})))
-                result.push(`<li>⛔ <code>${testName}</code> missing</li>`);
+                result.push(`<li>⛔ <code>${testName}</code> missing ${trigger(env, testName)}</li>`);
         for (const [testName, test] of Object.entries(revision.tests || {})) {
             const status = test.totalPassedAssertions == test.totalAssertions
                 ? '✅'

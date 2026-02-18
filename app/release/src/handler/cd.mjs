@@ -9,7 +9,7 @@ import config from '../config.mjs';
 import { formatTime } from '../fn/formatTime.mjs';
 import copyReportToS3 from '../s3.mjs';
 import notifySlack from '../slack.mjs';
-import trigger from '../trigger.mjs';
+import { triggerDecision } from '../trigger.mjs';
 
 export default async function initCd(server) {
     const octokit = new Octokit({
@@ -167,7 +167,7 @@ ${Object.entries(tests).map(([env, tests]) => Object.entries(tests).map(([name, 
             if (foundMismatch) envResponse.submodules = `Submodule refs do not match for environment ${env}, revision ${revision._id}, submodule ${foundMismatch[0]}`
             if (Object.keys(envResponse).length > 0) response[env] = envResponse;
         }
-        const triggered = await trigger(request, { tests, revisions, actions });
+        const triggered = await triggerDecision(request, { tests, revisions, actions });
         if (Object.keys(response).length > 0) {
             response.triggered = triggered;
             return h.response(response).code(202);

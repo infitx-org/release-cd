@@ -14,10 +14,12 @@ import notify from './handler/notify.mjs';
 import offboard from './handler/offboard.mjs';
 import onboard from './handler/onboard.mjs';
 import ping from './handler/ping.mjs';
+import reboot from './handler/reboot.mjs';
 import reonboard from './handler/reonboard.mjs';
 import report from './handler/report.mjs';
 import { cdRevisionGet } from './handler/revision.mjs';
 import triggerCronJob from './handler/triggerJob.mjs';
+import triggerRuleHandler from './handler/triggerRule.mjs';
 
 const init = async () => {
     const server = Hapi.server({
@@ -179,9 +181,23 @@ const init = async () => {
         handler: ping
     });
 
+    server.route({
+        options: config.server.post,
+        method: 'POST',
+        path: '/reboot/{vm}',
+        handler: reboot
+    });
+
+    server.route({
+        options: { auth: 'report' },
+        method: 'POST',
+        path: '/trigger/{ruleName}',
+        handler: triggerRuleHandler
+    });
+
     if (config.github?.token) {
         server.route({
-            options: config.server.get,
+            options: { auth: 'report' },
             method: 'GET',
             path: '/',
             handler: cdRevisionGet

@@ -96,6 +96,10 @@ export default rc('dev', {
     keycloak: {
         realm: 'master'
     },
+    proxmox: {
+        token: '',
+        baseUrl: 'https://proxmox:8006/api2/json/nodes'
+    },
     release: {
         url: '',
         prerelease: 'dev',

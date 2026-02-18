@@ -69,3 +69,10 @@ trigger-e2e-tests:
                 env: pm-dev
                 namespace: comesa-tests
                 job: comesa-tests-cronjob
+trigger-region-reboot:
+    when: false # this is a manual trigger, so it will never be triggered by the system
+    then:
+        region-reboot:
+            action: reboot # trigger reboot job in region-dev
+            params:
+                vm: eg-dev-master-2
