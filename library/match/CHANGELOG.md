@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.5.0](https://github.com/infitx-org/release-cd/compare/match-v1.4.4...match-v1.5.0) (2026-02-18)
+
+
+### Features
+
+* allow triggering by rule name / index ([4f2eacd](https://github.com/infitx-org/release-cd/commit/4f2eacd1a03b8c8a9ca63dbb5335f64f081b7d4c))
+
 ## [1.4.4](https://github.com/infitx-org/release-cd/compare/match-v1.4.3...match-v1.4.4) (2026-02-11)
 
 

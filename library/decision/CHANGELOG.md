@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.0](https://github.com/infitx-org/release-cd/compare/decision-v1.3.6...decision-v1.4.0) (2026-02-18)
+
+
+### Features
+
+* allow triggering by rule name / index ([4f2eacd](https://github.com/infitx-org/release-cd/commit/4f2eacd1a03b8c8a9ca63dbb5335f64f081b7d4c))
+
 ## [1.3.6](https://github.com/infitx-org/release-cd/compare/decision-v1.3.5...decision-v1.3.6) (2026-02-11)
 
 
