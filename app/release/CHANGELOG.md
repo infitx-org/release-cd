@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.47.0](https://github.com/infitx-org/release-cd/compare/release-v1.46.2...release-v1.47.0) (2026-02-18)
+
+
+### Features
+
+* add reboot and UI triggering ([4e47ff1](https://github.com/infitx-org/release-cd/commit/4e47ff1e074a81fb3b985fe465881c162e91d210))
+
 ## [1.46.2](https://github.com/infitx-org/release-cd/compare/release-v1.46.1...release-v1.46.2) (2026-02-10)
 
 
