@@ -21,7 +21,7 @@ module.exports = function decision(config) {
             const decisions = all ? [] : null;
             for (const index in rules) {
                 const { rule = index, when, then } = rules[index];
-                if (match(fact, when)) {
+                if (['string', 'number'].includes(typeof fact) ? rule === fact : match(fact, when)) {
                     if (all) {
                         Object.entries(typeof then === 'function' ? then(fact) : then).forEach(([decision, value]) => decisions.push({ rule, decision, ...value }));
                     } else {
