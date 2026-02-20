@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.5.1](https://github.com/infitx-org/release-cd/compare/match-v1.5.0...match-v1.5.1) (2026-02-20)
+
+
+### Bug Fixes
+
+* update allure dependency to version 3.2.0 in decision, match, and rest-fs packages ([b85e14d](https://github.com/infitx-org/release-cd/commit/b85e14db1701c07071f15bd0ed31bdaf7a510d04))
+
 ## [1.5.0](https://github.com/infitx-org/release-cd/compare/match-v1.4.4...match-v1.5.0) (2026-02-18)
 
 

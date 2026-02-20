@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.3](https://github.com/infitx-org/release-cd/compare/rest-fs-v1.2.2...rest-fs-v1.2.3) (2026-02-20)
+
+
+### Bug Fixes
+
+* update allure dependency to version 3.2.0 in decision, match, and rest-fs packages ([b85e14d](https://github.com/infitx-org/release-cd/commit/b85e14db1701c07071f15bd0ed31bdaf7a510d04))
+
 ## [1.2.2](https://github.com/infitx-org/release-cd/compare/rest-fs-v1.2.1...rest-fs-v1.2.2) (2026-02-10)
 
 
