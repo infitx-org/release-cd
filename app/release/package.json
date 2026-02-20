@@ -28,7 +28,7 @@
     "@mojaloop/central-services-logger": "^11.10.3",
     "@octokit/rest": "^21.1.1",
     "@slack/webhook": "^7.0.6",
-    "allure": "^3.0.1",
+    "allure": "^3.2.0",
     "allure-jest": "^3.4.5",
     "allure-js-commons": "^3.4.5",
     "aws-sdk": "^2.1693.0",

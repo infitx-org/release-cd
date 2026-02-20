@@ -13,7 +13,7 @@
         "lodash": "^4.17.23"
     },
     "devDependencies": {
-        "allure": "^3.1.0",
+        "allure": "^3.2.0",
         "allure-jest": "^3.4.5",
         "yaml": "^2.8.2",
         "jest": "^30.2.0",
