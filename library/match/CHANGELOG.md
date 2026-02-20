@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.5.2](https://github.com/infitx-org/release-cd/compare/match-v1.5.1...match-v1.5.2) (2026-02-20)
+
+
+### Bug Fixes
+
+* ci reports ([633a11b](https://github.com/infitx-org/release-cd/commit/633a11be0945a1e6f274999b3e3ab137b7c92c88))
+* update ci-unit script to include specific allure names for decision, match, and rest-fs packages ([8c52e4b](https://github.com/infitx-org/release-cd/commit/8c52e4be87893328143d3562c51bf33f419074b1))
+
 ## [1.5.1](https://github.com/infitx-org/release-cd/compare/match-v1.5.0...match-v1.5.1) (2026-02-20)
 
 
