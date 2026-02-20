@@ -1,6 +1,6 @@
 {
     "name": "@infitx/match",
-    "version": "1.5.1",
+    "version": "1.5.2",
     "description": "Object pattern matching utility",
     "main": "index.js",
     "scripts": {
