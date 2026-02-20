@@ -5,7 +5,7 @@
     "main": "index.js",
     "scripts": {
         "build": "true",
-        "ci-unit": "JEST_JUNIT_OUTPUT_DIR=coverage jest --ci --reporters=default --reporters=jest-junit --outputFile=./coverage/junit.xml",
+        "ci-unit": "JEST_JUNIT_OUTPUT_DIR=coverage jest --ci --reporters=default --reporters=jest-junit --outputFile=./coverage/junit.xml;allure generate",
         "ci-publish": "node ../../common/scripts/install-run-rush-pnpm.js publish --access public --provenance",
         "watch": "jest --watchAll"
     },

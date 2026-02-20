@@ -5,7 +5,7 @@
     "main": "index.js",
     "scripts": {
         "build": "true",
-        "ci-unit": "jest --ci",
+        "ci-unit": "JEST_JUNIT_OUTPUT_DIR=coverage jest --ci --reporters=default --reporters=jest-junit --outputFile=./coverage/junit.xml;allure generate",
         "watch": "node --watch .",
         "test": "jest",
         "test:watch": "jest --watch",
