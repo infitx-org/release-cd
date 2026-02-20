@@ -50,7 +50,7 @@ async function rebootVm({ nodeName, vmId, vmName, log, startTime }) {
 
     log(`Sending shutdown command to VM ${vmName} (Node: ${nodeName}, VM ID: ${vmId})`);
     await axios.post(
-        `${config.proxmox.baseUrl}/${nodeName}/qemu/${vmId}/status/shutdown`, null, axiosConfig);
+        `${config.proxmox.baseUrl}/${nodeName}/qemu/${vmId}/status/stop`, null, axiosConfig);
     let status;
     for (let i = 0; i < 60; i++) { // check the status every 5 seconds for up to 5 minutes
         await new Promise(res => setTimeout(res, 5000)); // wait for 5 seconds before checking status again
@@ -60,7 +60,10 @@ async function rebootVm({ nodeName, vmId, vmName, log, startTime }) {
         log(`VM ${vmName} status: ${status}`);
         if (status === 'stopped') break;
     }
-
+    if (status !== 'stopped') {
+        log(`VM ${vmName} did not stop within expected time. Current status: ${status}. Aborting restart process.`);
+        return;
+    }
     // start the VM again
     log(`VM ${vmName} is stopped. Sending start command...`);
     await axios.post(`${config.proxmox.baseUrl}/${nodeName}/qemu/${vmId}/status/start`, null, axiosConfig);
