@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.47.1](https://github.com/infitx-org/release-cd/compare/release-v1.47.0...release-v1.47.1) (2026-02-20)
+
+
+### Bug Fixes
+
+* change shutdown command to stop for VM reboot process ([e694e2c](https://github.com/infitx-org/release-cd/commit/e694e2c1782c099aa3c51df38b1349d43f89fea3))
+* update allure dependency to version 3.2.0 in decision, match, and rest-fs packages ([b85e14d](https://github.com/infitx-org/release-cd/commit/b85e14db1701c07071f15bd0ed31bdaf7a510d04))
+
 ## [1.47.0](https://github.com/infitx-org/release-cd/compare/release-v1.46.2...release-v1.47.0) (2026-02-18)
 
 
