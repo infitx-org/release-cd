@@ -1,6 +1,6 @@
 {
     "name": "@infitx/decision",
-    "version": "1.4.1",
+    "version": "1.4.2",
     "description": "Decision tables engine",
     "main": "index.js",
     "scripts": {

@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.47.2](https://github.com/infitx-org/release-cd/compare/release-v1.47.1...release-v1.47.2) (2026-02-26)
+
+
+### Bug Fixes
+
+* add trigger button to test failure messages in cdRevisionGet ([94e3086](https://github.com/infitx-org/release-cd/commit/94e30865f1bb3440815e078e1394d180ef9c4f0d))
+
 ## [1.47.1](https://github.com/infitx-org/release-cd/compare/release-v1.47.0...release-v1.47.1) (2026-02-20)
 
 
