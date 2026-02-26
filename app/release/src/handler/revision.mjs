@@ -251,7 +251,7 @@ export const cdRevisionGet = async (request, h) => {
                 : requiredTests.includes(testName)
                     ? '⛔'
                     : '⚠️';
-            result.push(`<li>${status} ${test.report ? `<a href="${test.report}" target="_blank">${testName}</a>` : `${testName}`} failed <code>${((test.totalAssertions || 0) - (test.totalPassedAssertions || 0))}/${test.totalAssertions || 0}, ⌛ ${formatTime(test.duration)}</code></li>`);
+            result.push(`<li>${status} ${test.report ? `<a href="${test.report}" target="_blank">${testName}</a>` : `${testName}`} failed <code>${((test.totalAssertions || 0) - (test.totalPassedAssertions || 0))}/${test.totalAssertions || 0}, ⌛ ${formatTime(test.duration)}</code> ${trigger(env, testName)}</li>`);
         }
         result.push('</ul>');
         result.push('</details>');
