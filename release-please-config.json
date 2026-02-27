@@ -4,7 +4,8 @@
         "app/release": {},
         "app/onboard": {},
         "app/james": {
-            "release-type": "simple"
+            "release-type": "simple",
+            "component": "james"
         },
         "library/match": {},
         "library/decision": {},
