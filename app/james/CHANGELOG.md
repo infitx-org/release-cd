@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.1](https://github.com/infitx-org/release-cd/compare/james-v1.2.0...james-v1.2.1) (2026-02-27)
+
+
+### Bug Fixes
+
+* correct paths for requirements and source in Dockerfile ([31a8b78](https://github.com/infitx-org/release-cd/commit/31a8b78db5118278b18d4a2e515977800244763e))
+
 ## [1.2.0](https://github.com/infitx-org/release-cd/compare/james-v1.1.0...james-v1.2.0) (2026-02-27)
 
 
