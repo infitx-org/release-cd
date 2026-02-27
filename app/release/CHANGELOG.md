@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.48.0](https://github.com/infitx-org/release-cd/compare/release-v1.47.2...release-v1.48.0) (2026-02-27)
+
+
+### Features
+
+* enhance app health visualization and add auxiliary tests section ([75c9500](https://github.com/infitx-org/release-cd/commit/75c95000a20d7d8e049434f4b4ddaaa65c1e0010))
+
 ## [1.47.2](https://github.com/infitx-org/release-cd/compare/release-v1.47.1...release-v1.47.2) (2026-02-26)
 
 
