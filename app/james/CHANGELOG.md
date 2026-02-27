@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.2](https://github.com/infitx-org/release-cd/compare/james-v1.2.1...james-v1.2.2) (2026-02-27)
+
+
+### Bug Fixes
+
+* update langchain and related dependencies in requirements.txt ([0d6bdfb](https://github.com/infitx-org/release-cd/commit/0d6bdfbc9d4c3e4cb6b0a4bb1d1731dcde567a1c))
+
 ## [1.2.1](https://github.com/infitx-org/release-cd/compare/james-v1.2.0...james-v1.2.1) (2026-02-27)
 
 
