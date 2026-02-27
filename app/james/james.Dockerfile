@@ -9,11 +9,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 WORKDIR /app
 
 # Copy and install Python dependencies first (layer caching)
-COPY requirements.txt .
+COPY app/james/requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy application source
-COPY src/ ./src/
+COPY app/james/src/ ./src/
 
 # Create directories for data and logs
 RUN mkdir -p /app/data/chromadb /var/log/ai-agent
