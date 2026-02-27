@@ -124,3 +124,12 @@ allure-report
 *-result.json
 *.crt
 test.sh
+
+# Python
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+htmlcov/
+.coverage

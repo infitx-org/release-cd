@@ -3,6 +3,7 @@
     "packages": {
         "app/release": {},
         "app/onboard": {},
+        "app/james": {},
         "library/match": {},
         "library/decision": {},
         "library/rest-fs": {}
