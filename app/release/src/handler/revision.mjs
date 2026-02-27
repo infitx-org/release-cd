@@ -146,9 +146,236 @@ export const cdRevisionGet = async (request, h) => {
             flex: 1 1 100%;
         }
     }
+    .health-viz {
+        margin-top: 12px;
+        font-size: 0.85em;
+    }
+    .health-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        overflow-y: auto;
+        max-height: 500px;
+        font-size: 0.75em;
+        margin-top: 4px;
+    }
+    .health-app-section {
+        display: grid;
+        grid-template-columns: 100px auto;
+        gap: 4px;
+        align-items: center;
+        padding: 4px;
+        background: rgba(0,0,0,0.02);
+        border-radius: 4px;
+    }
+    @media (prefers-color-scheme: dark) {
+        .health-app-section {
+            background: rgba(255,255,255,0.03);
+        }
+    }
+    .health-app-name {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        padding: 2px 4px;
+        font-weight: 500;
+        font-size: 0.85em;
+    }
+    .health-state-bands {
+        display: flex;
+        flex-direction: column;
+        gap: 1px;
+    }
+    .health-heatmap-row {
+        display: flex;
+        gap: 1px;
+        align-items: center;
+    }
+    .health-cell {
+        flex: 1;
+        height: 6px;
+        border-radius: 1px;
+        position: relative;
+        min-width: 2px;
+    }
+    /* Intensity levels for each state (0 = no transitions, 1-5+ increasing intensity) */
+    .health-cell.Healthy-0 { background: #e8f5e9; }
+    .health-cell.Healthy-1 { background: #a5d6a7; }
+    .health-cell.Healthy-2 { background: #66bb6a; }
+    .health-cell.Healthy-3 { background: #43a047; }
+    .health-cell.Healthy-4 { background: #2e7d32; }
+
+    .health-cell.Progressing-0 { background: #e3f2fd; }
+    .health-cell.Progressing-1 { background: #90caf9; }
+    .health-cell.Progressing-2 { background: #42a5f5; }
+    .health-cell.Progressing-3 { background: #1e88e5; }
+    .health-cell.Progressing-4 { background: #1565c0; }
+
+    .health-cell.Degraded-0 { background: #fff8e1; }
+    .health-cell.Degraded-1 { background: #ffe082; }
+    .health-cell.Degraded-2 { background: #ffd54f; }
+    .health-cell.Degraded-3 { background: #ffca28; }
+    .health-cell.Degraded-4 { background: #ffa000; }
+
+    .health-cell.Missing-0 { background: #fff3e0; }
+    .health-cell.Missing-1 { background: #ffb74d; }
+    .health-cell.Missing-2 { background: #ff9800; }
+    .health-cell.Missing-3 { background: #fb8c00; }
+    .health-cell.Missing-4 { background: #e65100; }
+
+    .health-cell.Unknown-0 { background: #ffebee; }
+    .health-cell.Unknown-1 { background: #e57373; }
+    .health-cell.Unknown-2 { background: #f44336; }
+    .health-cell.Unknown-3 { background: #e53935; }
+    .health-cell.Unknown-4 { background: #c62828; }
+
+    @media (prefers-color-scheme: dark) {
+        .health-cell.Healthy-0,
+        .health-cell.Progressing-0,
+        .health-cell.Degraded-0,
+        .health-cell.Missing-0,
+        .health-cell.Unknown-0 { background: #2a2a2a; }
+    }
+    .health-legend {
+        display: flex;
+        gap: 12px;
+        margin-top: 8px;
+        flex-wrap: wrap;
+        font-size: 0.7em;
+    }
+    .health-legend-item {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+    .health-legend-box {
+        width: 12px;
+        height: 12px;
+        border-radius: 2px;
+    }
+    .health-stats {
+        margin-top: 6px;
+        font-size: 0.7em;
+        color: #666;
+    }
+    @media (prefers-color-scheme: dark) {
+        .health-stats {
+            color: #aaa;
+        }
+    }
     </style>`);
     result.push(`
 <script>
+        async function loadHealthData(env, url) {
+            try {
+                const response = await fetch(url);
+                if (!response.ok) throw new Error('Failed to fetch health data');
+                const data = await response.json();
+                renderHealthViz(env, data);
+            } catch (err) {
+                console.error(\`Failed to load health data for \${env}:\`, err);
+                const container = document.getElementById(\`health-\${env}\`);
+                if (container) {
+                    container.innerHTML = '<div style="color: #ea4335;">⚠️ Failed to load health data</div>';
+                }
+            }
+        }
+
+        function renderHealthViz(env, data) {
+            const container = document.getElementById(\`health-\${env}\`);
+            if (!container) return;
+
+            const apps = Object.entries(data);
+            if (apps.length === 0) {
+                container.innerHTML = '<div>No health data available</div>';
+                return;
+            }
+
+            // Filter out all-healthy apps and sort alphabetically
+            const filteredApps = apps.filter(([_, appData]) => !appData.isHealthy);
+            filteredApps.sort((a, b) => {
+                const [nameA] = a;
+                const [nameB] = b;
+                return nameA.localeCompare(nameB);
+            });
+
+            if (filteredApps.length === 0) {
+                const totalApps = apps.length;
+                const healthyApps = apps.filter(([_, d]) => d.isHealthy).length;
+                container.innerHTML = \`<div style="color: #34a853; padding: 8px;">✓ All \${totalApps} apps are healthy!</div>\`;
+                return;
+            }
+
+            // Map transition count to intensity level (0-4)
+            const getIntensityLevel = (count) => {
+                if (count === 0) return 0;
+                if (count <= 3) return 1;
+                if (count <= 6) return 2;
+                if (count < 12) return 3;
+                return 4; // 12+ transitions
+            };
+
+            let html = '<div class="health-grid">';
+            for (const [appName, appData] of filteredApps) {
+                const title = \`\${appName}: \${appData.currentStatus || 'Unknown'} (\${appData.totalTransitions} samples)\`;
+
+                // Only render if there are states present
+                if (appData.statesPresent.length === 0) continue;
+
+                html += \`<div class="health-app-section">\`;
+                html += \`<div class="health-app-name" title="\${title}">\${appName}</div>\`;
+                html += \`<div class="health-state-bands">\`;
+
+                // Create a row for each state that has transitions
+                for (const state of appData.statesPresent) {
+                    const transitions = appData.stateTransitions[state];
+                    html += \`<div class="health-heatmap-row">\`;
+
+                    for (let hourIdx = 0; hourIdx < transitions.length; hourIdx++) {
+                        const count = transitions[hourIdx];
+                        const intensity = getIntensityLevel(count);
+                        const cellTitle = \`\${state}: \${count} transition\${count !== 1 ? 's' : ''}\`;
+
+                        html += \`<div class="health-cell \${state}-\${intensity}" title="\${cellTitle}"></div>\`;
+                    }
+
+                    html += \`</div>\`;
+                }
+
+                html += \`</div>\`; // Close health-state-bands
+                html += \`</div>\`; // Close health-app-section
+            }
+            html += '</div>';
+
+            // Add legend
+            html += '<div class="health-legend">';
+            html += '<div style="font-weight: 500; margin-right: 8px;">States:</div>';
+            html += '<div class="health-legend-item"><div class="health-legend-box" style="background: #66bb6a;"></div><span>Healthy</span></div>';
+            html += '<div class="health-legend-item"><div class="health-legend-box" style="background: #42a5f5;"></div><span>Progressing</span></div>';
+            html += '<div class="health-legend-item"><div class="health-legend-box" style="background: #ffd54f;"></div><span>Degraded</span></div>';
+            html += '<div class="health-legend-item"><div class="health-legend-box" style="background: #ff9800;"></div><span>Missing</span></div>';
+            html += '<div class="health-legend-item"><div class="health-legend-box" style="background: #f44336;"></div><span>Unknown</span></div>';
+            html += '</div>';
+
+            html += '<div class="health-legend" style="margin-top: 4px;">';
+            html += '<div style="font-weight: 500; margin-right: 8px;">Transitions/hour:</div>';
+            html += '<div class="health-legend-item"><div class="health-legend-box" style="background: #e8f5e9;"></div><span>0</span></div>';
+            html += '<div class="health-legend-item"><div class="health-legend-box" style="background: #a5d6a7;"></div><span>1-3</span></div>';
+            html += '<div class="health-legend-item"><div class="health-legend-box" style="background: #66bb6a;"></div><span>4-6</span></div>';
+            html += '<div class="health-legend-item"><div class="health-legend-box" style="background: #43a047;"></div><span>7-11</span></div>';
+            html += '<div class="health-legend-item"><div class="health-legend-box" style="background: #2e7d32;"></div><span>12+</span></div>';
+            html += '</div>';
+
+            // Add stats
+            const totalApps = apps.length;
+            const healthyApps = apps.filter(([_, d]) => d.isHealthy).length;
+            const stableApps = apps.filter(([_, d]) => d.isStable).length;
+            const displayedApps = filteredApps.filter(([_, d]) => d.statesPresent.length > 0).length;
+            html += \`<div class="health-stats">Apps: \${displayedApps}/\${totalApps} (hiding \${healthyApps} all-healthy) | Stable: \${stableApps} | 24h heatmap →</div>\`;
+
+            container.innerHTML = html;
+        }
+
         const showHint = (button, message, isError = false) => {
             const hint = document.createElement('div');
             hint.textContent = message;
@@ -246,6 +473,8 @@ export const cdRevisionGet = async (request, h) => {
             if (!(testName in (revision.tests || {})))
                 result.push(`<li>⛔ <code>${testName}</code> missing ${trigger(env, testName)}</li>`);
         for (const [testName, test] of Object.entries(revision.tests || {})) {
+            // if the test is not expected, skip it for the next section
+            if (![...requiredTests, ...optionalTests].includes(testName)) continue;
             const status = test.totalPassedAssertions == test.totalAssertions
                 ? '✅'
                 : requiredTests.includes(testName)
@@ -255,6 +484,26 @@ export const cdRevisionGet = async (request, h) => {
         }
         result.push('</ul>');
         result.push('</details>');
+        // Collapsed section for other tests
+        const otherTests = Object.entries(revision.tests || {}).filter(([testName]) => ![...requiredTests, ...optionalTests].includes(testName));
+        if (otherTests.length) {
+            result.push('<details><summary>Auxiliary Tests</summary>');
+            result.push('<ul>');
+            for (const [testName, test] of otherTests) {
+                const status = test.totalPassedAssertions == test.totalAssertions
+                    ? '✅'
+                    : '⚠️';
+                result.push(`<li>${status} ${test.report ? `<a href="${test.report}" target="_blank">${testName}</a>` : `${testName}`} failed <code>${((test.totalAssertions || 0) - (test.totalPassedAssertions || 0))}/${test.totalAssertions || 0}, ⌛ ${formatTime(test.duration)}</code></li>`);
+            }
+            result.push('</ul>');
+            result.push('</details>');
+        }
+
+        result.push('<details open><summary>App Health (24h)</summary>');
+        result.push(`<div class="health-viz" id="health-${env}">Loading...</div>`);
+        result.push(`<script>loadHealthData('${env}', '${config.env[env]}/app');</script>`);
+        result.push('</details>');
+
         result.push('</div>'); // Close env-card
     }
     result.push('</div>'); // Close env-container
