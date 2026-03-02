@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.5.3](https://github.com/infitx-org/release-cd/compare/match-v1.5.2...match-v1.5.3) (2026-03-02)
+
+
+### Bug Fixes
+
+* publish definitions ([b0534e0](https://github.com/infitx-org/release-cd/commit/b0534e05cf2fa5b9f7baee07c109bb3775dd38cd))
+
 ## [1.5.2](https://github.com/infitx-org/release-cd/compare/match-v1.5.1...match-v1.5.2) (2026-02-26)
 
 
