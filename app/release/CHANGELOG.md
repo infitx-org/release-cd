@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.48.1](https://github.com/infitx-org/release-cd/compare/release-v1.48.0...release-v1.48.1) (2026-03-11)
+
+
+### Bug Fixes
+
+* handle skipped tests ([4a350dc](https://github.com/infitx-org/release-cd/commit/4a350dc6c240229da60249349c3b420c321d241f))
+
 ## [1.48.0](https://github.com/infitx-org/release-cd/compare/release-v1.47.2...release-v1.48.0) (2026-02-27)
 
 
