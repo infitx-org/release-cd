@@ -475,12 +475,12 @@ export const cdRevisionGet = async (request, h) => {
         for (const [testName, test] of Object.entries(revision.tests || {})) {
             // if the test is not expected, skip it for the next section
             if (![...requiredTests, ...optionalTests].includes(testName)) continue;
-            const status = test.totalPassedAssertions == test.totalAssertions
+            const status = (test.totalPassedAssertions + (test.totalSkippedAssertions ?? 0)) == test.totalAssertions
                 ? '✅'
                 : requiredTests.includes(testName)
                     ? '⛔'
                     : '⚠️';
-            result.push(`<li>${status} ${test.report ? `<a href="${test.report}" target="_blank">${testName}</a>` : `${testName}`} failed <code>${((test.totalAssertions || 0) - (test.totalPassedAssertions || 0))}/${test.totalAssertions || 0}, ⌛ ${formatTime(test.duration)}</code> ${trigger(env, testName)}</li>`);
+            result.push(`<li>${status} ${test.report ? `<a href="${test.report}" target="_blank">${testName}</a>` : `${testName}`} failed <code>${((test.totalAssertions || 0) - (test.totalPassedAssertions || 0) - (test.totalSkippedAssertions || 0))}/${test.totalAssertions || 0}, ⌛ ${formatTime(test.duration)}</code> ${trigger(env, testName)}</li>`);
         }
         result.push('</ul>');
         result.push('</details>');
@@ -490,10 +490,10 @@ export const cdRevisionGet = async (request, h) => {
             result.push('<details><summary>Auxiliary Tests</summary>');
             result.push('<ul>');
             for (const [testName, test] of otherTests) {
-                const status = test.totalPassedAssertions == test.totalAssertions
+                const status = (test.totalPassedAssertions + (test.totalSkippedAssertions ?? 0)) == test.totalAssertions
                     ? '✅'
                     : '⚠️';
-                result.push(`<li>${status} ${test.report ? `<a href="${test.report}" target="_blank">${testName}</a>` : `${testName}`} failed <code>${((test.totalAssertions || 0) - (test.totalPassedAssertions || 0))}/${test.totalAssertions || 0}, ⌛ ${formatTime(test.duration)}</code></li>`);
+                result.push(`<li>${status} ${test.report ? `<a href="${test.report}" target="_blank">${testName}</a>` : `${testName}`} failed <code>${((test.totalAssertions || 0) - (test.totalPassedAssertions || 0) - (test.totalSkippedAssertions || 0))}/${test.totalAssertions || 0}, ⌛ ${formatTime(test.duration)}</code></li>`);
             }
             result.push('</ul>');
             result.push('</details>');

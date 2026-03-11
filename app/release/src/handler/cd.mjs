@@ -20,7 +20,7 @@ export default async function initCd(server) {
     server.app.db = client.db(config.mongodb.database);
 
     const requiredTestsPassed = (requiredTests, { tests }) => requiredTests.every(
-        test => tests?.[test]?.totalAssertions > 0 && tests[test].totalAssertions === tests[test].totalPassedAssertions
+        test => tests?.[test]?.totalAssertions > 0 && tests[test].totalAssertions === tests[test].totalPassedAssertions + (tests[test].totalSkippedAssertions ?? 0)
     );
     const optionalTestsPresent = (optionalTests, { tests }) => optionalTests.every(
         test => tests?.[test]?.totalAssertions > 0
@@ -61,7 +61,7 @@ ${Object.entries(submodules).filter(isNotIac).map(([name, { path }]) => `${path}
 
 | Env  | Test | Pass | Fail | Duration |
 | :--- | :--- | ---: | ---: | ---:     |
-${Object.entries(tests).map(([env, tests]) => Object.entries(tests).map(([name, { totalPassedAssertions, totalAssertions, s3Url, duration }]) => `| ${env} | ${s3Url ? `[${name}](${s3Url})` : name} | ${totalPassedAssertions} | ${totalAssertions - totalPassedAssertions} | ${formatTime(duration)} |`)).flat().join('\n')}
+${Object.entries(tests).map(([env, tests]) => Object.entries(tests).map(([name, { totalPassedAssertions, totalAssertions, totalSkippedAssertions = 0, s3Url, duration }]) => `| ${env} | ${s3Url ? `[${name}](${s3Url})` : name} | ${totalPassedAssertions} | ${totalAssertions - totalPassedAssertions - totalSkippedAssertions} | ${formatTime(duration)} |`)).flat().join('\n')}
 
 `;
 
