@@ -28,6 +28,9 @@ export default rc('dev', {
     prometheus: {
         url: 'http://prom-kube-prometheus-stack-prometheus.monitoring.svc.cluster.local:9090'
     },
+    tempo: {
+        url: 'http://central-tempo-query-frontend.monitoring.svc.cluster.local:3200'
+    },
     rule: {
         environments: {
             // 'region-dev': {

@@ -18,6 +18,7 @@ import reboot from './handler/reboot.mjs';
 import reonboard from './handler/reonboard.mjs';
 import report from './handler/report.mjs';
 import { cdRevisionGet } from './handler/revision.mjs';
+import traces from './handler/trace.mjs';
 import triggerCronJob from './handler/triggerJob.mjs';
 import triggerRuleHandler from './handler/triggerRule.mjs';
 
@@ -121,6 +122,13 @@ const init = async () => {
             const result = await getDfspState(id)
             return h.response(result);
         }
+    });
+
+    server.route({
+        options: config.server.get,
+        method: 'GET',
+        path: '/traces',
+        handler: traces
     });
 
     server.route({
