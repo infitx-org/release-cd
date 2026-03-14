@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.4](https://github.com/infitx-org/release-cd/compare/decision-v1.4.3...decision-v1.4.4) (2026-03-14)
+
+
+### Bug Fixes
+
+* update build workflow and add allure configuration files ([169bdb8](https://github.com/infitx-org/release-cd/commit/169bdb80a48041b40dcd2a54206c76bd2fe8d900))
+
 ## [1.4.3](https://github.com/infitx-org/release-cd/compare/decision-v1.4.2...decision-v1.4.3) (2026-03-02)
 
 

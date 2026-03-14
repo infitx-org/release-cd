@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.49.0](https://github.com/infitx-org/release-cd/compare/release-v1.48.1...release-v1.49.0) (2026-03-14)
+
+
+### Features
+
+* add trace handler and route for trace aggregation ([184a9ae](https://github.com/infitx-org/release-cd/commit/184a9ae02c6ec1ae9f919784e2b7ae7620c778a4))
+
 ## [1.48.1](https://github.com/infitx-org/release-cd/compare/release-v1.48.0...release-v1.48.1) (2026-03-11)
 
 
