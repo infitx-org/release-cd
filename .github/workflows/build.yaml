@@ -8,13 +8,16 @@ on:
 jobs:
   build:
     uses: infitx-org/actions/.github/workflows/rush.yaml@main
+    secrets:
+      REPORT_TOKEN: ${{ secrets.REPORT_TOKEN }}
+      HISTORY_TOKEN: ${{ secrets.HISTORY_TOKEN }}
 
   changes:
     runs-on: ubuntu-latest
     outputs:
       james: ${{ steps.filter.outputs.james }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: dorny/paths-filter@v3
         id: filter
         with:
