@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.5.4](https://github.com/infitx-org/release-cd/compare/match-v1.5.3...match-v1.5.4) (2026-03-14)
+
+
+### Bug Fixes
+
+* update build workflow and add allure configuration files ([169bdb8](https://github.com/infitx-org/release-cd/commit/169bdb80a48041b40dcd2a54206c76bd2fe8d900))
+
 ## [1.5.3](https://github.com/infitx-org/release-cd/compare/match-v1.5.2...match-v1.5.3) (2026-03-02)
 
 

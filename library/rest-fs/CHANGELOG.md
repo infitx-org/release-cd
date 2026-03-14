@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.0](https://github.com/infitx-org/release-cd/compare/rest-fs-v1.2.4...rest-fs-v1.3.0) (2026-03-14)
+
+
+### Features
+
+* add allure configuration file for history tracking ([20001dc](https://github.com/infitx-org/release-cd/commit/20001dca564d2d5df0f4637ed72259da0fc07d75))
+
 ## [1.2.4](https://github.com/infitx-org/release-cd/compare/rest-fs-v1.2.3...rest-fs-v1.2.4) (2026-02-26)
 
 
