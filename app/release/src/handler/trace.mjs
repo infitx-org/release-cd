@@ -196,7 +196,7 @@ export default async function traces(request, h) {
         since,
         limit = 20,
         spanFilter,
-        groupBy = 'k8s.cluster.name,service.name,db.operation|db.statement|messaging.operation.name|http.method,db.sql.table|messaging.destination.name|http.route|http.target',
+        groupBy = 'k8s.cluster.name,service.name,db.operation|db.statement|messaging.operation.name|http.method,db.sql.table|db.name|messaging.destination.name|http.route|http.target',
         aggregation = 'total,avg,p95',
         format = 'html',
     } = request.query;
@@ -344,7 +344,7 @@ code { background: #f0f0f0; padding: 1px 4px; border-radius: 3px; font-size: 0.8
 .chart-box { width: 100%; height: 1000px; background: white; border: 1px solid #ddd; border-radius: 8px;
              box-shadow: 0 2px 4px rgba(0,0,0,0.08); overflow: hidden; margin-bottom: 4px; }
 table { border-collapse: collapse; width: 100%; background: white; border: 1px solid #ddd; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.08); }
-th { background: #0066cc; color: white; padding: 10px 14px; text-align: left; font-size: 0.82em; text-transform: uppercase; letter-spacing: 0.05em; white-space: nowrap; }
+th { background: #0066cc; color: white; padding: 10px 14px; text-align: left; font-size: 0.82em; text-transform: uppercase; letter-spacing: 0.05em; white-space: pre-wrap; }
 th.num { text-align: right; }
 td { padding: 8px 14px; font-size: 0.9em; border-bottom: 1px solid #eee; white-space: nowrap; }
 tr:last-child td { border-bottom: none; }
