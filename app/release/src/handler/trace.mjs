@@ -29,21 +29,31 @@ function buildAttrMap(attributes = []) {
 
 function extractSpans(trace) {
     const spans = [];
+    const parentAttrs = new Map();
+    const parents = new Set();
     for (const batch of trace.batches ?? []) {
         const resourceAttrs = buildAttrMap(batch.resource?.attributes);
         for (const libSpans of batch.scopeSpans ?? []) {
             for (const span of libSpans.spans ?? []) {
+                const spanAttrs = buildAttrMap(span.attributes);
+                parentAttrs.set(span.spanId, spanAttrs);
+                parents.add(span.parentSpanId);
                 spans.push({
                     name: span.name,
+                    spanId: span.spanId,
+                    parentId: span.parentSpanId,
                     startTimeUnixNano: span.startTimeUnixNano,
                     endTimeUnixNano: span.endTimeUnixNano,
                     _resourceAttrs: resourceAttrs,
-                    _spanAttrs: buildAttrMap(span.attributes),
+                    _spanAttrs: spanAttrs,
                 });
             }
         }
     }
-    return spans;
+    return spans.map(span => !parents.has(span.spanId) && {
+        ...span,
+        _spanAttrs: { ...parentAttrs.get(span.parentId), ...span._spanAttrs },
+    }); // keep only root spans to avoid double-counting durations in parent-child overlaps
 }
 
 function spanMatchesFilter(span, filter) {
@@ -61,10 +71,7 @@ function spanMatchesFilter(span, filter) {
 }
 
 function getGroupKey(span, groupBy) {
-    return groupBy.map(attr => {
-        const val = span._spanAttrs[attr] ?? span._resourceAttrs[attr];
-        return val !== undefined ? String(val) : '(none)';
-    }).join(' | ');
+    return groupBy.map(attr => getAttrValue(span, attr)).join(' | ');
 }
 
 function spanDurationMs(span) {
@@ -73,6 +80,10 @@ function spanDurationMs(span) {
 
 function round2(n) {
     return Math.round(n * 100) / 100;
+}
+
+function round(n) {
+    return Math.round(n);
 }
 
 function computeAggregations(durations, aggregations) {
@@ -108,7 +119,7 @@ function aggregateSpans(spans, groupBy, aggregations) {
         if (!groups[key]) {
             const attrs = {};
             for (const attr of groupBy) {
-                attrs[attr] = span._spanAttrs[attr] ?? span._resourceAttrs[attr] ?? null;
+                attrs[attr] = getAttrValue(span, attr);
             }
             groups[key] = { key, attrs, durations: [] };
         }
@@ -126,29 +137,45 @@ function aggregateSpans(spans, groupBy, aggregations) {
         .sort((a, b) => (b[primaryField] ?? 0) - (a[primaryField] ?? 0));
 }
 
+// split alphanumeric words and mask the ones containing digits
+const maskAlphanumericWords = string => string.split(/(\W+)/).map(word => /\d/.test(word) ? '***' : word).join('');
+
+const getAttrValue = (span, key, emptyValue = '(none)') => {
+    key = key.split('|')
+        .map(s => s.trim())
+        .filter(Boolean);
+    for (const k of key) {
+        const val = span._spanAttrs[k] ?? span._resourceAttrs[k];
+        if (val !== undefined) return `${k}=${maskAlphanumericWords(String(val))}`;
+    }
+    return emptyValue;
+}
+
 // Build [src, tgt, totalMs] rows for a Sankey across consecutive groupBy layers.
 // Each span contributes its duration to every adjacent-layer pair it belongs to.
 function buildSankeyLinks(spans, groupByKeys) {
     if (groupByKeys.length < 2) return [];
     const linkTotals = new Map();
+    const srcTotals = new Map();
+    const tgtTotals = new Map();
     for (const span of spans) {
         const duration = spanDurationMs(span);
         for (let i = 0; i < groupByKeys.length - 1; i++) {
             const srcAttr = groupByKeys[i];
             const tgtAttr = groupByKeys[i + 1];
-            const srcVal = span._spanAttrs[srcAttr] ?? span._resourceAttrs[srcAttr];
-            const tgtVal = span._spanAttrs[tgtAttr] ?? span._resourceAttrs[tgtAttr];
-            const src = `${srcAttr}=${srcVal !== undefined ? srcVal : '(none)'}`;
-            const tgt = `${tgtAttr}=${tgtVal !== undefined ? tgtVal : '(none)'}`;
+            const src = getAttrValue(span, srcAttr, `(none) ${i}`);
+            const tgt = getAttrValue(span, tgtAttr, `(none) ${i + 1}`);
             if (src === tgt) continue; // skip degenerate self-loops
             const key = `${src}\x00${tgt}`;
             linkTotals.set(key, (linkTotals.get(key) ?? 0) + duration);
+            srcTotals.set(src, (srcTotals.get(src) ?? 0) + duration);
+            tgtTotals.set(tgt, (tgtTotals.get(tgt) ?? 0) + duration);
         }
     }
     return Array.from(linkTotals.entries())
         .map(([key, total]) => {
             const sep = key.indexOf('\x00');
-            return [key.slice(0, sep), key.slice(sep + 1), round2(total)];
+            return [`${key.slice(0, sep)} (${round(srcTotals.get(key.slice(0, sep)) ?? 0)}ms)`, `${key.slice(sep + 1)} (${round(tgtTotals.get(key.slice(sep + 1)) ?? 0)}ms)`, round2(total)];
         })
         .filter(l => l[2] > 0)
         .sort((a, b) => b[2] - a[2])
@@ -167,9 +194,9 @@ export default async function traces(request, h) {
         since,
         limit = 20,
         spanFilter,
-        groupBy,
-        aggregation = 'avg',
-        format = 'json',
+        groupBy = 'db.operation|http.method|messaging.operation.name,db.sql.table|messaging.destination.name|http.route|http.target,k8s.cluster.name',
+        aggregation = 'total,avg,p95',
+        format = 'html',
     } = request.query;
     let traceIds = request.query.trace;
 
@@ -225,13 +252,15 @@ export default async function traces(request, h) {
             allSpans.push(...extractSpans(r.data));
         }
     }
+    const totalSpans = allSpans.length;
 
-    const matchingSpans = allSpans.filter(s => spanMatchesFilter(s, parsedFilter));
+    const matchingSpans = allSpans.filter(s => s && spanMatchesFilter(s, parsedFilter));
     const rows = aggregateSpans(matchingSpans, groupByKeys, aggregations);
 
     const result = {
         traces: traceIds.length,
         matchingSpans: matchingSpans.length,
+        totalSpans: totalSpans,
         rows,
         sankeyLinks: buildSankeyLinks(matchingSpans, groupByKeys),
     };
@@ -252,7 +281,7 @@ function escapeHtml(str) {
 
 function renderHtml(result, groupByKeys, aggregations, params) {
     const headers = [
-        ...groupByKeys,
+        ...groupByKeys.map(k => k.replace(/\|/g, ' / ')),
         'Count',
         ...aggregations.map(a => AGG_LABELS[a]),
     ];
@@ -264,6 +293,7 @@ function renderHtml(result, groupByKeys, aggregations, params) {
 
     const metaParts = [
         `Traces: <strong>${result.traces}</strong>`,
+        `Total spans: <strong>${result.totalSpans}</strong>`,
         `Matching spans: <strong>${result.matchingSpans}</strong>`,
         `Groups: <strong>${result.rows.length}</strong>`,
     ];
@@ -342,7 +372,7 @@ function buildSankeyScript(sankeyLinks, groupByKeys) {
     }
     const palette = ['#1a73e8', '#ea8600', '#0f9d58', '#a142f4', '#d93025', '#007b83'];
     const nodeColors = seenNodes.map(n => {
-        const idx = groupByKeys.findIndex(k => n.startsWith(`${k}=`));
+        const idx = groupByKeys.findIndex(k => k.split('|').some(part => n.startsWith(`${part}=`)));
         return palette[Math.max(0, idx) % palette.length];
     });
 
