@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.50.3](https://github.com/infitx-org/release-cd/compare/release-v1.50.2...release-v1.50.3) (2026-03-16)
+
+
+### Bug Fixes
+
+* update groupBy parameter to include service name for improved trace grouping ([fc76896](https://github.com/infitx-org/release-cd/commit/fc76896ec394b6ac7e7adab3a1b806c35fb1ba90))
+
 ## [1.50.2](https://github.com/infitx-org/release-cd/compare/release-v1.50.1...release-v1.50.2) (2026-03-16)
 
 
