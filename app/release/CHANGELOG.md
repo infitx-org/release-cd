@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.50.4](https://github.com/infitx-org/release-cd/compare/release-v1.50.3...release-v1.50.4) (2026-03-16)
+
+
+### Bug Fixes
+
+* update groupBy parameter to include db.name for enhanced trace grouping ([7512b33](https://github.com/infitx-org/release-cd/commit/7512b331fd1e7de7f4610bc5329632e8fc586b73))
+
 ## [1.50.3](https://github.com/infitx-org/release-cd/compare/release-v1.50.2...release-v1.50.3) (2026-03-16)
 
 
