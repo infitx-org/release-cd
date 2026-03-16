@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.50.1](https://github.com/infitx-org/release-cd/compare/release-v1.50.0...release-v1.50.1) (2026-03-16)
+
+
+### Bug Fixes
+
+* update groupBy parameter for improved span filtering and add '/traces' to masked routes ([ed58bab](https://github.com/infitx-org/release-cd/commit/ed58bab0cdf4c145bec6488bd19c6d15d112df2c))
+
 ## [1.50.0](https://github.com/infitx-org/release-cd/compare/release-v1.49.0...release-v1.50.0) (2026-03-16)
 
 
