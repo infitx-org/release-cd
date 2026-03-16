@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.50.2](https://github.com/infitx-org/release-cd/compare/release-v1.50.1...release-v1.50.2) (2026-03-16)
+
+
+### Bug Fixes
+
+* refine span duration calculation and adjust groupBy parameters for better trace representation ([2a228e7](https://github.com/infitx-org/release-cd/commit/2a228e77ac8df8f29677c232c9994a5ed37e387a))
+
 ## [1.50.1](https://github.com/infitx-org/release-cd/compare/release-v1.50.0...release-v1.50.1) (2026-03-16)
 
 
