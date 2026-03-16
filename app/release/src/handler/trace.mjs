@@ -294,7 +294,7 @@ function renderHtml(result, groupByKeys, aggregations, params) {
     const metaParts = [
         `Traces: <strong>${result.traces}</strong>`,
         `Total spans: <strong>${result.totalSpans}</strong>`,
-        `Matching spans: <strong>${result.matchingSpans}</strong>`,
+        `Matching leaf spans: <strong>${result.matchingSpans}</strong>`,
         `Groups: <strong>${result.rows.length}</strong>`,
     ];
     if (params.q && params.q !== '{}') metaParts.push(`Query: <code>${escapeHtml(params.q)}</code>`);
