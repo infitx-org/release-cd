@@ -37,7 +37,9 @@ function extractSpans(trace) {
             for (const span of libSpans.spans ?? []) {
                 const spanAttrs = buildAttrMap(span.attributes);
                 parentAttrs.set(span.spanId, spanAttrs);
-                parents.add(span.parentSpanId);
+                // consuming spans are not really included in the duration of their producer
+                if (!['consume', 'receive'].includes(spanAttrs['messaging.operation.name']))
+                    parents.add(span.parentSpanId);
                 spans.push({
                     name: span.name,
                     spanId: span.spanId,
@@ -145,6 +147,7 @@ const getAttrValue = (span, key, emptyValue = '(none)') => {
         .map(s => s.trim())
         .filter(Boolean);
     for (const k of key) {
+        if (k === 'db.statement' && span._spanAttrs['db.system'] === 'redis') return 'db.system=redis'; // avoid showing full Redis commands
         const val = span._spanAttrs[k] ?? span._resourceAttrs[k];
         if (val !== undefined) return `${k}=${maskAlphanumericWords(String(val))}`;
     }
@@ -178,7 +181,6 @@ function buildSankeyLinks(spans, groupByKeys) {
             return [`${key.slice(0, sep)} (${round(srcTotals.get(key.slice(0, sep)) ?? 0)}ms)`, `${key.slice(sep + 1)} (${round(tgtTotals.get(key.slice(sep + 1)) ?? 0)}ms)`, round2(total)];
         })
         .filter(l => l[2] > 0)
-        .sort((a, b) => b[2] - a[2])
 }
 
 export default async function traces(request, h) {
@@ -194,7 +196,7 @@ export default async function traces(request, h) {
         since,
         limit = 20,
         spanFilter,
-        groupBy = 'db.operation|messaging.operation.name|http.method,db.sql.table|messaging.destination.name|http.route|http.target,k8s.cluster.name',
+        groupBy = 'k8s.cluster.name,db.operation|db.statement|messaging.operation.name|http.method,db.sql.table|messaging.destination.name|http.route|http.target',
         aggregation = 'total,avg,p95',
         format = 'html',
     } = request.query;
