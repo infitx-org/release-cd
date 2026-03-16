@@ -27,7 +27,7 @@ const init = async () => {
         port: config.server.port,
         host: config.server.host
     });
-    const masked = ['/app', '/', '/report/{key*}'];
+    const masked = ['/app', '/', '/report/{key*}', '/traces'];
 
     server.auth.scheme('authorization-header', () => {
         return {
