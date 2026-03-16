@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.50.0](https://github.com/infitx-org/release-cd/compare/release-v1.49.0...release-v1.50.0) (2026-03-16)
+
+
+### Features
+
+* enhance span extraction and aggregation logic for improved trace analysis ([e16f166](https://github.com/infitx-org/release-cd/commit/e16f1669dbf9601aa1f96da597b720c2edafccf7))
+
+
+### Bug Fixes
+
+* clarify renderHtml output by renaming 'Matching spans' to 'Matching leaf spans' ([53a4b4d](https://github.com/infitx-org/release-cd/commit/53a4b4d3e046e86df886efcae1e4ce40f32f1038))
+
 ## [1.49.0](https://github.com/infitx-org/release-cd/compare/release-v1.48.1...release-v1.49.0) (2026-03-14)
 
 
