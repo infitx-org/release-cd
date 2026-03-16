@@ -196,7 +196,7 @@ export default async function traces(request, h) {
         since,
         limit = 20,
         spanFilter,
-        groupBy = 'k8s.cluster.name,db.operation|db.statement|messaging.operation.name|http.method,db.sql.table|messaging.destination.name|http.route|http.target',
+        groupBy = 'k8s.cluster.name,service.name,db.operation|db.statement|messaging.operation.name|http.method,db.sql.table|messaging.destination.name|http.route|http.target',
         aggregation = 'total,avg,p95',
         format = 'html',
     } = request.query;
