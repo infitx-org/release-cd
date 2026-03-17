@@ -33,7 +33,7 @@ function extractSpans(trace) {
     const parents = new Set();
     for (const batch of trace.batches ?? []) {
         const resourceAttrs = buildAttrMap(batch.resource?.attributes);
-        for (const libSpans of batch.scopeSpans ?? []) {
+        for (const libSpans of batch.scopeSpans ?? batch.instrumentationLibrarySpans ?? []) {
             for (const span of libSpans.spans ?? []) {
                 const spanAttrs = buildAttrMap(span.attributes);
                 parentAttrs.set(span.spanId, spanAttrs);
@@ -147,7 +147,7 @@ const getAttrValue = (span, key, emptyValue = '(none)') => {
         .map(s => s.trim())
         .filter(Boolean);
     for (const k of key) {
-        if (k === 'db.statement' && span._spanAttrs['db.system'] === 'redis') return 'db.system=redis'; // avoid showing full Redis commands
+        if (k === 'db.statement' && span._spanAttrs['db.system'] === 'redis') return 'db.statement=redis'; // avoid showing full Redis commands
         const val = span._spanAttrs[k] ?? span._resourceAttrs[k];
         if (val !== undefined) return `${k}=${maskAlphanumericWords(String(val))}`;
     }
@@ -183,11 +183,11 @@ function buildSankeyLinks(spans, groupByKeys) {
         .filter(l => l[2] > 0)
 }
 
+const DEFAULT_GROUP_BY = 'k8s.cluster.name,service.name,db.operation|db.statement|messaging.operation.name|http.method,db.sql.table|db.name|messaging.destination.name|http.route|http.target';
+const DEFAULT_AGGREGATION = 'total,avg,p95';
+
 export default async function traces(request, h) {
     const tempoUrl = config.tempo?.url;
-    if (!tempoUrl) {
-        throw Boom.serverUnavailable('tempo.url is not configured');
-    }
 
     const {
         q = '{}',
@@ -196,11 +196,21 @@ export default async function traces(request, h) {
         since,
         limit = 20,
         spanFilter,
-        groupBy = 'k8s.cluster.name,service.name,db.operation|db.statement|messaging.operation.name|http.method,db.sql.table|db.name|messaging.destination.name|http.route|http.target',
-        aggregation = 'total,avg,p95',
+        groupBy = DEFAULT_GROUP_BY,
+        aggregation = DEFAULT_AGGREGATION,
         format = 'html',
     } = request.query;
     let traceIds = request.query.trace;
+
+    const isUpload = request.method === 'post' && request.payload != null;
+    const hasParams = isUpload || traceIds || since || start || end || (request.query.q && request.query.q !== '{}');
+
+    if (!hasParams) {
+        if (format === 'html') {
+            return h.response(renderFormOnlyHtml({ groupBy, aggregation, q, since, limit, spanFilter })).code(200).type('text/html');
+        }
+        return h.response({ error: 'Provide trace, since, start/end, or upload a trace file' }).code(400);
+    }
 
     if (!groupBy) {
         throw Boom.badRequest('groupBy is required (comma-separated attribute keys, e.g. db.sql.table,db.operation)');
@@ -222,45 +232,59 @@ export default async function traces(request, h) {
         }
     }
 
-    // Build Tempo search params
-    const searchParams = { q, limit: Number(limit) };
-    if (since) {
-        const seconds = parseSince(since);
-        const now = Math.floor(Date.now() / 1000);
-        searchParams.start = now - seconds;
-        searchParams.end = now;
-    } else {
-        if (start) searchParams.start = Number(start);
-        if (end) searchParams.end = Number(end);
-    }
-
-    // Search for matching traces
-    if (!traceIds) {
-        const searchResponse = await axios.get(`${tempoUrl}/api/search`, { params: searchParams });
-        traceIds = (searchResponse.data.traces ?? []).map(t => t.traceID);
-    } else {
-        traceIds = traceIds.split(',').map(s => s.trim()).filter(Boolean);
-    }
-
-    // Fetch full traces with limited concurrency to avoid overloading Tempo
-    const CONCURRENCY = 1;
     const allSpans = [];
-    for (let i = 0; i < traceIds.length; i += CONCURRENCY) {
-        const batch = traceIds.slice(i, i + CONCURRENCY);
-        const responses = await Promise.all(
-            batch.map(id => axios.get(`${tempoUrl}/api/traces/${id}`))
-        );
-        for (const r of responses) {
-            allSpans.push(...extractSpans(r.data));
+    let traceCount = 0;
+
+    if (isUpload) {
+        // Process uploaded trace JSON directly — no Tempo needed
+        allSpans.push(...extractSpans(request.payload));
+        traceCount = 1;
+    } else {
+        if (!tempoUrl) {
+            throw Boom.serverUnavailable('tempo.url is not configured. Provide an explicit trace ID or upload a trace file.');
+        }
+
+        // Build Tempo search params
+        const searchParams = { q, limit: Number(limit) };
+        if (since) {
+            const seconds = parseSince(since);
+            const now = Math.floor(Date.now() / 1000);
+            searchParams.start = now - seconds;
+            searchParams.end = now;
+        } else {
+            if (start) searchParams.start = Number(start);
+            if (end) searchParams.end = Number(end);
+        }
+
+        // Search for matching traces
+        if (!traceIds) {
+            const searchResponse = await axios.get(`${tempoUrl}/api/search`, { params: searchParams });
+            traceIds = (searchResponse.data.traces ?? []).map(t => t.traceID);
+        } else {
+            traceIds = traceIds.split(',').map(s => s.trim()).filter(Boolean);
+        }
+
+        traceCount = traceIds.length;
+
+        // Fetch full traces with limited concurrency to avoid overloading Tempo
+        const CONCURRENCY = 1;
+        for (let i = 0; i < traceIds.length; i += CONCURRENCY) {
+            const batch = traceIds.slice(i, i + CONCURRENCY);
+            const responses = await Promise.all(
+                batch.map(id => axios.get(`${tempoUrl}/api/traces/${id}`))
+            );
+            for (const r of responses) {
+                allSpans.push(...extractSpans(r.data));
+            }
         }
     }
-    const totalSpans = allSpans.length;
 
+    const totalSpans = allSpans.length;
     const matchingSpans = allSpans.filter(s => s && spanMatchesFilter(s, parsedFilter));
     const rows = aggregateSpans(matchingSpans, groupByKeys, aggregations);
 
     const result = {
-        traces: traceIds.length,
+        traces: traceCount,
         matchingSpans: matchingSpans.length,
         totalSpans: totalSpans,
         rows,
@@ -280,6 +304,128 @@ function escapeHtml(str) {
         .replace(/>/g, '&gt;')
         .replace(/"/g, '&quot;');
 }
+
+function buildFormHtml(params = {}, collapsed = false) {
+    const v = k => escapeHtml(String(params[k] ?? ''));
+    const groupBy = v('groupBy') || escapeHtml(DEFAULT_GROUP_BY);
+    const aggregation = v('aggregation') || escapeHtml(DEFAULT_AGGREGATION);
+    return `
+<details class="trace-form-wrap"${collapsed ? '' : ' open'}>
+  <summary class="trace-form-toggle">&#9881; Query / Upload</summary>
+  <form id="traceForm" class="trace-form">
+    <div class="form-row">
+      <label class="form-label">Trace ID(s)
+        <input class="form-input" name="trace" type="text" value="${v('trace')}" placeholder="comma-separated trace IDs">
+      </label>
+      <span class="form-or">or</span>
+      <label class="form-label">Upload trace file (.json)
+        <input class="form-input" type="file" id="traceFile" accept=".json">
+      </label>
+    </div>
+    <div class="form-row">
+      <label class="form-label">Group by
+        <input class="form-input form-input--wide" name="groupBy" type="text" value="${groupBy}">
+      </label>
+      <label class="form-label">Aggregation
+        <input class="form-input" name="aggregation" type="text" value="${aggregation}">
+      </label>
+    </div>
+    <details class="form-advanced">
+      <summary>Advanced</summary>
+      <div class="form-row form-row--advanced">
+        <label class="form-label">TraceQL query <input class="form-input" name="q" type="text" value="${v('q')}" placeholder="{}"></label>
+        <label class="form-label">Since        <input class="form-input form-input--sm" name="since" type="text" value="${v('since')}" placeholder="e.g. 1h, 30m"></label>
+        <label class="form-label">Limit        <input class="form-input form-input--sm" name="limit" type="number" value="${v('limit') || '20'}" min="1"></label>
+        <label class="form-label">Span filter  <input class="form-input" name="spanFilter" type="text" value="${v('spanFilter')}" placeholder='{"db.system":"mysql"}'></label>
+      </div>
+    </details>
+    <div class="form-actions">
+      <button class="form-btn" type="submit">Analyze</button>
+      <span id="form-status" class="form-status"></span>
+    </div>
+  </form>
+</details>
+<script>
+(function () {
+  var form = document.getElementById('traceForm');
+  form.addEventListener('submit', async function (e) {
+    e.preventDefault();
+    var file = document.getElementById('traceFile').files[0];
+    var params = new URLSearchParams();
+    ['groupBy', 'aggregation', 'q', 'since', 'limit', 'spanFilter'].forEach(function (n) {
+      var el = form.querySelector('[name="' + n + '"]');
+      if (el && el.value && el.value !== '{}') params.set(n, el.value);
+    });
+    var status = document.getElementById('form-status');
+    if (file) {
+      status.textContent = 'Reading file\u2026';
+      try {
+        var text = await file.text();
+        status.textContent = 'Uploading\u2026';
+        var resp = await fetch('/traces?' + params, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: text
+        });
+        var html = await resp.text();
+        document.open();
+        document.write(html);
+        document.close();
+      } catch (err) {
+        status.textContent = 'Error: ' + err.message;
+      }
+    } else {
+      var trace = form.querySelector('[name="trace"]').value.trim();
+      if (trace) params.set('trace', trace);
+      if (!trace && !params.get('since') && !params.get('q')) {
+        alert('Enter a trace ID, a "since" value, a TraceQL query, or upload a file.');
+        return;
+      }
+      window.location.href = '/traces?' + params;
+    }
+  });
+}());
+</script>`;
+}
+
+function renderFormOnlyHtml(params) {
+    return `<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Trace Span Aggregation</title>
+<style>
+* { box-sizing: border-box; }
+body { font-family: sans-serif; background: #f9f9f9; color: #222; margin: 0; padding: 20px; }
+h1 { margin: 0 0 16px 0; }
+${FORM_CSS}
+</style>
+</head>
+<body>
+<h1>Trace Span Aggregation</h1>
+${buildFormHtml(params, false)}
+</body>
+</html>`;
+}
+
+const FORM_CSS = `
+.trace-form-wrap { background: white; border: 1px solid #ddd; border-radius: 8px; padding: 12px 16px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.06); }
+.trace-form-toggle { cursor: pointer; font-weight: 600; font-size: 0.95em; color: #444; user-select: none; }
+.trace-form { margin-top: 12px; }
+.form-row { display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-end; margin-bottom: 10px; }
+.form-row--advanced { margin-top: 8px; }
+.form-label { display: flex; flex-direction: column; font-size: 0.8em; color: #555; font-weight: 600; gap: 3px; }
+.form-input { font-size: 0.9rem; padding: 5px 8px; border: 1px solid #ccc; border-radius: 4px; background: #fafafa; min-width: 180px; }
+.form-input--wide { min-width: 340px; }
+.form-input--sm { min-width: 90px; }
+.form-or { font-size: 0.85em; color: #888; align-self: center; margin: 0 4px; }
+.form-advanced { margin-top: 6px; font-size: 0.85em; color: #666; }
+.form-advanced summary { cursor: pointer; }
+.form-actions { margin-top: 10px; display: flex; align-items: center; gap: 12px; }
+.form-btn { background: #0066cc; color: white; border: none; border-radius: 4px; padding: 7px 20px; font-size: 0.9em; cursor: pointer; }
+.form-btn:hover { background: #0055aa; }
+.form-status { font-size: 0.85em; color: #666; }
+`;
 
 function renderHtml(result, groupByKeys, aggregations, params) {
     const headers = [
@@ -336,7 +482,7 @@ ${tableRows.map(row =>
 <style>
 * { box-sizing: border-box; }
 body { font-family: sans-serif; background: #f9f9f9; color: #222; margin: 0; padding: 20px; }
-h1 { margin: 0 0 8px 0; }
+h1 { margin: 0 0 12px 0; }
 .section-title { margin: 24px 0 8px; font-size: 1.05em; color: #444; font-weight: 600; }
 .meta { color: #555; font-size: 0.9em; margin-bottom: 20px; display: flex; flex-wrap: wrap; gap: 12px; }
 .meta span { background: white; border: 1px solid #ddd; border-radius: 4px; padding: 4px 10px; }
@@ -350,10 +496,12 @@ td { padding: 8px 14px; font-size: 0.9em; border-bottom: 1px solid #eee; white-s
 tr:last-child td { border-bottom: none; }
 tr:hover td { background: #f0f7ff; }
 td.num { text-align: right; font-variant-numeric: tabular-nums; }
+${FORM_CSS}
 </style>
 </head>
 <body>
 <h1>Trace Span Aggregation</h1>
+${buildFormHtml(params, true)}
 <div class="meta">${metaParts.map(p => `<span>${p}</span>`).join('')}</div>
 ${sankeyHtml}
 ${hasSankey ? '<h2 class="section-title">Breakdown Table</h2>' : ''}

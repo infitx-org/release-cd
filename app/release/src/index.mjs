@@ -132,6 +132,20 @@ const init = async () => {
     });
 
     server.route({
+        options: {
+            ...config.server.get,
+            payload: {
+                parse: true,
+                allow: 'application/json',
+                maxBytes: 100 * 1024 * 1024,
+            },
+        },
+        method: 'POST',
+        path: '/traces',
+        handler: traces
+    });
+
+    server.route({
         options: config.server.get,
         method: 'GET',
         path: '/health',
