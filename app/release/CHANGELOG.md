@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.51.0](https://github.com/infitx-org/release-cd/compare/release-v1.50.4...release-v1.51.0) (2026-03-17)
+
+
+### Features
+
+* allow trace uploads ([06e38af](https://github.com/infitx-org/release-cd/commit/06e38af0197be27f0c3a10f7f4f867b08ab7c263))
+
 ## [1.50.4](https://github.com/infitx-org/release-cd/compare/release-v1.50.3...release-v1.50.4) (2026-03-16)
 
 
