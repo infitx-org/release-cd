@@ -11,6 +11,9 @@ ignore:
     - vulnerability: CVE-2026-24515
     - vulnerability: GHSA-7h2j-956f-4vf2
     - vulnerability: CVE-2025-68121
+    - vulnerability: CVE-2026-33526
+    - vulnerability: GHSA-2w6w-674q-4c4q
+    - vulnerability: GHSA-p77j-4mvh-x3m3
 # Set output format defaults
 output:
     - 'table'
