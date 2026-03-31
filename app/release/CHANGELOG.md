@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.52.0](https://github.com/infitx-org/release-cd/compare/release-v1.51.0...release-v1.52.0) (2026-03-31)
+
+
+### Features
+
+* add current dfsp and health states ([e57b10d](https://github.com/infitx-org/release-cd/commit/e57b10dbd2fd789a69dd8e64a597b5b8c2f24c0b))
+
 ## [1.51.0](https://github.com/infitx-org/release-cd/compare/release-v1.50.4...release-v1.51.0) (2026-03-17)
 
 
