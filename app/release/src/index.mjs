@@ -7,6 +7,7 @@ import path from 'path';
 
 import config from './config.mjs';
 import app from './handler/app.mjs';
+import dfspStates from './handler/dfspStates.mjs';
 import getDfspState from './handler/getDfspState.mjs';
 import keyRotate from './handler/keyRotate.mjs';
 import keyRotateDFSP from './handler/keyRotateDFSP.mjs';
@@ -27,7 +28,7 @@ const init = async () => {
         port: config.server.port,
         host: config.server.host
     });
-    const masked = ['/app', '/', '/report/{key*}', '/traces'];
+    const masked = ['/app', '/', '/report/{key*}', '/traces', '/dfsp-states'];
 
     server.auth.scheme('authorization-header', () => {
         return {
@@ -173,6 +174,13 @@ const init = async () => {
         method: 'GET',
         path: '/app',
         handler: app
+    });
+
+    server.route({
+        options: config.server.get,
+        method: 'GET',
+        path: '/dfsp-states',
+        handler: dfspStates
     });
 
     server.route({

@@ -180,6 +180,16 @@ export const cdRevisionGet = async (request, h) => {
         padding: 2px 4px;
         font-weight: 500;
         font-size: 0.85em;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+    .health-status-dot {
+        display: inline-block;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        flex-shrink: 0;
     }
     .health-state-bands {
         display: flex;
@@ -263,6 +273,48 @@ export const cdRevisionGet = async (request, h) => {
             color: #aaa;
         }
     }
+    .dfsp-state-grid {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 8px;
+    }
+    .dfsp-state-item {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 4px 10px;
+        border-radius: 12px;
+        font-size: 0.8em;
+        font-weight: 500;
+        border: 1px solid rgba(0,0,0,0.1);
+    }
+    .dfsp-state-item.success {
+        background: #e6f4ea;
+        color: #1e6e2e;
+    }
+    .dfsp-state-item.error {
+        background: #fce8e6;
+        color: #a50e0e;
+    }
+    .dfsp-state-item.unknown {
+        background: #f1f3f4;
+        color: #5f6368;
+    }
+    .dfsp-state-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        flex-shrink: 0;
+    }
+    .dfsp-state-dot.success { background: #34a853; }
+    .dfsp-state-dot.error   { background: #ea4335; }
+    .dfsp-state-dot.unknown { background: #9aa0a6; }
+    @media (prefers-color-scheme: dark) {
+        .dfsp-state-item.success { background: #1e3a22; color: #81c995; }
+        .dfsp-state-item.error   { background: #3c1414; color: #f28b82; }
+        .dfsp-state-item.unknown { background: #2d2e30; color: #9aa0a6; }
+    }
     </style>`);
     result.push(`
 <script>
@@ -291,17 +343,14 @@ export const cdRevisionGet = async (request, h) => {
                 return;
             }
 
-            // Filter out all-healthy apps and sort alphabetically
+            // Filter out apps that are currently healthy with no non-healthy history
             const filteredApps = apps.filter(([_, appData]) => !appData.isHealthy);
-            filteredApps.sort((a, b) => {
-                const [nameA] = a;
-                const [nameB] = b;
-                return nameA.localeCompare(nameB);
-            });
+            filteredApps.sort(([nameA], [nameB]) => nameA.localeCompare(nameB));
+
+            const totalApps = apps.length;
+            const healthyApps = apps.filter(([_, d]) => d.currentStatus === 'Healthy').length;
 
             if (filteredApps.length === 0) {
-                const totalApps = apps.length;
-                const healthyApps = apps.filter(([_, d]) => d.isHealthy).length;
                 container.innerHTML = \`<div style="color: #34a853; padding: 8px;">✓ All \${totalApps} apps are healthy!</div>\`;
                 return;
             }
@@ -316,30 +365,42 @@ export const cdRevisionGet = async (request, h) => {
             };
 
             let html = '<div class="health-grid">';
+            const statusColors = {
+                Healthy: '#34a853',
+                Progressing: '#4285f4',
+                Degraded: '#fbbc04',
+                Missing: '#ff6d00',
+                Unknown: '#ea4335',
+            };
             for (const [appName, appData] of filteredApps) {
-                const title = \`\${appName}: \${appData.currentStatus || 'Unknown'} (\${appData.totalTransitions} samples)\`;
-
-                // Only render if there are states present
-                if (appData.statesPresent.length === 0) continue;
+                const title = \`\${appName}: \${appData.currentStatus || 'Unknown'} (\${appData.totalTransitions} transitions)\`;
+                const dotColor = statusColors[appData.currentStatus] ?? '#9aa0a6';
 
                 html += \`<div class="health-app-section">\`;
-                html += \`<div class="health-app-name" title="\${title}">\${appName}</div>\`;
+                html += \`<div class="health-app-name" title="\${title}"><span class="health-status-dot" style="background:\${dotColor};"></span>\${appName}</div>\`;
                 html += \`<div class="health-state-bands">\`;
 
-                // Create a row for each state that has transitions
-                for (const state of appData.statesPresent) {
-                    const transitions = appData.stateTransitions[state];
-                    html += \`<div class="health-heatmap-row">\`;
-
-                    for (let hourIdx = 0; hourIdx < transitions.length; hourIdx++) {
-                        const count = transitions[hourIdx];
-                        const intensity = getIntensityLevel(count);
-                        const cellTitle = \`\${state}: \${count} transition\${count !== 1 ? 's' : ''}\`;
-
-                        html += \`<div class="health-cell \${state}-\${intensity}" title="\${cellTitle}"></div>\`;
-                    }
-
+                if (appData.statesPresent.length === 0) {
+                    // App has a non-healthy current status but no heatmap data — show a placeholder bar
+                    html += \`<div class="health-heatmap-row" title="No transition data in the last 24h">\`;
+                    html += \`<div style="flex:1;height:6px;border-radius:1px;background:\${dotColor};opacity:0.35;"></div>\`;
                     html += \`</div>\`;
+                } else {
+                    // Create a row for each state that has transitions
+                    for (const state of appData.statesPresent) {
+                        const transitions = appData.stateTransitions[state];
+                        html += \`<div class="health-heatmap-row">\`;
+
+                        for (let hourIdx = 0; hourIdx < transitions.length; hourIdx++) {
+                            const count = transitions[hourIdx];
+                            const intensity = getIntensityLevel(count);
+                            const cellTitle = \`\${state}: \${count} transition\${count !== 1 ? 's' : ''}\`;
+
+                            html += \`<div class="health-cell \${state}-\${intensity}" title="\${cellTitle}"></div>\`;
+                        }
+
+                        html += \`</div>\`;
+                    }
                 }
 
                 html += \`</div>\`; // Close health-state-bands
@@ -367,13 +428,40 @@ export const cdRevisionGet = async (request, h) => {
             html += '</div>';
 
             // Add stats
-            const totalApps = apps.length;
-            const healthyApps = apps.filter(([_, d]) => d.isHealthy).length;
             const stableApps = apps.filter(([_, d]) => d.isStable).length;
-            const displayedApps = filteredApps.filter(([_, d]) => d.statesPresent.length > 0).length;
-            html += \`<div class="health-stats">Apps: \${displayedApps}/\${totalApps} (hiding \${healthyApps} all-healthy) | Stable: \${stableApps} | 24h heatmap →</div>\`;
+            html += \`<div class="health-stats">Showing \${filteredApps.length}/\${totalApps} apps (\${healthyApps} currently healthy hidden) | 24h heatmap →</div>\`;
 
             container.innerHTML = html;
+        }
+
+        async function loadDfspStates(containerId, url) {
+            const container = document.getElementById(containerId);
+            if (!container) return;
+            try {
+                const response = await fetch(url);
+                if (!response.ok) throw new Error('Failed to fetch DFSP states');
+                const data = await response.json();
+                const entries = Object.entries(data);
+                if (entries.length === 0) {
+                    container.innerHTML = '<div style="color: #888; font-size: 0.85em;">No DFSPs configured.</div>';
+                    return;
+                }
+                let html = '<div class="dfsp-state-grid">';
+                for (const [dfsp, info] of entries) {
+                    if (info.stateLabel === null) {
+                        html += \`<div class="dfsp-state-item unknown"><span class="dfsp-state-dot unknown"></span>\${dfsp} — no data</div>\`;
+                    } else if (info.isSuccess) {
+                        html += \`<div class="dfsp-state-item success"><span class="dfsp-state-dot success"></span>\${dfsp}</div>\`;
+                    } else {
+                        html += \`<div class="dfsp-state-item error" title="\${info.stateLabel}"><span class="dfsp-state-dot error"></span>\${dfsp} — \${info.stateLabel}</div>\`;
+                    }
+                }
+                html += '</div>';
+                container.innerHTML = html;
+            } catch (err) {
+                console.error('Failed to load DFSP states:', err);
+                container.innerHTML = '<div style="color: #ea4335;">⚠️ Failed to load DFSP states</div>';
+            }
         }
 
         const showHint = (button, message, isError = false) => {
@@ -503,6 +591,13 @@ export const cdRevisionGet = async (request, h) => {
         result.push(`<div class="health-viz" id="health-${env}">Loading...</div>`);
         result.push(`<script>loadHealthData('${env}', '${config.env[env]}/app');</script>`);
         result.push('</details>');
+
+        if (config.rule.environments[env]?.dfsps?.length) {
+            result.push('<details open><summary>DFSP State</summary>');
+            result.push(`<div class="health-viz" id="dfsp-state-${env}">Loading...</div>`);
+            result.push(`<script>loadDfspStates('dfsp-state-${env}', '${config.env[env]}/dfsp-states?env=${env}');</script>`);
+            result.push('</details>');
+        }
 
         result.push('</div>'); // Close env-card
     }

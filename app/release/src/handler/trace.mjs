@@ -38,7 +38,7 @@ function extractSpans(trace) {
                 const spanAttrs = buildAttrMap(span.attributes);
                 parentAttrs.set(span.spanId, spanAttrs);
                 // consuming spans are not really included in the duration of their producer
-                if (!['consume', 'receive'].includes(spanAttrs['messaging.operation.name']))
+                if (!['consume', 'receive', 'process'].includes(spanAttrs['messaging.operation.name']))
                     parents.add(span.parentSpanId);
                 spans.push({
                     name: span.name,
